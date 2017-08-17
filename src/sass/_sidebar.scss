@@ -173,6 +173,21 @@
       color: $sidebar-fg-active;
     }
   }
+
+  .logo {
+    position: absolute;
+    bottom: 0;
+    padding-bottom: 5px;
+    width: 100%;
+
+    img {
+      width: 80%;
+      margin: auto;
+      display: block;
+      left: 0;
+      right: 0;
+    }
+  }
 }
 
 .content {

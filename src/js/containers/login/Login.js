@@ -91,15 +91,14 @@ class Content extends Component {
         <div className="row">
           <div className="col s12 m4 login-area-left-side">
             <div className="row icon">
-              <p><img src="images/logo.png"/></p>
+              <p><img src="images/main.png"/></p>
             </div>
             <div className="row">
               {/* TODO This really should be in an i18n file somewhere */}
               <div className="info">
-                <i>-- Heleus (TODO: change this to the chosen name) --</i> IoT platform
-                provides an open and solid foundation for a series of applications that depend
-                on data being collected from a myriad of devices, allowing developers to focus on
-                the real value of their innovative applications.
+                dojot IoT platform provides an open and solid foundation for a series of
+                applications that depend on data being collected from a myriad of devices,
+                allowing developers to focus on the real value of their innovative applications.
               </div>
             </div>
           </div>

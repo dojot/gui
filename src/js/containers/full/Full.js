@@ -234,6 +234,9 @@ class Sidebar extends Component {
             { entries.map((item) => <SidebarItem item={item} key={item.label} open={this.props.open} router={this.props.router}/> )}
           </ul>
         </nav>
+        <div className="logo">
+          <img src="images/logo-wh.png" />
+        </div>
       </div>
     )
   }
