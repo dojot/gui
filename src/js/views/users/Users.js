@@ -14,6 +14,7 @@ import Filter from "../utils/Filter";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import MaterialSelect from "../../components/MaterialSelect";
+import MaterialInput from "../../components/MaterialInput";
 import AutheticationFailed from "../../components/AuthenticationFailed";
 
 import LoginStore from "../../stores/LoginStore";
@@ -329,8 +330,6 @@ class UserFormImpl extends Component {
     super(props);
     this.saveUser = this.saveUser.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.isValid = this.isValid.bind(this);
-    this.getValidClass = this.getValidClass.bind(this);
   }
 
   componentDidMount() {
@@ -367,19 +366,6 @@ class UserFormImpl extends Component {
     FormActions.update({f: f, v: v, e: this.props.edit});
   }
 
-  isValid(name) {
-    if (name in this.props.invalid) {
-      return this.props.invalid[name] === undefined ;
-    }
-
-    return true;
-  }
-
-  getValidClass(name) {
-    if (this.isValid(name)) return "react-validate";
-    return "react-validate invalid";
-  }
-
   render() {
     return (
       <span>
@@ -398,45 +384,39 @@ class UserFormImpl extends Component {
 
           <div className="lst-user-detail row" >
             <div className="lst-user-line col s12 input-field">
-              <input id="fld_Name" type="text" className={this.getValidClass('name')} pattern=".*"
-                     name="name" value={this.props.user.name}
-                     key="name" onChange={this.handleChange} />
-              <label htmlFor="fld_Name"
-                     data-error={this.props.invalid['name']}
-                     data-success="">Name</label>
+              <MaterialInput id="fld_name" value={this.props.user.name}
+                             error={this.props.invalid['name']}
+                             name="name" onChange={this.handleChange}>
+                Name
+              </MaterialInput>
             </div>
             <div className="lst-user-line col s12 input-field">
-              <input id="fld_Email" type="email" className={this.getValidClass('email')}
-                     name="email" value={this.props.user.email}
-                     key="email" onChange={this.handleChange} />
-              <label htmlFor="fld_Email"
-                     data-error={this.props.invalid['email']}
-                     data-success="">Email</label>
+              <MaterialInput id="fld_email" value={this.props.user.email}
+                             error={this.props.invalid['email']}
+                             name="email" onChange={this.handleChange}>
+                Email
+              </MaterialInput>
             </div>
             <div className="lst-user-line col s12 input-field">
-              <input id="fld_login" type="text" className={this.getValidClass('username')}
-                     name="username" value={this.props.user.username}
-                     disabled={this.props.edit}
-                     key="username" onChange={this.handleChange} />
-              <label htmlFor="fld_login"
-                     data-error={this.props.invalid['username']}
-                     data-success="">Username</label>
+              <MaterialInput id="fld_login" value={this.props.user.username}
+                             error={this.props.invalid['username']}
+                             name="username" onChange={this.handleChange}>
+                Username
+              </MaterialInput>
             </div>
             <div className="lst-user-line col s12 input-field">
-              <input id="fld_password" type="password" className={this.getValidClass('passwd')} pattern=".*"
-                     name="passwd" value={this.props.user.passwd}
-                     key="passwd" onChange={this.handleChange} />
-              <label htmlFor="fld_password"
-                     data-error={this.props.invalid['passwd']}
-                     data-success="">Password</label>
+              <MaterialInput id="fld_passwd" value={this.props.user.passwd}
+                             error={this.props.invalid['passwd']} type="password"
+                             name="passwd" onChange={this.handleChange}>
+                Password
+              </MaterialInput>
             </div>
             <div className="lst-user-line col s6 input-field">
-              <input id="fld_service" type="text" className={this.getValidClass('service')} pattern="[a-z0-9_]+"
-                     name="service" value={this.props.user.service}
-                     key="service" onChange={this.handleChange} />
-              <label htmlFor="fld_service"
-                     data-error={this.props.invalid['service']}
-                     data-success="">Service</label>
+              <MaterialInput id="fld_service" value={this.props.user.service}
+                             error={this.props.invalid['service']}
+                             name="service" onChange={this.handleChange}>
+                Service
+              </MaterialInput>
             </div>
             <div className="lst-user-line col s6 input-field">
               <MaterialSelect id="flr_profile" name="profile"

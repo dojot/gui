@@ -100,19 +100,31 @@ class Graph extends Component{
   }
 
   render() {
+
+    function getValue(tuple) {
+      let val_type = typeof tuple.attrValue;
+      if (val_type == "string" && tuple.attrType != "string") {
+        if (tuple.attrValue.trim().length > 0) {
+          if (tuple.attrType.toLowerCase() == 'integer') {
+            return parseInt(tuple.attrValue);
+          } else if (tuple.attrType.toLowerCase() == 'float'){
+            return parseFloat(tuple.attrValue);
+          }
+        }
+      } else if (val_type == "number") {
+        return tuple.attrValue;
+      }
+
+      return undefined;
+    }
+
     let labels = [];
     let values = [];
     this.props.data.map((i) => {
-      if (i.attrValue.trim().length > 0) {
+      let value = getValue(i);
+      if (value !== undefined) {
         labels.push(util.printTime(Date.parse(i.recvTime)/1000));
-        if (i.attrType.toLowerCase() === 'integer') {
-          values.push(parseInt(i.attrValue));
-        } else if (i.attrType.toLowerCase() === 'float') {
-          values.push(parseFloat(i.attrValue));
-        } else {
-          console.error('unknown field type');
-          values.push(parseInt(i.attrValue));
-        }
+        values.push(value);
       }
     })
 

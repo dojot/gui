@@ -15,6 +15,7 @@ import TagForm from '../../components/TagForm';
 import util from "../../comms/util/util";
 
 import MaterialSelect from "../../components/MaterialSelect";
+import MaterialInput from "../../components/MaterialInput";
 
 class FActions {
   set(args) { return args; }
@@ -30,7 +31,14 @@ class FActions {
   }
 }
 const FormActions = alt.createActions(FActions);
-const AttrActions = alt.generateActions('set', 'update', 'add', 'remove', 'error');
+const AttrActions = alt.generateActions('set', 'update', 'add', 'remove');
+class ErrorActionsImpl {
+  reset() { return {}; }
+  setField(field, message) {
+    return {field: field, message: message};
+  }
+}
+const ErrorActions = alt.createActions(ErrorActionsImpl);
 class FStore {
   constructor() {
     this.device = {}; this.set();
@@ -39,7 +47,11 @@ class FStore {
     // Map used to filter out duplicated attr names. Do check loadAttrs() for further notes.
     this.attrNames = {}; this.loadAttrs();
 
+    // General form-wide sticky error messages
     this.attrError = "";
+    // Map used to keep per field, custom error messages
+    this.fieldError = {};
+
     this.bindListeners({
       set: FormActions.SET,
       updateDevice: FormActions.UPDATE,
@@ -52,7 +64,9 @@ class FStore {
       updAttr: AttrActions.UPDATE,
       addAttr: AttrActions.ADD,
       removeAttr: AttrActions.REMOVE,
-      errorAttr: AttrActions.ERROR,
+
+      errorAttr: ErrorActions.SET_FIELD,
+      errorReset: ErrorActions.RESET,
     });
     this.set(null);
   }
@@ -134,13 +148,24 @@ class FStore {
   }
 
   errorAttr(error) {
-    this.attrError = error;
+    if (typeof error === 'string') {
+      this.attrError = error;
+    } else if (typeof error === 'object') {
+      this.fieldError[error.field] = error.message;
+    }
+  }
+
+  errorReset() {
+    this.fieldError = {};
   }
 
   addAttr() {
     // check for duplicate names. Do check loadAttrs() for further details.
     if (this.attrNames.hasOwnProperty(this.newAttr.name)) {
-      this.attrError = "There is already an attribute named '" + this.newAttr.name + "'";
+      this.errorAttr({
+        field: 'name',
+        message: "There's already an attribute named '" + this.newAttr.name + "'"
+      });
       return;
     } else {
       this.attrNames[this.newAttr.name] = this.newAttr.name;
@@ -278,12 +303,9 @@ class NewAttr extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.dismiss = this.dismiss.bind(this);
     this.submit = this.submit.bind(this);
-    this.validateName = this.validateName.bind(this);
-    this.isNameValid = this.isNameValid.bind(this);
     this.cleanBuffer = this.cleanBuffer.bind(this);
-    this.validateType = this.validateType.bind(this);
+    this.isNameValid = this.isNameValid.bind(this);
     this.isTypeValid = this.isTypeValid.bind(this);
-
     this.availableTypes = attrType.getTypes();
   }
 
@@ -295,95 +317,85 @@ class NewAttr extends Component {
     })
   }
 
-  handleChange(event) {
-    event.preventDefault();
-    AttrActions.update({f: event.target.name, v: event.target.value});
-  }
-
   isNameValid(name) {
-    if (name.match(/^[a-zA-Z0-9]+$/) == null) {
-      AttrActions.error('Invalid name - only alphanumeric characters (no spaces) supported');
+    if (name.length == 0) {
+      ErrorActions.setField('name', "You can't leave this empty");
+      return false;
+    }
+
+    if (name.match(/^\w+$/) == null) {
+      ErrorActions.setField('name', "Please use only letters (a-z), numbers (0-9) and underscores (_).");
       return false;
     } if (this.props.attrNames.hasOwnProperty(name)) {
-      AttrActions.error("There is already an attribute named '" + name + "'");
+      ErrorActions.setField('name', "There is already an attribute named '" + name + "'");
       return false;
     } else {
-      AttrActions.error('');
+      ErrorActions.setField('name', "");
       return true;
     }
   }
 
-  validateName(event) {
+  isTypeValid(value){
+    const validator = {
+      'string': function (value) {
+        return value.trim().length > 0;
+      },
+      'geo:point': function (value) {
+        const re = /^([+-]?\d+(\.\d+)?)([,]\s*)([+-]?\d+(\.\d+)?)$/
+        const result = re.test(value);
+        if (result == false) {
+          ErrorActions.setField('value', 'This is not a valid coordinate')
+        }
+        return result;
+      },
+      'integer': function (value) {
+        const re = /^[+-]?\d+$/
+        const result = re.test(value);
+        if (result == false) {
+          ErrorActions.setField('value', 'This is not an integer')
+        }
+        return result;
+      },
+      'float': function (value) {
+        const re = /^[+-]?\d+(.\d+)?$/
+        const result = re.test(value);
+        if (result == false) {
+          ErrorActions.setField('value', 'This is not a float')
+        }
+        return result;
+      },
+      'boolean': function (value) {
+        const re = /^0|1|true|false$/
+        const result = re.test(value);
+        if (result == false) {
+          ErrorActions.setField('value', 'This is not a boolean')
+        }
+        return result;
+      },
+    };
+
+    if (validator.hasOwnProperty(this.props.newAttr.type)) {
+      const result = validator[this.props.newAttr.type](value)
+      if (result) { ErrorActions.setField('value', ''); }
+      return result;
+    }
+
+    return true;
+  }
+
+  handleChange(event) {
+    const handler = {
+      'label':  this.isNameValid,
+      // 'type':  this.isTypeValid
+      'value':  this.isTypeValid
+    }
+
     event.preventDefault();
-    const value = event.target.value;
-    this.isNameValid(value);
-    this.handleChange(event);
-  }
-
-  validateType(event){
-
-    event.preventDefault();
-    const staticValue = event.target.value;
-    this.isTypeValid(staticValue);
-    this.handleChange(event);
-  }
-
-  isTypeValid(type){
-
-    if(this.props.newAttr.type == 'string'){
-          AttrActions.error('');
-          return true;
-    }
-
-    if(this.props.newAttr.type == 'geo:point'){
-      while(type){
-        if(type.match(/^(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)$/) == null){
-          AttrActions.error('Invalid type - Type is not compatible with Static Value (Insert a geo-point value)');
-          return false;
-        }else{
-          AttrActions.error('');
-          return true;
-        }
-      }
-    }
-
-    if(this.props.newAttr.type == 'integer'){
-      while(type){
-        if(type.match(/^(([-+]?[1-9]\d*)|([0-9]\d*))$/)==null){
-          AttrActions.error('Invalid type - Type is not compatible with Static Value (Insert a integer value)');
-          return false;
-        }else{
-          AttrActions.error('');
-          return true;
-        }
-      }
-    }
-
-    if(this.props.newAttr.type == 'float'){
-      while(type){
-        if(type.match(/^(([+-]?[1-9]\d*(\.\d+)?)|([0-9]\d*(\.\d+)*)?|([-][0]\d*(\.\d+)))$/)==null){
-          AttrActions.error('Invalid type - Type is not compatible with Static Value (Insert a float value)');
-          return false;
-        } else {
-          AttrActions.error('');
-          return true
-        }
-      }
-    }
-
-    if(this.props.newAttr.type == 'boolean'){
-      while(type){
-        if(type.match(/^(0|1|true|false)$/)==null){
-          AttrActions.error('Invalid type - Type is not compatible with Static Value (Insert a boolean value (0 or 1, true or false))');
-          return false;
-        } else {
-          AttrActions.error('');
-          return true
-        }
-      }
+    AttrActions.update({f: event.target.name, v: event.target.value});
+    if (handler.hasOwnProperty(event.target.name)) {
+      handler[event.target.name](event.target.value);
     }
   }
-
 
   dismiss(event) {
     event.preventDefault();
@@ -403,17 +415,13 @@ class NewAttr extends Component {
       return;
     }
 
-    if ((this.props.newAttr.name.length > 0) && (this.props.newAttr.value.length >= 0)) {
-      AttrActions.add();
-      let modalElement = ReactDOM.findDOMNode(this.refs.modal);
-      $(modalElement).modal('close');
-    } else {
-        AttrActions.error("An attribute must have its name defined.");
-    }
+    AttrActions.add();
+    let modalElement = ReactDOM.findDOMNode(this.refs.modal);
+    $(modalElement).modal('close');
   }
 
   cleanBuffer(event){
-    AttrActions.error('');
+    ErrorActions.reset();
   }
 
   render() {
@@ -423,16 +431,14 @@ class NewAttr extends Component {
         <div className="modal visible-overflow-y" id="newAttrsForm" ref="modal">
           <div className="modal-content full">
             <div className="title row">New Attribute</div>
-            {(this.props.attrError.length > 0) && (
-              <div className="error row">{this.props.attrError}</div>
-            )}
             <form className="row" onSubmit={this.submit}>
               <div className="row">
                 <div className="input-field col s12" >
-                  <label htmlFor="fld_name">Name</label>
-                  <input id="fld_name" type="text"
-                          name="name" value={this.props.newAttr.name}
-                          key="protocol" onChange={this.validateName} />
+                  <MaterialInput id="fld_name" value={this.props.newAttr.name}
+                                 error={this.props.fieldError['name']}
+                                 name="name" onChange={this.handleChange}>
+                    Name
+                  </MaterialInput>
                 </div>
                 <div className="input-field col s4" >
                   <MaterialSelect id="fld_type" name="type" key="protocol"
@@ -444,10 +450,11 @@ class NewAttr extends Component {
                   <label htmlFor="fld_type">Type</label>
                 </div>
                 <div className="input-field col s8">
-                  <label htmlFor="fld_value">Static value</label>
-                  <input id="fld_value" type="text"
-                        name="value" value={this.props.newAttr.value}
-                        key="protocol" onChange={this.validateType}/>
+                  <MaterialInput id="fld_value" value={this.props.newAttr.value}
+                                 error={this.props.fieldError['value']}
+                                 name="value" onChange={this.handleChange}>
+                    Static value
+                  </MaterialInput>
                 </div>
               </div>
 
@@ -507,10 +514,10 @@ class DeviceForm extends Component {
             <div className="col s9 pt20px">
               <div>
                 <div className="input-field large col s12 ">
-                  <label htmlFor="fld_label">Name</label>
-                  <input id="fld_label" type="text"
-                         name="label" value={this.props.device.label}
-                         key="label" onChange={this.handleChange} />
+                  <MaterialInput id="fld_label" value={this.props.device.label}
+                                 name="label" onChange={this.handleChange}>
+                    Name
+                  </MaterialInput>
                 </div>
 
                 <div className="col s12">
