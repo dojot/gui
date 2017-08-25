@@ -22,14 +22,14 @@ class DeviceItem extends Component {
     return (
       <Link className='main-div' to={'/device/list?detail=' + this.props.data.id}>
         <div className="item">
-          <div className="col s6 name-info">
+          <div className="col s12 name-info">
                 {this.props.data.label}
           </div>
           <div className={'item-hovered no-padding color-'+this.props.data._status}>
-          <div className="col s6 name-info">
+          <div className="col s8 name-info">
                 {this.props.data.label}
           </div>
-          <div className="col s6 time-info upper">
+          <div className="col s4 time-info upper">
                 <title>{this.props.data._status}</title>
                 <span>STATUS</span>
           </div>
@@ -54,10 +54,10 @@ class TemplateItem extends Component {
     return (
       <div className='main-div'>
         <div className="item">
-          <div className="col s6 name-info">
+          <div className="col s12 name-info">
                 {this.props.data.label}
           </div>
-          <div className="col s6 time-info">
+          <div className="col s6 time-info hide-on-small-only">
                 <title>{util.timestamp_to_date(this.props.data.created)}</title>
                 <span>CREATED AT</span>
           </div>
@@ -141,8 +141,8 @@ class ElementList extends Component {
     return (
         <div className="col box">
             <div className={"box-title bg-"+info.color}>
-              <img className="icon" src={info.img_url}/>
-              <label className='number'>{tam}</label>
+              <img className="icon hide-on-small-only" src={info.img_url}/>
+              <label className='number hide-on-small-only'>{tam}</label>
               <label className='subtitle'>{info.subtitle}</label>
               <label className='title'>{info.title}</label>
               <i className="fa fa-menu"></i>
@@ -165,7 +165,7 @@ class MainPainel extends Component {
 
     render() {
       return (
-        <div className="right-painel-info">
+        <div className="right-painel-info col s12 m12 l8 xl9">
           <ElementList type='devices' list={this.props.devices} />
           <ElementList type='templates' list={this.props.templates} />
         </div>
@@ -187,8 +187,8 @@ class LeftPainel extends Component {
       side_stats = this.props.stats.sideStats;
 
     return (
-        <div className="left-painel-info" >
-          <div className="main-header col s12">
+      <div className="left-painel-info col s12 m12 l4 xl3" >
+          <div className="main-header">
             <div className="photo-big" >
               <div className="circle-after">
                 <img className="w100p h100p" src="images/big-chip.png"/>
@@ -201,20 +201,24 @@ class LeftPainel extends Component {
           <div className="box-stats col s12">
             <p className='main-title'><label>{this.props.stats.title}</label></p>
             <div className='stats'>
-            { main_stats.map((stat) =>
-              <div key={stat.key} className="lst-item col s12">
-              <p className="key"> {stat.key}</p>
-              <p className="value"> {stat.value}</p>
+            <div className="main-stats col s12 m6 l12">
+              { main_stats.map((stat) =>
+                <div key={stat.key} className="lst-item">
+                  <p className="key"> {stat.key}</p>
+                  <p className="value"> {stat.value}</p>
+                </div>
+              )}
               </div>
-            )}
-            { side_stats.map((stat) =>
-              <div key={stat.key} className="lst-item sub col s6">
-              <p className="key"> {stat.key}</p>
-              <p className="value"> {stat.value}</p>
+              <div className="side-stats col s12 m6 l12">
+              { side_stats.map((stat) =>
+                <div key={stat.key} className="lst-item sub">
+                  <p className="key"> {stat.key}</p>
+                  <p className="value"> {stat.value}</p>
+                </div>
+              )}
               </div>
-            )}
             </div>
-        </div>
+          </div>
       </div>
     )
   }
@@ -253,9 +257,9 @@ class DeviceDashboardImpl extends Component {
       transitionAppearTimeout={500}
       transitionEnterTimeout={500}
       transitionLeaveTimeout={500} >
-      <div className="row col s12 main-painel">
-       <LeftPainel id='div_devices' mainTitle="Devices" subtitle="Dashboard" stats={this.props.devices.stats} />
-        <MainPainel devices={this.props.devices.last_devices} templates={this.props.devices.last_templates} />
+      <div className="row main-painel">
+         <LeftPainel id='div_devices' mainTitle="Devices" subtitle="Dashboard" stats={this.props.devices.stats} />
+         <MainPainel devices={this.props.devices.last_devices} templates={this.props.devices.last_templates} />
       </div>
       </ReactCSSTransitionGroup>
     );

@@ -1,0 +1,15 @@
+sudo: false
+language: node_js
+node_js: 4
+script:
+  - npm run build
+install:
+  - npm install -g bower
+  - npm install
+  - bower install
+services:
+  - docker
+after_success:
+  - docker build -t $TRAVIS_REPO_SLUG -f docker/Dockerfile .
+  - docker login -u="$USERNAME" -p="$PASSWD"
+  - docker push $TRAVIS_REPO_SLUG

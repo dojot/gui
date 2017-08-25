@@ -16,6 +16,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import MaterialSelect from "../../components/MaterialSelect";
 import MaterialInput from "../../components/MaterialInput";
 import AutheticationFailed from "../../components/AuthenticationFailed";
+import Paginator from "../../components/Paginator";
 
 import LoginStore from "../../stores/LoginStore";
 
@@ -469,14 +470,9 @@ class UserList extends Component {
     super(props);
 
     this.state = {
-      filter: '',
       detail: undefined,
       edit: undefined,
       create: undefined,
-      current: 1,
-      usersByPage: 6,
-      listOfUser: undefined,
-      listOfUserByPage: undefined,
       height: undefined
     };
 
@@ -486,15 +482,6 @@ class UserList extends Component {
     this.updateUser = this.updateUser.bind(this);
     this.deleteUser = this.deleteUser.bind(this);
     this.handleCreate = this.handleCreate.bind(this);
-
-    this.applyFiltering = this.applyFiltering.bind(this);
-    this.handleSearchChange = this.handleSearchChange.bind(this);
-    this.applyPagination = this.applyPagination.bind(this);
-    this.nextPage = this.nextPage.bind(this);
-    this.prevPage = this.prevPage.bind(this);
-    this.isFirstPage = this.isFirstPage.bind(this);
-    this.isLastPage = this.isLastPage.bind(this);
-
     this.newUser = this.newUser.bind(this);
   }
 
@@ -559,75 +546,6 @@ class UserList extends Component {
     return true;
   }
 
-  applyFiltering(list) {
-    // TODO make filtering work for users
-    return list;
-    const filter = this.state.filter;
-    const idFilter = filter.match(/id:\W*([-a-fA-F0-9]+)\W?/);
-    return this.props.users.filter(function(e) {
-      let result = false;
-      if (idFilter && idFilter[1]) {
-        result = result || e.id.toUpperCase().includes(idFilter[1].toUpperCase());
-      }
-
-      return result || e.name.toUpperCase().includes(filter.toUpperCase());
-    });
-  }
-
-  handleSearchChange(event) {
-    const filter = event.target.value;
-    let state = this.state;
-    state.filter = filter;
-    state.detail = undefined;
-    this.setState(state);
-  }
-
-  applyPagination() {
-    let state = this.state;
-    const listPaginate = [];
-    let count = 0;
-    let initIndex = (this.state.current-1) * this.state.usersByPage;
-    let finalIndex = this.state.current * this.state.usersByPage;
-    for (let i = initIndex; i < finalIndex; i++) {
-      if (this.state.listOfUser[i] != undefined) {
-        listPaginate[count] = this.state.listOfUser[i];
-      }
-      count++;
-    }
-    this.state.listOfUserByPage = listPaginate;
-  }
-
-  isFirstPage() {
-    return this.state.current == 1;
-  }
-
-  isLastPage() {
-    return this.state.listOfUser.length <= ((this.state.current) * this.state.usersByPage);
-  }
-
-  prevPage(list) {
-    let state = this.state;
-    if (!this.isFirstPage()) {
-      state.current--;
-      this.applyPagination();
-    }
-    this.setState(state);
-  }
-
-  nextPage() {
-    let state = this.state;
-      if (!this.isLastPage()) {
-        state.current++;
-        this.applyPagination();
-        this.setState(state);
-      }
-  }
-
-  componentDidMount() {
-    // TODO: use this later on to set the number of entries to be presented in each page
-    // const height = document.getElementsByClassName('userCanvas')[0].clientHeight;
-  }
-
   newUser(user) {
     UserActions.addUser(user, (data) => {
       Materialize.toast('User created', 4000);
@@ -639,19 +557,17 @@ class UserList extends Component {
     });
   }
 
+  componentDidMount() {
+    // TODO: use this later on to set the number of entries to be presented in each page
+    // const height = document.getElementsByClassName('userCanvas')[0].clientHeight;
+  }
+
   render() {
-
-    this.state.listOfUser = this.applyFiltering(this.props.users);
-    this.applyPagination();
-    let displayed = this.state.usersByPage;
-    if (this.state.listOfUser.length < displayed)
-      displayed = this.state.listOfUser.length;
-
     let detailAreaStatus = "";
     if (this.state.create || this.state.edit) detailAreaStatus = " create";
     if (this.state.detail) detailAreaStatus = " selected";
-    const prevPageClass = (this.isFirstPage() ? " inactive" : "");
-    const nextPageClass = (this.isLastPage() ? " inactive" : "");
+    const prevPageClass = (this.props.isFirst ? " inactive" : "");
+    const nextPageClass = (this.props.isLast ? " inactive" : "");
 
 
     return (
@@ -663,7 +579,7 @@ class UserList extends Component {
             <div className="col s4 m4 main-title">List of Users</div>
             <div className="col s2 m2 header-card-info">
               <div className="title"># Users</div>
-              <div className="subtitle">{this.state.listOfUser.length}</div>
+              <div className="subtitle">{this.props.total}</div>
             </div>
             <div className="col s4 header-card-info"></div>
             <div className="col s6 m2 button">
@@ -672,21 +588,21 @@ class UserList extends Component {
           </div>
 
           <div className={"fill row userCanvas z-depth-2" + detailAreaStatus}>
-            { this.state.listOfUserByPage.length > 0 ? (
+            { this.props.values.length > 0 ? (
                 <div className="col s4 no-padding" id="user-list">
-                  { this.state.listOfUserByPage.map((user) =>
+                  { this.props.values.map((user) =>
                       <ListItem user={user}
                                 key={user.id}
                                 detail={this.state.detail}
                                 detailedUser={this.detailedUser}/>
                   )}
                   <div className="col s4 userCanvasFooter">
-                    <div id="labelShowing" className="col s12 m6">Showing {this.state.listOfUserByPage.length} of {this.state.listOfUser.length}</div>
+                    <div id="labelShowing" className="col s12 m6">Showing {this.props.values.length} of {this.props.total}</div>
                     <div id="prevPageId" className="col s6 m3 clickable">
-                      <a className={prevPageClass} onClick={this.prevPage}><i className="fa fa-chevron-left paddingRight10"></i>PREV</a>
+                      <a className={prevPageClass} onClick={this.props.prev}><i className="fa fa-chevron-left paddingRight10"></i>PREV</a>
                     </div>
                     <div id="nextPageId" className="col s6 m3 clickable">
-                      <a className={nextPageClass} onClick={this.nextPage}>NEXT<i className="fa fa-chevron-right paddingLeft10"></i></a>
+                      <a className={nextPageClass} onClick={this.props.next}>NEXT<i className="fa fa-chevron-right paddingLeft10"></i></a>
                     </div>
                   </div>
                 </div>
@@ -732,15 +648,70 @@ class UserList extends Component {
   }
 }
 
+function UserFilter(props) {
+  const filter = props.filter;
+
+  // parse the given field, searching for special selectors on the form <field name>:<value>
+  const tokens = filter.match(/([a-z]+)\W*:\W*(\w+)\W*/g);
+  let parsed = undefined;
+  if (tokens !== null) {
+    parsed = tokens.map((t) => {
+      const k = t.match(/([a-z]+)\W*:\W*(\w+)\W*/);
+      if (k !== null){
+        return {id: k[1], val: k[2].toLowerCase()};
+      } else {
+        return null;
+      }
+    });
+  }
+
+  // does the actual filtering
+  const filteredList = props.users.filter(function(e) {
+    if (tokens !== undefined && parsed !== undefined) {
+      let match = true;
+      for (let i = 0; i < parsed.length; i++) {
+        if (e.hasOwnProperty(parsed[i].id)) {
+          // all special selectors must match.
+          match = match && e[parsed[i].id].toLowerCase().includes(parsed[i].val)
+        }
+      }
+      return match;
+    } else {
+      // if no special selector was found in the search box, use the whole search term to compare
+      // to selected user fields.
+      return (
+        e.name.toLowerCase().includes(filter) ||
+        e.username.toLowerCase().includes(filter) ||
+        e.service.toLowerCase().includes(filter)
+      )
+    }
+  });
+
+  return (
+    <Paginator values={filteredList} entriesPerPage={6}>
+      {/* Paginator forwards paginated values into UserList */}
+      <UserList error={props.error} total={props.users.length}/>
+    </Paginator>
+  )
+}
+
 class Users extends Component {
+  constructor() {
+    super();
+    this.state = { filter: '' };
+    this.filterChange = this.filterChange.bind(this);
+  }
+
+  // Uses Users' internal state as store for the filter field. No sync issues since the
+  // rendering of the affected view is done on the lower order compoenent (UserFilter).
+  filterChange(e) {
+    this.setState({ filter: e });
+  }
+
   componentDidMount() {
     if(LoginStore.getState().user.profile == "admin"){
       UserActions.fetchUsers.defer();
     }
-  }
-
-  filterChange(newFilter) {
-    // TODO
   }
 
   render() {
@@ -751,7 +722,7 @@ class Users extends Component {
             <Filter onChange={this.filterChange} />
           </PageHeader>
           <AltContainer store={UserStore} >
-            <UserList />
+            <UserFilter filter={this.state.filter} />
           </AltContainer>
         </span>
       );
