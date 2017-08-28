@@ -30,7 +30,6 @@ class Content extends Component {
   }
 
   validate() {
-    console.log(this.state)
     let result = {};
     let invalid = {}
     const username = /^[a-z0-9_]+$/;
@@ -44,7 +43,6 @@ class Content extends Component {
       invalid['passwd'] = "This can't be empty";
     }
 
-    console.log(invalid);
     if (Object.keys(invalid).length > 0) { result['invalid'] = invalid; }
     return Object.keys(result).length > 0 ? result : undefined;
   }
@@ -52,7 +50,6 @@ class Content extends Component {
   login(e) {
     e.preventDefault();
     const results = this.validate();
-    console.log(results);
     if (results !== undefined) {
       this.setState(results);
     } else {
