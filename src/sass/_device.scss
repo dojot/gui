@@ -50,3 +50,42 @@
   padding-top: $page-header-size + 5px;
   top:-50px;
 }
+
+@media screen and (max-width: 600px){
+  .title-area{
+      .page-title{
+
+      }
+      .page-subtitle{
+        display:none;
+      }
+  }
+
+  .devicesSubHeader{
+    .main-title{
+      padding-left: 0em;
+    }
+
+    .btn-flat{
+      position: relative;
+      right: -20vw;
+      width: 25%;
+    }
+ }
+ .deviceCanvas{
+   .lst-entry-body{
+     .metric{
+       &.last{
+         .metric-label{
+           left: 0px;
+         }
+       }
+       .metric-label{
+         position: relative;
+         left: -5px;
+       }
+
+       }
+     }
+   }
+ }

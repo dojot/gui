@@ -773,7 +773,7 @@ class DeviceList extends Component {
         <div className = "flex-wrapper">
           <div className="row z-depth-2 devicesSubHeader p0" id="inner-header">
             <div className="col s4 m4 main-title">List of Devices</div>
-            <div className= "col s2 m2 header-info">
+            <div className= "col s2 m2 header-info hide-on-small-only">
               <div className= "title"># Devices</div>
               <div className= "subtitle">{filteredList.length}</div>
             </div>
