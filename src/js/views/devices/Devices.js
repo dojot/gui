@@ -211,7 +211,7 @@ class PositionRenderer extends Component {
     if ((this.props.attr == null) ||
         (! (this.props.deviceId in this.props.devices)) ||
         (! (this.props.attr in this.props.devices[this.props.deviceId]))) {
-      return (<NoData />);
+      return (<NoData/>);
     }
 
     let pos = this.props.value;
@@ -225,7 +225,7 @@ class PositionRenderer extends Component {
           </div>
         )
       } else if (posData.data.length == 0) {
-        return (<NoData />);
+        return (<NoData/>);
       } else  {
         pos = posData.data[posData.data.length - 1].attrValue;
       }
@@ -233,7 +233,7 @@ class PositionRenderer extends Component {
 
     parsed = pos.match(/^([+-]?\d+(\.\d+)?)\s*[,]\s*([+-]?\d+(\.\d+)?)$/)
     if (parsed == null) {
-      return (<NoData />)
+      return (<NoData/>)
     }
 
     const position = [parseFloat(parsed[1]),parseFloat(parsed[3])];
@@ -361,6 +361,9 @@ class DetailAttrs extends Component {
   }
 
   render() {
+
+    var width = screen.width;
+
     let device = this.props.device;
 
     let filteredStatics = device.static_attrs.filter((a) => { return (a.type.toLowerCase() != "geo:point")});
@@ -369,11 +372,21 @@ class DetailAttrs extends Component {
     let count = 0;
     if (filteredStatics.length > 0) { count++; }
     count += filteredAttrs.length;
-    count = (count > 3 ? 3 : count);
+    //count = (count > 3 ? 3 : count);
 
-    let horizontalSize = "col s4";
+    if(width < 600){
+      count = 1;
+    } else {
+      if(width < 992){
+        count = (count > 2 ? 2 : count);
+      } else {
+        count = (count > 3 ? 3 : count);
+      }
+    }
+
+    let horizontalSize = "col s4 m4";
     if (count == 2 && filteredStatics.length > 0) {
-      horizontalSize = "col s8";
+      horizontalSize = "col s4 m8";
     } else if (count != 0) {
       horizontalSize = "col s" + (12 / count);
     }
@@ -417,7 +430,7 @@ class DetailAttrs extends Component {
       count--;
       return (
         <div className="row half-height">
-          <div className="col s4 full-height">
+          <div className="col s12 m4 full-height">
             <div className="text-info full-height">
               <div className="title">Attributes</div>
               <div className="">
@@ -425,8 +438,8 @@ class DetailAttrs extends Component {
                   {filteredStatics.map((i, k) =>
                     (k < 3) && (i.type.toLowerCase() != "geo:point") && (
                       <li key={i.name}>
-                        <span className="col s6 label">{i.name}</span>
-                        <span className="col s6 value">{i.value}</span>
+                        <span className="col s12 m6 label">{i.name}</span>
+                        <span className="col s12 m6 value">{i.value}</span>
                       </li>
                     )
                   )}
@@ -532,7 +545,7 @@ class DetailItem extends Component {
           </div>
           <div className="col action-area">
             <div className="relative full-width full-height">
-              <div className="actions">
+              <div className="actions hide-on-small-only">
                 <div><i className="clickable fa fa-code" title="Get code"/></div>
                 <Link to={"/device/id/" + this.props.device.id + "/detail"} title="View all details">
                   <div><i className="clickable fa fa-expand" /></div>
@@ -545,51 +558,66 @@ class DetailItem extends Component {
                 <div><i className="clickable fa fa-times" onClick={this.props.handleDismiss} title="Hide details"/></div>
                 <RemoveDialog callback={this.remove} target="confirmDiag" />
               </div>
+
+              <div className="actions hide-on-med-and-up">
+                <div><i className="tiny clickable fa fa-code" title="Get code"/></div>
+                <Link to={"/device/id/" + this.props.device.id + "/detail"} title="View all details">
+                  <div><i className="tiny clickable fa fa-expand" /></div>
+                </Link>
+                <Link to={"/device/id/" + this.props.device.id + "/edit"} title="Edit device">
+                  <div><i className="tiny clickable fa fa-pencil" /></div>
+                </Link>
+                <div><i className="tiny clickable fa fa-trash" title="Remove device" onClick={(e) => {e.preventDefault(); $('#confirmDiag').modal('open');}}/></div>
+                {/* <button className="" data-target="confirmDiag"><i className="fa fa-trash" /></button> */}
+                <div><i className="tiny clickable fa fa-times" onClick={this.props.handleDismiss} title="Hide details"/></div>
+                <RemoveDialog callback={this.remove} target="confirmDiag" />
+              </div>
+
             </div>
           </div>
         </div>
 
         <div className="row detail-body">
           <div className="row content">
-            <div className="col s9 full-height">
+            <div className="col s12 m9 full-height">
               <div className="row half-height">
-                <div className="col s3 full-height">
+                <div className="col s12 m3 full-height">
                   <div className="img full-height">
                     <img src="images/ciShadow.svg" />
                   </div>
                 </div>
-                <div className="col s9">
-                  <div className="metrics col s12">
-                    <div className="metric col s4">
-                      <span className="label">Attributes</span>
-                      <span className="value">{this.props.device.attrs.length + this.props.device.static_attrs.length}</span>
-                      {/* <span className="value">{this.props.device.attrs.length}</span> */}
+                <div className="col s12 m9">
+                    <div className="metrics col s6 m12">
+                      <div className="metric col s12 m4">
+                        <span className="label">Attributes</span>
+                        <span className="value">{this.props.device.attrs.length + this.props.device.static_attrs.length}</span>
+                        {/* <span className="value">{this.props.device.attrs.length}</span> */}
+                      </div>
+                      <div className="metric col s12 m4">
+                        <span className="label">Last update</span>
+                        <span className="value">{util.printTime(this.props.device.updated)}</span>
+                      </div>
+                      <div className="metric col s12 m4">
+                        <span className="label">Status</span>
+                        <span className="value">{this.props.device._status}</span>
+                      </div>
                     </div>
-                    <div className="metric col s4">
-                      <span className="label">Last update</span>
-                      <span className="value">{util.printTime(this.props.device.updated)}</span>
-                    </div>
-                    <div className="metric col s4">
-                      <span className="label">Status</span>
-                      <span className="value">{this.props.device._status}</span>
-                    </div>
-                  </div>
 
-                  <div className="metrics col s12">
-                    <div className="metric col s4" >
-                      <span className="label">Protocol</span>
-                      <span className="value">{this.props.device.protocol ? this.props.device.protocol : "MQTT"}</span>
+                    <div className="metrics col s6 m12">
+                      <div className="metric col s12 m4" >
+                        <span className="label">Protocol</span>
+                        <span className="value">{this.props.device.protocol ? this.props.device.protocol : "MQTT"}</span>
+                      </div>
+                      <div className="metric col s12 m8" >
+                        <span className="label">Tags</span>
+                        <TagList tags={this.props.device.tags} />
+                      </div>
                     </div>
-                    <div className="metric col s8" >
-                      <span className="label">Tags</span>
-                      <TagList tags={this.props.device.tags} />
-                    </div>
-                  </div>
                 </div>
               </div>
-              <DetailAttrs device={this.props.device} />
+                <DetailAttrs device={this.props.device} />
             </div>
-            <div className="col s3 map z-depth-2 full-height">
+            <div className="col s3 map z-depth-2 full-height hide-on-small-only">
               <Position device={this.props.device} position={position}/>
             </div>
           </div>
@@ -624,7 +652,7 @@ class ListItem extends Component {
 
     if (detail) {
       return (
-        <div className="lst-entry col s12 detail" id={this.props.device.id} >
+        <div className="lst-entry col s12 detail full heigth" id={this.props.device.id} >
           <DetailItem device={this.props.device} handleDismiss={this.handleDismiss}/>
         </div>
       )
