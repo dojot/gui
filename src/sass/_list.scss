@@ -843,10 +843,39 @@ $action-area-width: 200px;
     }
   }
 
+  .lst-entry-wrapper{
+    .detail-header{
+      .img{
+        display: none;
+      }
+
+      .detail-body-full-view{
+
+        .metrics:nth-child(1){
+          position: relative;
+          right: 30%;
+
+        }
+
+        .metrics:nth-child(2){
+          position: relative;
+          right: 30%;
+
+        }
+      }
+
+    }
+  }
+
+  .inner-header{
+    .title{
+      position:relative;
+      left: -20px;
+    }
+  }
 }
 
 @media screen and (max-width: 499px){
-
   .detail-body{
     .content{
       .img{
@@ -860,6 +889,27 @@ $action-area-width: 200px;
       .graph{
         height: 110%;
         bottom: 100%;
+      }
+    }
+  }
+
+  .lst-entry-wrapper{
+    .detail-body-full-view{
+      .metrics:nth-child(1){
+        .metric:nth-child(1){
+          left: -30%;
+        }
+        .metric:nth-child(2){
+          left: 15%;
+        }
+        .metric:nth-child(3){
+          left: 70%;
+        }
+      }
+      .metrics:nth-child(2){
+        .metric:nth-child(1){
+          left: -30%;
+        }
       }
     }
   }
@@ -886,6 +936,52 @@ $action-area-width: 200px;
       }
     }
   }
+
+  .lst-entry-wrapper{
+      .detail-body-full-view{
+
+        .metrics:nth-child(1){
+          position: relative;
+          right: 30%;
+
+          .metric:nth-child(1){
+            bottom: 40px;
+            left: -20%;
+          }
+
+          .metric:nth-child(2){
+            top: 50px;
+            left: -55%;
+
+          }
+
+          .metric:nth-child(3){
+            left: -90%;
+            top: 180px;
+
+
+          }
+
+        }
+
+        .metrics:nth-child(2){
+          position: relative;
+          right: 30%;
+
+          .metric:nth-child(1){
+            left: 110%;
+            bottom: 195px;
+          }
+
+          .metric:nth-child(2){
+            left: 80%;
+            top: -105px;
+          }
+
+        }
+      }
+
+    }
 }
 
 @media screen and (min-width: 601px) and (max-width: 900px){
@@ -900,6 +996,38 @@ $action-area-width: 200px;
         position: relative;
         left: -40px;;
       }
+    }
+  }
+
+  .inner-header{
+    .actions{
+      .btn-flat{
+        padding: 0.1em;
+      }
+
+    }
+  }
+}
+
+@media screen and (max-width: 992px){
+  .detail-body-full-view{
+
+    .metrics{
+      .metric:nth-child(1){
+        position: relative;
+        right: 10%;
+      }
+
+      .metric:nth-child(2){
+        position: relative;
+        left: 15%;
+      }
+
+      .metric:nth-child(3){
+        position: relative;
+        left: 45%;
+      }
+
     }
   }
 }

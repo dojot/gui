@@ -68,24 +68,50 @@ class RemoveDialog extends Component {
 
 class DeviceUserActions extends Component {
   render() {
+    $('.dropdown-button').dropdown({
+      inDuration: 300,
+      outDuration: 225,
+      hover: true,
+      belowOrigin: true,
+      alignment: 'left'
+    }
+  );
     return (
       <div>
-        <a className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Get code">
-          <i className="clickable fa fa-code"/>
-        </a>
-        <Link to={"/device/list?detail=" + this.props.deviceid} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Hide all details">
-          <i className="clickable fa fa-compress" />
-        </Link>
-        <Link to={"/device/id/" + this.props.deviceid + "/edit"} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Edit device">
-          <i className="clickable fa fa-pencil" />
-        </Link>
-        <a className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Remove device"
-           onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}>
-          <i className="clickable fa fa-trash"/>
-        </a>
-        <Link to={"/device/list"} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Return to device list">
-          <i className="clickable fa fa-times" />
-        </Link>
+        <div className="hide-on-small-only">
+            <a className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Get code">
+              <i className="clickable fa fa-code"/>
+            </a>
+            <Link to={"/device/list?detail=" + this.props.deviceid} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Hide all details">
+              <i className="clickable fa fa-compress" />
+            </Link>
+            <Link to={"/device/id/" + this.props.deviceid + "/edit"} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Edit device">
+              <i className="clickable fa fa-pencil" />
+            </Link>
+            <a className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Remove device"
+               onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}>
+              <i className="clickable fa fa-trash"/>
+            </a>
+            <Link to={"/device/list"} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Return to device list">
+              <i className="clickable fa fa-times" />
+            </Link>
+        </div>
+        
+        <div className="hide-on-med-and-up">
+          <a className="dropdown-button btn" data-activates="dropdown">Menu<i className="material-icons right">arrow_drop_down</i></a>
+          <ul id="dropdown" className="dropdown-content">
+            <li><a href="#!">Get Code</a></li>
+            <li className="divider"></li>
+            <li><Link to={"/device/list?detail=" + this.props.deviceid}tabIndex="-1" title="Hide all details">Hide</Link></li>
+            <li className="divider"></li>
+            <li><Link to={"/device/id/" + this.props.deviceid + "/edit"} tabIndex="-1" title="Edit device">Edit</Link></li>
+            <li className="divider"></li>
+            <li><a tabIndex="-1" title="Remove device"
+               onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}>Remove</a></li>
+            <li className="divider"></li>
+            <li><Link to={"/device/list"} tabIndex="-1" title="Return to device list">Return</Link></li>
+          </ul>
+        </div>
       </div>
     )
   }
@@ -455,7 +481,7 @@ class DeviceDetail extends Component {
                     <span className="label">Last update</span>
                     <span className="value">{util.printTime(device.updated)}</span>
                   </div>
-                  <div className="metric fullPage ol s4">
+                  <div className="metric fullPage col s4">
                     <span className="label">Status</span>
                     <span className="value">{device._status}</span>
                   </div>
