@@ -7793,12 +7793,12 @@ RED.palette = (function() {
     }
 
     function escapeNodeType(nt) {
-        return nt.replace(" ","_").replace(".","_").replace(":","_");
+        return nt.replace(/ /g,"_").replace(/\./g,"_").replace(/:/g,"_");
     }
 
     function addNodeType(nt,def) {
         var nodeTypeId = escapeNodeType(nt);
-        if ($("#palette_node_"+nodeTypeId).length) {
+        if ($("#palette_node_" + nodeTypeId).length) {
             return;
         }
         if (exclusion.indexOf(def.category)===-1) {
@@ -7999,6 +7999,7 @@ RED.palette = (function() {
             }
         }
     }
+
     function hideNodeType(nt) {
         var nodeTypeId = escapeNodeType(nt);
         $("#palette_node_"+nodeTypeId).hide();
