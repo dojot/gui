@@ -28,10 +28,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          {loader:'style-loader'},
-          {loader:'css-loader', options:{sourceMap: true}},
-        ]
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: ['css-loader']
+        })
       },
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
