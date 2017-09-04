@@ -242,7 +242,7 @@ class AttrCard extends Component {
         <div className="card z-depth-2">
           <div className="card-content row">
             <div className="col s10 main">
-              <div className="value title">{this.props.name}</div>
+              <div className="value title truncate">{this.props.name}</div>
               <div className="label">Name</div>
             </div>
             <div className="col s2">
@@ -361,7 +361,7 @@ class NewAttr extends Component {
         return result;
       },
       'float': function (value) {
-        const re = /^[+-]?\d+(.\d+)?$/
+        const re = /^[+-]?\d+(\.\d+)?$/
         const result = re.test(value);
         if (result == false) {
           ErrorActions.setField('value', 'This is not a float')
