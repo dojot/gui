@@ -122,8 +122,10 @@ class Graph extends Component{
     this.props.data.map((i) => {
       let value = getValue(i);
       if (value !== undefined) {
-        labels.push(util.printTime(Date.parse(i.recvTime)/1000));
-        values.push(value);
+        if (!((value === 0) && (this.props.data.length == 1))){
+          labels.push(util.printTime(Date.parse(i.recvTime)/1000));
+          values.push(value);
+        }
       }
     })
 
@@ -236,6 +238,9 @@ class PositionRenderer extends Component {
     }
 
     const position = [parseFloat(parsed[1]),parseFloat(parsed[3])];
+    if (position[0] == 0 && position[1] == 0) {
+      return (<NoData />)
+    }
     return (
       <Map center={position} zoom={19} ref={m => {this.leafletMap = m;}}>
         <ReactResizeDetector handleWidth onResize={this.resize.bind(this)} />
