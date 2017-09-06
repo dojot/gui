@@ -498,13 +498,13 @@ class DeviceForm extends Component {
       <div className={"row device" + " " + (this.props.className ? this.props.className : "")}>
         <div className="row detail-header">
           <div className="col s12 m10 offset-m1 valign-wrapper">
-            <div className="col s3">
+            <div className="col s3 hide-on-small-only">
               {/* TODO clickable, file upload */}
               <div className="img">
                 <img src="images/ciShadow.svg" />
               </div>
             </div>
-            <div className="col s9 pt20px">
+            <div className="col s12 m9 pt20px">
               <div>
                 <div className="input-field large col s12 ">
                   <MaterialInput id="fld_label" value={this.props.device.label}
@@ -514,14 +514,14 @@ class DeviceForm extends Component {
                 </div>
 
                 <div className="col s12">
-                  <MaterialSelect id="fld_prot" name="protocol" className="col s4"
+                  <MaterialSelect id="fld_prot" name="protocol" className="col s12 m3"
                                   label="Device type"
                                   value={this.props.device.protocol}
                                   onChange={this.handleChange} >
                     <option value="MQTT">MQTT</option>
                     <option value="virtual">Virtual</option>
                   </MaterialSelect>
-                  <div className="col s8" >
+                  <div className="col s12 m9" >
                     <TagForm tags={this.props.device.tags}/>
                   </div>
                 </div>
@@ -531,7 +531,7 @@ class DeviceForm extends Component {
         </div>
 
         <div className="row">
-          <div className="col s10 offset-s1">
+          <div className="col s9 m10 offset-m1">
             <div className="title col s11">Attributes</div>
             <div className="col s1">
               <NewAttr {...this.props}/>

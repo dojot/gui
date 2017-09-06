@@ -82,9 +82,10 @@ class DeviceUserActions extends Component {
             <a className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Get code">
               <i className="clickable fa fa-code"/>
             </a>
-            <Link to={"/device/list?detail=" + this.props.deviceid} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Hide all details">
+            {/*<Link to={"/device/list?detail=" + this.props.deviceid} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Hide all details">
               <i className="clickable fa fa-compress" />
             </Link>
+            */}
             <Link to={"/device/id/" + this.props.deviceid + "/edit"} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Edit device">
               <i className="clickable fa fa-pencil" />
             </Link>
@@ -96,13 +97,13 @@ class DeviceUserActions extends Component {
               <i className="clickable fa fa-times" />
             </Link>
         </div>
-        
+
         <div className="hide-on-med-and-up">
           <a className="dropdown-button btn" data-activates="dropdown">Menu<i className="material-icons right">arrow_drop_down</i></a>
           <ul id="dropdown" className="dropdown-content">
             <li><a href="#!">Get Code</a></li>
             <li className="divider"></li>
-            <li><Link to={"/device/list?detail=" + this.props.deviceid}tabIndex="-1" title="Hide all details">Hide</Link></li>
+            {/*<li><Link to={"/device/list?detail=" + this.props.deviceid}tabIndex="-1" title="Hide all details">Hide</Link></li>*/}
             <li className="divider"></li>
             <li><Link to={"/device/id/" + this.props.deviceid + "/edit"} tabIndex="-1" title="Edit device">Edit</Link></li>
             <li className="divider"></li>
