@@ -20,7 +20,7 @@ class DeviceItem extends Component {
     let uptime = '-';
 
     return (
-      <Link className='main-div' to={'/device/list?detail=' + this.props.data.id}>
+      <Link className='main-div' to={'/device/id/' + this.props.data.id +'/detail'}>
         <div className="item">
           <div className="col s12 name-info">
                 {this.props.data.label}

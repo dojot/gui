@@ -783,6 +783,22 @@ $action-area-width: 200px;
   width: calc(100% - #{$action-area-width});
 }
 
+.inner-header{
+  .actions{
+    .actions-menu{
+      .dropdown-button{
+        left: 10px;
+        top: -8px;
+      }
+      .dropdown-content{
+        .material-icons{
+          padding-left: 15px;
+        }
+      }
+    }
+  }
+}
+
 @media screen and (max-width: 600px){
 
   .background-info{
@@ -844,26 +860,81 @@ $action-area-width: 200px;
   }
 
   .lst-entry-wrapper{
+    font-size: 0.8em;
     .detail-header{
       .img{
         display: none;
       }
+    }
 
-      .detail-body-full-view{
-
-        .metrics:nth-child(1){
-          position: relative;
-          right: 30%;
-
+    .detail-body-full-view{
+      .metrics:nth-child(1){
+        left: -50%;
+        .metric:nth-child(1){
+          top: -50px;
+          left: 50%;
+          .label{
+            position: relative;
+            left: 10%;
+          }
+          .value{
+            position: relative;
+            left: 6em;
+            top: -20px;
+          }
         }
 
-        .metrics:nth-child(2){
-          position: relative;
-          right: 30%;
+        .metric:nth-child(2){
+          left: 18%;
+          top: 20px;
+          .label{
+            position: relative;
+            top:-15px;
+          }
+          .value{
+            position: relative;
+            left: 6em;
+            top: -55px;
+          }
+        }
 
+        .metric:nth-child(3){
+          top: 85px;
+          left: -15%;
+          .label{
+            position: relative;
+            top: -8px;
+          }
+          .value{
+            position: relative;
+            left: 6em;
+            top: -28px;
+          }
         }
       }
+      .metrics:nth-child(2){
+        left: -50%;
+        top: 10px;
+        .metric:nth-child(1){
+          top: 0px;
+          left: 52%;
+          .value{
+            position: relative;
+            left: 6em;
+            top: -20px;
+          }
+        }
 
+        .metric:nth-child(2){
+          top: 55px;
+          left: 19%;
+          .tag{
+            position: relative;
+            left: 6em;
+            top: -20px;
+          }
+        }
+      }
     }
   }
 
@@ -892,27 +963,24 @@ $action-area-width: 200px;
       }
     }
   }
+}
 
-  .lst-entry-wrapper{
-    .detail-body-full-view{
-      .metrics:nth-child(1){
-        .metric:nth-child(1){
-          left: -30%;
-        }
-        .metric:nth-child(2){
-          left: 15%;
-        }
-        .metric:nth-child(3){
-          left: 70%;
-        }
-      }
-      .metrics:nth-child(2){
-        .metric:nth-child(1){
-          left: -30%;
+@media screen and (max-width: 460px){
+
+    .inner-header{
+      .actions{
+        .actions-menu{
+          .dropdown-button{
+            left: 40px;
+            top: -8px;
+            .material-icons{
+              position: relative;
+              left: -14px;
+            }
+          }
         }
       }
     }
-  }
 }
 
 @media screen and (max-width: 389px){
@@ -936,52 +1004,6 @@ $action-area-width: 200px;
       }
     }
   }
-
-  .lst-entry-wrapper{
-      .detail-body-full-view{
-
-        .metrics:nth-child(1){
-          position: relative;
-          right: 30%;
-
-          .metric:nth-child(1){
-            bottom: 40px;
-            left: -20%;
-          }
-
-          .metric:nth-child(2){
-            top: 50px;
-            left: -55%;
-
-          }
-
-          .metric:nth-child(3){
-            left: -90%;
-            top: 180px;
-
-
-          }
-
-        }
-
-        .metrics:nth-child(2){
-          position: relative;
-          right: 30%;
-
-          .metric:nth-child(1){
-            left: 110%;
-            bottom: 195px;
-          }
-
-          .metric:nth-child(2){
-            left: 80%;
-            top: -105px;
-          }
-
-        }
-      }
-
-    }
 }
 
 @media screen and (min-width: 601px) and (max-width: 900px){
@@ -1011,8 +1033,9 @@ $action-area-width: 200px;
 
 @media screen and (max-width: 992px){
   .detail-body-full-view{
-
-    .metrics{
+    .metrics:nth-child(1){
+      position: relative;
+      left: -25%;
       .metric:nth-child(1){
         position: relative;
         right: 10%;
@@ -1027,7 +1050,20 @@ $action-area-width: 200px;
         position: relative;
         left: 45%;
       }
+    }
 
+    .metrics:nth-child(2){
+      position: relative;
+      left: -25%;
+      .metric:nth-child(1){
+        position: relative;
+        right: 10%;
+      }
+
+      .metric:nth-child(2){
+        position: relative;
+        left: 15%;
+      }
     }
   }
 }

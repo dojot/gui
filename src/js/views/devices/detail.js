@@ -71,9 +71,11 @@ class DeviceUserActions extends Component {
     $('.dropdown-button').dropdown({
       inDuration: 300,
       outDuration: 225,
+      constrainWidth: false,
       hover: true,
-      belowOrigin: true,
-      alignment: 'left'
+      gutter: -10,
+      belowOrigin: false,
+      alignment: 'right'
     }
   );
     return (
@@ -98,19 +100,21 @@ class DeviceUserActions extends Component {
             </Link>
         </div>
 
-        <div className="hide-on-med-and-up">
-          <a className="dropdown-button btn" data-activates="dropdown">Menu<i className="material-icons right">arrow_drop_down</i></a>
+        <div id="dropdown-menu" className="actions-menu hide-on-med-and-up">
+          <a className="dropdown-button btn-flat btn-ciano" data-activates="dropdown"><i className="material-icons">menu</i></a>
           <ul id="dropdown" className="dropdown-content">
-            <li><a href="#!">Get Code</a></li>
-            <li className="divider"></li>
-            {/*<li><Link to={"/device/list?detail=" + this.props.deviceid}tabIndex="-1" title="Hide all details">Hide</Link></li>*/}
-            <li className="divider"></li>
-            <li><Link to={"/device/id/" + this.props.deviceid + "/edit"} tabIndex="-1" title="Edit device">Edit</Link></li>
-            <li className="divider"></li>
-            <li><a tabIndex="-1" title="Remove device"
-               onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}>Remove</a></li>
-            <li className="divider"></li>
-            <li><Link to={"/device/list"} tabIndex="-1" title="Return to device list">Return</Link></li>
+            <li>
+              <a href="#!"><i className="material-icons">code</i></a>
+            </li>
+            <li>
+              <Link to={"/device/id/" + this.props.deviceid + "/edit"}><i className="material-icons">edit</i></Link>
+            </li>
+            <li>
+              <a onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}><i className="material-icons">delete</i></a>
+            </li>
+            <li>
+              <Link to={"/device/list"}><i className="material-icons">close</i></Link>
+            </li>
           </ul>
         </div>
       </div>
@@ -466,7 +470,7 @@ class DeviceDetail extends Component {
         <div className="row device">
           <div className="row detail-header">
             <div className="col s12 m10 offset-m1 valign-wrapper">
-              <div className="col s3">
+              <div className="col s3 hide-on-med-and-down">
                 {/* TODO clickable, file upload */}
                 <div className="img">
                   <img src="images/ciShadow.svg" />
