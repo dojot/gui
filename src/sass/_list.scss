@@ -791,13 +791,48 @@ $action-area-width: 200px;
         top: -8px;
       }
       .dropdown-content{
+        left: 6px !important;
+        a{
+          font-size: 14px;
+          color: #848484;
+        }
         .material-icons{
-          padding-left: 15px;
+          position: relative;
+          padding-left: 45px;
+          top: -22px;
         }
       }
     }
   }
 }
+
+@media screen and (max-width: 354px){
+  .detail-body-full-view{
+    .metrics:nth-child(1){
+      top: 0px !important;
+      .metric:nth-child(2){
+        .value{
+          top: -56px !important;
+        }
+      }
+
+      .metric:nth-child(3){
+        top: 100px !important;
+      }
+    }
+    .metrics:nth-child(2){
+      top: 5px !important;
+
+      .metric:nth-child(1){
+        top: 15px !important;
+      }
+    }
+  }
+
+}
+
+
+
 
 @media screen and (max-width: 600px){
 
@@ -809,7 +844,7 @@ $action-area-width: 200px;
 
   img{
     position: relative;
-    bottom: 30px;
+    bottom: 35px;
   }
 
   .lst-entry-title{
@@ -869,7 +904,8 @@ $action-area-width: 200px;
 
     .detail-body-full-view{
       .metrics:nth-child(1){
-        left: -50%;
+        left: -65%;
+        top: 30px;
         .metric:nth-child(1){
           top: -50px;
           left: 50%;
@@ -890,16 +926,18 @@ $action-area-width: 200px;
           .label{
             position: relative;
             top:-15px;
+            width: 500%;
           }
           .value{
             position: relative;
             left: 6em;
-            top: -55px;
+            top: -35px;
+            width: 800%;
           }
         }
 
         .metric:nth-child(3){
-          top: 85px;
+          top: 65px;
           left: -15%;
           .label{
             position: relative;
@@ -913,10 +951,10 @@ $action-area-width: 200px;
         }
       }
       .metrics:nth-child(2){
-        left: -50%;
-        top: 10px;
+        left: -65%;
+        top: 40px;
         .metric:nth-child(1){
-          top: 0px;
+          top: 20px;
           left: 52%;
           .value{
             position: relative;
@@ -926,12 +964,13 @@ $action-area-width: 200px;
         }
 
         .metric:nth-child(2){
-          top: 55px;
+          top: 65px;
           left: 19%;
           .tag{
             position: relative;
             left: 6em;
             top: -20px;
+            width: 200%;
           }
         }
       }
@@ -1035,7 +1074,7 @@ $action-area-width: 200px;
   .detail-body-full-view{
     .metrics:nth-child(1){
       position: relative;
-      left: -25%;
+      left: -50%;
       .metric:nth-child(1){
         position: relative;
         right: 10%;
@@ -1057,12 +1096,13 @@ $action-area-width: 200px;
       left: -25%;
       .metric:nth-child(1){
         position: relative;
-        right: 10%;
+        left: 150%;
+        top: -150px;
       }
 
       .metric:nth-child(2){
         position: relative;
-        left: 15%;
+        left: -78%;
       }
     }
   }

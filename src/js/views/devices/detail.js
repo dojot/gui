@@ -68,16 +68,6 @@ class RemoveDialog extends Component {
 
 class DeviceUserActions extends Component {
   render() {
-    $('.dropdown-button').dropdown({
-      inDuration: 300,
-      outDuration: 225,
-      constrainWidth: false,
-      hover: true,
-      gutter: -10,
-      belowOrigin: false,
-      alignment: 'right'
-    }
-  );
     return (
       <div>
         <div className="hide-on-small-only">
@@ -101,19 +91,19 @@ class DeviceUserActions extends Component {
         </div>
 
         <div id="dropdown-menu" className="actions-menu hide-on-med-and-up">
-          <a className="dropdown-button btn-flat btn-ciano" data-activates="dropdown"><i className="material-icons">menu</i></a>
+          <a className="dropdown-button btn-flat btn-ciano" data-activates="dropdown" onClick={this.toggleMenu}><i className="material-icons">menu</i></a>
           <ul id="dropdown" className="dropdown-content">
             <li>
-              <a href="#!"><i className="material-icons">code</i></a>
+              <a href="#!">Code<i className="material-icons">code</i></a>
             </li>
             <li>
-              <Link to={"/device/id/" + this.props.deviceid + "/edit"}><i className="material-icons">edit</i></Link>
+              <Link to={"/device/id/" + this.props.deviceid + "/edit"}>Edit<i className="material-icons">edit</i></Link>
             </li>
             <li>
-              <a onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}><i className="material-icons">delete</i></a>
+              <a onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}>Remove<i className="material-icons">delete</i></a>
             </li>
             <li>
-              <Link to={"/device/list"}><i className="material-icons">close</i></Link>
+              <Link to={"/device/list"}>Return<i className="material-icons">close</i></Link>
             </li>
           </ul>
         </div>

@@ -139,17 +139,31 @@ class ElementList extends Component {
       tam = this.props.list.length;
 
     return (
-        <div className="col box">
-            <div className={"box-title bg-"+info.color}>
-              <img className="icon hide-on-small-only" src={info.img_url}/>
-              <label className='number hide-on-small-only'>{tam}</label>
-              <label className='subtitle'>{info.subtitle}</label>
-              <label className='title'>{info.title}</label>
-              <i className="fa fa-menu"></i>
-            </div>
-            <div className="box-content full-height">
-              { this.listItems(this.props.type) }
-            </div>
+        <div>
+          <div className="col box hide-on-small-only">
+              <div className={"box-title bg-"+info.color}>
+                <img className="icon hide-on-small-only" src={info.img_url}/>
+                <label className='number hide-on-small-only'>{tam}</label>
+                <label className='subtitle'>{info.subtitle}</label>
+                <label className='title'>{info.title}</label>
+                <i className="fa fa-menu"></i>
+              </div>
+              <div className="box-content full-height">
+                { this.listItems(this.props.type) }
+              </div>
+          </div>
+          <div className="col s12 box hide-on-med-and-up">
+              <div className={"box-title bg-"+info.color}>
+                <img className="icon hide-on-small-only" src={info.img_url}/>
+                <label className='number hide-on-small-only'>{tam}</label>
+                <label className='subtitle'>{info.subtitle}</label>
+                <label className='title'>{info.title}</label>
+                <i className="fa fa-menu"></i>
+              </div>
+              <div className="box-content full-height">
+                { this.listItems(this.props.type) }
+              </div>
+          </div>
         </div>
     )
   }
