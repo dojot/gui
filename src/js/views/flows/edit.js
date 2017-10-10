@@ -312,7 +312,10 @@ class EditFlow extends Component {
             </div>
             {(this.props.params.flowid) && (
               <div className="col">
-                <button className="waves-effect waves-light btn-flat btn-red" data-target="confirmDiag">remove</button>
+                <a className="waves-effect waves-light btn-flat btn-red" tabIndex="-1" title="Remove flow"
+                   onClick={(e) => {e.preventDefault(); $('#confirmDiag').modal('open');}}>
+                  remove
+                </a>
               </div>
             )}
             <div className="col">
