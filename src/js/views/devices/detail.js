@@ -70,22 +70,43 @@ class DeviceUserActions extends Component {
   render() {
     return (
       <div>
-        <a className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Get code">
-          <i className="clickable fa fa-code"/>
-        </a>
-        <Link to={"/device/list?detail=" + this.props.deviceid} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Hide all details">
-          <i className="clickable fa fa-compress" />
-        </Link>
-        <Link to={"/device/id/" + this.props.deviceid + "/edit"} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Edit device">
-          <i className="clickable fa fa-pencil" />
-        </Link>
-        <a className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Remove device"
-           onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}>
-          <i className="clickable fa fa-trash"/>
-        </a>
-        <Link to={"/device/list"} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Return to device list">
-          <i className="clickable fa fa-times" />
-        </Link>
+        <div className="hide-on-small-only">
+            <a className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Get code">
+              <i className="clickable fa fa-code"/>
+            </a>
+            {/*<Link to={"/device/list?detail=" + this.props.deviceid} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Hide all details">
+              <i className="clickable fa fa-compress" />
+            </Link>
+            */}
+            <Link to={"/device/id/" + this.props.deviceid + "/edit"} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Edit device">
+              <i className="clickable fa fa-pencil" />
+            </Link>
+            <a className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Remove device"
+               onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}>
+              <i className="clickable fa fa-trash"/>
+            </a>
+            <Link to={"/device/list"} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Return to device list">
+              <i className="clickable fa fa-times" />
+            </Link>
+        </div>
+
+        <div id="dropdown-menu" className="actions-menu hide-on-med-and-up">
+          <a className="dropdown-button btn-flat btn-ciano" data-activates="dropdown" onClick={this.toggleMenu}><i className="material-icons">menu</i></a>
+          <ul id="dropdown" className="dropdown-content">
+            <li>
+              <a href="#!">Code<i className="material-icons">code</i></a>
+            </li>
+            <li>
+              <Link to={"/device/id/" + this.props.deviceid + "/edit"}>Edit<i className="material-icons">edit</i></Link>
+            </li>
+            <li>
+              <a onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}>Remove<i className="material-icons">delete</i></a>
+            </li>
+            <li>
+              <Link to={"/device/list"}>Return<i className="material-icons">close</i></Link>
+            </li>
+          </ul>
+        </div>
       </div>
     )
   }
@@ -439,7 +460,7 @@ class DeviceDetail extends Component {
         <div className="row device">
           <div className="row detail-header">
             <div className="col s12 m10 offset-m1 valign-wrapper">
-              <div className="col s3">
+              <div className="col s3 hide-on-med-and-down">
                 {/* TODO clickable, file upload */}
                 <div className="img">
                   <img src="images/ciShadow.svg" />
@@ -455,7 +476,7 @@ class DeviceDetail extends Component {
                     <span className="label">Last update</span>
                     <span className="value">{util.printTime(device.updated)}</span>
                   </div>
-                  <div className="metric fullPage ol s4">
+                  <div className="metric fullPage col s4">
                     <span className="label">Status</span>
                     <span className="value">{device._status}</span>
                   </div>

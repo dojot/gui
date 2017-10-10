@@ -61,3 +61,21 @@
     font-size: 15px;
   }
 }
+
+@media screen and (max-width: 460px){
+  .inner-header{
+    .actions{
+      .btn-flat{
+        width: 50%;
+        top: 8px;
+        left: 50%;
+      }
+    }
+  }
+
+  .detail-header{
+    .btn-item{
+      left: -10px;
+    }
+  }
+}
