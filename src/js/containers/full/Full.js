@@ -16,11 +16,18 @@ class Navbar extends Component {
 
     this.state = {
       open: false,
+      page: '',
+      page_icon: false,
     };
 
     this.handleClick = this.handleClick.bind(this);
     this.gravatar = "https://www.gravatar.com/avatar/" + btoa(this.props.user.username) + "?d=identicon";
   }
+
+  // changePage(page,icon) {
+  //   console.log("new page/icon",page,icon);
+  //   this.setState({page: page, page_icon:icon});
+  // }
 
   handleClick(e) {
     e.preventDefault();
@@ -39,11 +46,16 @@ class Navbar extends Component {
     }
 
     return (
-      <nav className="nav outer-header line-normal">
-        <div className="nav-wrapper">
-          <div className="nav-status row">
+      <nav className="nav outer-header">
+        <div className="nav-line">
+          <div className="nav-status">
             {/* TODO: add props for badge indicator */}
-            <div className="status-item status-icon fa fa-bell-o"></div>
+            <div className="status-item status-icon">
+              <i className="fa fa-spinner fa-pulse fa-fw"></i>
+            </div>
+            <div className="status-item status-icon">
+                {this.state.page} {this.state.page_icon}
+            </div>
             <div className="status-item user-area">
                 <div className="user-pic">
                   <img src={this.gravatar} />
@@ -155,23 +167,12 @@ function SidebarItem(props) {
     return (
       <li className="nav-item">
         <Link to={props.item.target} className={entryClass} activeClassName="active" tabIndex="-1">
-          <div className="nav-title caps">{props.item.label}</div>
-          <div className="nav-desc">{props.item.desc}</div>
           <div className="nav-icon">
-            <i className={props.item.iconClass} />
+            <div className={"icon-"+props.item.image+" icon-prop"}></div>
           </div>
+          <div className="nav-title">{props.item.label}</div>
+          <div className="nav-desc">{props.item.desc}</div>
         </Link>
-        {('children' in props.item) && isActive && (
-          <ul className="nav-2nd">
-            { props.item.children.map((child) =>
-              <li className="" key={child.label} >
-                <Link to={child.target} className={getSubItemClass(child)} activeClassName="active" tabIndex="-1" title={child.title}>
-                      <span className="caps">{child.label}</span>
-                </Link>
-              </li>
-            )}
-          </ul>
-        )}
       </li>
     )
   } else {
@@ -179,9 +180,8 @@ function SidebarItem(props) {
       <li className="nav-item">
         <Link to={props.item.target} className={entryClass} activeClassName="active" tabIndex="-1">
           <div className="nav-icon">
-            <i className={props.item.iconClass} />
+            <div className={"icon-"+props.item.image+" icon-prop"}></div>
           </div>
-          <div className="nav-title caps hide-on-small-only">{props.item.label}</div>
         </Link>
       </li>
     )
@@ -202,18 +202,18 @@ class Sidebar extends Component {
 
   render() {
     let entries = [
-      { target: "/device/stats", iconClass: "material-icons mi-ic-memory", label: "Devices", desc: "Known devices and configuration", children: [
+      { target: "/device/stats", image: "chip", iconClass: "material-icons mi-ic-memory", label: "Devices", desc: "Known devices and configuration", children: [
         { target: "/device/list", iconClass: "", label: "device", title: "Devices list", siblings: ['/device/id', '/device/new']},
         { target: "/template/list", iconClass: "", label: "template", title: "Templates list", siblings: ['/template/id', '/template/new']},
         { target: "/alarm?q=device", iconClass: "", label: "alarm", title: "Alarms list"}
       ]},
-      { target: "/flows", iconClass: "material-icons mi-device-hub", label: "data flows", desc: "Processing flows to be executed"},
-      { target: "/alarm", iconClass: "fa fa-bell-o", label: "alarms", desc: "System events and alarms"},
-      { target: "/auth", iconClass: "fa fa-unlock-alt", label: "auth", desc: "User and permissions management", children: [
+      { target: "/flows", image: "graph",  iconClass: "material-icons mi-device-hub", label: "data flows", desc: "Processing flows to be executed"},
+      { target: "/alarm",  image: "bell",  iconClass: "fa fa-bell-o", label: "alarms", desc: "System events and alarms"},
+      { target: "/auth",  image: "auth",  iconClass: "fa fa-unlock-alt", label: "auth", desc: "User and permissions management", children: [
         { target: "/auth/user", iconClass: "", label: "users", title: "Users list"},
         { target: "/auth/permissions", iconClass: "", label: "permissions", title: "Permissions list"}
       ]},
-      { target: "/deploy", iconClass: "fa fa-cogs", label: "deploy", desc: "Application and plugin management", children: [
+      { target: "/deploy",  image: "settings",  iconClass: "fa fa-cogs", label: "deploy", desc: "Application and plugin management", children: [
         { target: "/deploy/plugins", iconClass: "", label: "plugins", title: "Plugins list"},
         { target: "/deploy/applications", iconClass: "", label: "applications", title: "Applications list"},
         { target: "/alarm?q=deploy", iconClass: "", label: "alarm", title: "Alarms list"},
@@ -223,10 +223,22 @@ class Sidebar extends Component {
     return (
       <div className="sidebar expand z-depth-5" tabIndex="-1">
         <div className="header">
-          {this.props.open && (<span>MENU</span>) }
-          <div className="action waves-effect waves-light" onClick={this.handleClick} >
-            <i className="fa fa-bars" />
-          </div>
+          {this.props.open &&
+            ( <div className="logo-n-bars">
+              <img className="logo" src="images/logo-bl.png" />
+              <div className="bars action waves-effect waves-light" onClick={this.handleClick} >
+              <img className="img-bars" src="images/menu.png" />
+              </div>
+            </div>)
+          }
+          {!this.props.open &&
+            ( <div className="logo-n-bars">
+              <img className="closed-logo" src="images/logo-bl.png" />
+              <div className="bars action waves-effect waves-light" onClick={this.handleClick} >
+              <img className="img-bars" src="images/menu.png" />
+              </div>
+            </div>)
+          }
         </div>
 
         <nav className="sidebar-nav line-normal">
@@ -234,9 +246,6 @@ class Sidebar extends Component {
             { entries.map((item) => <SidebarItem item={item} key={item.label} open={this.props.open} router={this.props.router}/> )}
           </ul>
         </nav>
-        <div className="logo">
-          <img src="images/logo-wh.png" />
-        </div>
       </div>
     )
   }
@@ -246,7 +255,7 @@ function Content(props) {
   return (
     <div className={"app-body full-height " + (props.leftSideBar.open ? " open" : " closed") }>
       <Sidebar open={props.leftSideBar.open} router={props.router}/>
-      <div className="content expand">
+      <div className="content expand relative">
         {props.children}
       </div>
     </div>

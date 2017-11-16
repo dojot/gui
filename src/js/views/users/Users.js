@@ -8,7 +8,7 @@ import AltContainer from 'alt-container';
 var UserStore = require('../../stores/UserStore');
 var UserActions = require('../../actions/UserActions');
 
-import { PageHeader } from "../../containers/full/PageHeader";
+import { NewPageHeader } from "../../containers/full/PageHeader";
 import Filter from "../utils/Filter";
 
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
@@ -718,9 +718,9 @@ class Users extends Component {
     if(LoginStore.getState().user.profile == "admin") {
       return (
         <span id="userMain" className="flex-wrapper">
-          <PageHeader title="Auth" subtitle="Users">
+          <NewPageHeader title="Auth" subtitle="Users" icon='user' >
             <Filter onChange={this.filterChange} />
-          </PageHeader>
+          </NewPageHeader>
           <AltContainer store={UserStore} >
             <UserFilter filter={this.state.filter} />
           </AltContainer>

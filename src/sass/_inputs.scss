@@ -1,3 +1,31 @@
+.new-btn-flat
+{
+  font-family: 'Roboto', sans-serif;
+  font-size: 11px;
+  text-align: center;
+  height: 31px;
+  padding-top: 7px;
+  border-radius: 4px;
+  padding-right: 45px;
+  padding-left: 27px;
+  background: linear-gradient(269.31deg, #F88383 9.21%, #F26F6F 42.78%, #EB5757 84.23%);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3);
+  color: white;
+  font-weight: bold;
+  transition: all .4s ease 0s;
+
+  &:hover {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2) !important;
+    background: linear-gradient(269.31deg, #F2994A 9.21%, #FF7800 84.23%);
+  }
+
+  i {
+    position: absolute;
+    right: 16px;
+    top: 10px;
+  }
+}
+
 .btn-flat {
     /* font-weight: bolder; */
     /* font-size: 10px !important; */
@@ -60,4 +88,9 @@
     left: 9px;
     font-size: 15px;
   }
+}
+
+.input-field
+{
+  bottom: 0px !important;
 }

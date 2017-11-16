@@ -1,19 +1,159 @@
+
+.sub-nav{
+    // top:-70px;
+    // position: relative;
+    max-width: 500px;
+    overflow: hidden;
+    z-index: 9992;
+    position: fixed;
+    top: 62px;
+    left: 282px;
+
+    .nav-item{
+
+      display: inline-block;
+      // padding: 20px 0px;
+
+      a {
+        color: $black;
+        padding: 0px 24px 13px 4px;
+        border-radius: 2px;
+
+        .title
+        {
+          font-family: 'Roboto', sans-serif;
+          font-weight: 500;
+          font-size: 11px;
+          letter-spacing: 0.04em;
+          text-transform: capitalize;
+          padding: 0px;
+          display: inline-block;
+          font-weight: 600;
+          color: $dark-gray;
+
+            &:hover{
+              color: $magenta;
+            }
+        }
+
+
+        .active{
+          color: #28807E;
+          border-bottom: 2px solid #28807E;
+        }
+
+        .icon{
+            width: 30px;
+            display: inline-block;
+            padding-right: 10px;
+        }
+      }
+    }
+}
+
+
+*:focus{
+  outline: none;
+}
+
+.nav-item
+{
+    .icon-prop{
+      background-size: cover !important;
+      width: 26px;
+      height: 26px;
+    }
+
+    .icon-chip
+    {
+      background: url(/images/icons/chip.png);
+    }
+
+    &:hover .icon-chip
+    {
+      background: url(/images/icons/chip-wt.png);
+    }
+
+    .icon-bell
+    {
+      background: url(/images/icons/bell.png);
+    }
+
+    &:hover .icon-bell
+    {
+      background: url(/images/icons/bell-wt.png);
+    }
+
+    .icon-graph
+    {
+      background: url(/images/icons/graph.png);
+    }
+
+    &:hover .icon-graph
+    {
+      background: url(/images/icons/graph-wt.png);
+    }
+
+    .icon-settings
+    {
+      background: url(/images/icons/settings.png);
+    }
+
+    &:hover .icon-settings
+    {
+      background: url(/images/icons/settings-wt.png);
+    }
+
+    .icon-auth
+    {
+      background: url(/images/icons/auth.png);
+    }
+
+    &:hover .icon-auth
+    {
+      background: url(/images/icons/auth-wt.png);
+    }
+
+}
+
+
+
 .open .sidebar {
   width: $sidebar-width;
-  box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 1.14), 0 6px 30px 5px rgba(0, 0, 0, 0.5), 0 8px 10px -5px rgba(0, 0, 0, 0.5)
+}
+
+.closed .sidebar
+{
+  width: $sidebar-width-closed-large;
+
+
+  .sidebar-nav
+  {
+    width: 100%;
+
+    .nav-item
+    {
+      width: 100%;
+
+      .nav-link{
+        padding: 0px 5px;
+        padding-top: 10px;
+      }
+    }
+  }
 }
 
 .sidebar {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 999;
+  z-index: 9999;
   width: $sidebar-width-closed;
-  height: calc(100% - #{$header-height});
-  margin-top: $header-height;
-  border-right: 1px solid #c1c1c1 !important;
+  height: calc(100%);
+  margin-top: 0px;
   color: #fff;
-  background-color: $sidebar-bg;
+  border: 0px !important;
+  background: linear-gradient(0deg, #FFFFFF, #FFFFFF), linear-gradient(149.39deg, #FCFCFC 24.51%, #FCFCFC 24.51%, #FFFFFF 42.02%);
 
     // li:hover a{
     //     border:0px;
@@ -25,8 +165,42 @@
 
 
   .header {
-    color: #ccc; // TODO add this to color scheme
-    height: $header-height;
+    height: 120px;
+
+    .logo-n-bars {
+      position: relative;
+      height: 120px;
+
+
+      .closed-logo
+      {
+        position: absolute;
+        top: 21px;
+        left: 13px;
+        width: 57px;
+      }
+
+      .logo
+      {
+        position: absolute;
+        top: 21px;
+        left: 13px;
+        width: 164px;
+      }
+
+      .bars{
+        position: absolute;
+        top: 80px;
+        right: 32px;
+        width: 20px;
+      }
+
+      .img-bars
+      {
+        width: 100%;
+        height: 100%;
+      }
+    }
 
     >span {
       line-height: $header-height;
@@ -34,21 +208,6 @@
       font-weight: bold;
       padding-left: 10px;
       font-size: 80%;
-    }
-
-    .action {
-      position: absolute;
-      width: $header-height;
-      height: $header-height;
-      right: 0;
-    }
-
-    >div>i {
-      position: absolute;
-      right: 7.5px;
-      bottom: 7.5px;
-      font-size: 20px;
-      color: #fff;
     }
   }
 
@@ -61,40 +220,79 @@
 
       .nav-link {
         position: relative;
-        padding: 10px 10px;
-        border-left: 2px solid $silver;
-        margin-top: 2px;
-        min-height: 54px;
+        padding: 10px 0px;
+        border-left: 3px solid $magenta;
+        height: 52px;
         transition: all .2s;
 
         &:hover {
-          background-color: $shark;
-          border-left: 4px solid #828485; // TODO add this to palette
+          background-color: $magenta;
+          transition: all .5s;
+
+          .nav-title {
+            color: $white;
+          }
+
+          .nav-desc {
+            color: $white;
+          }
+
         }
       }
 
       > .nav-link.active {
         background-color: $sidebar-bg-active;
-        color: #fff;
-        border-left: 4px solid #2ea9b0; // TODO add this to palette
-        // border-color: #2ea9b0;
+        color: $black;
+        border-left: 0px;
 
-        .nav-desc {
-          color: #fff;
+        .nav-title {
+          color: $dark-gray;
+        }
+
+        &:hover {
+          background-color: $magenta;
+          transition: all .5s;
+
+          .nav-title {
+            color: $white;
+          }
+
+          .nav-desc {
+            color: $white;
+          }
+        }
+
+        &:after {
+          width: 5px;
+          content: " ";
+          height: 52px;
+          position: absolute;
+          box-shadow: 2px 0px 2px rgba(0, 0, 0, 0.25);
+          right: -3px;
+          top:0px;
+          background: $magenta;
         }
       }
     }
 
     .nav-icon {
-      position: absolute;
-      top: 25%;
+      position: relative;
       right: 0;
-      width: $sidebar-width-closed;
+      width: 60px;
       text-align: center;
-      display: block;
-      font-size: 1.6em;
+      display: inline-block;
+      float: left;
+      height: 100%;
+      padding-left: 16px;
+      padding-top: 3px;
+
+      img {
+          width: 22px;
+          height: 22px;
+      }
 
       i {
+        color: $magenta;
         position: absolute;
         right: 0;
         width: 100%
@@ -109,17 +307,26 @@
     }
 
     .nav-title {
-      font-size: 9pt;
-      font-weight: bold;
-      margin: 0 0;
+      font-family: Open Sans, sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: -0.3px;
+      text-transform: capitalize;
+      /* font-weight: bold; */
+      color: $dark-red;
+      /* margin: 0 0; */
       padding: 0 0;
     }
 
     .nav-desc {
-      font-size:  7pt;
       margin: 0 0;
       padding: 0.2em 0;
-      color: $sidebar-desc;
+      font-family: 'Open Sans';
+      font-weight: normal;
+      font-size: 10px;
+      color: $dark-silver;
+      letter-spacing: -0.2px;
+      overflow: hidden;
     }
 
     .nav-2nd {
@@ -220,21 +427,12 @@
   height: calc(100% - #{$header-height});
   margin-top: $header-height;
   color: #fff;
+  overflow: auto;
   background-color: $sidebar-bg;
   box-shadow:  0 8px 10px -5px rgba(0, 0, 0, 0.5);
 }
 
 @media only screen and (min-width: 601px) {
-  .sidebar {
-    width: $sidebar-width-closed-large;
-    box-shadow: none;
-  }
-
-  .open .sidebar {
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-    // Just to check if would be better use shadow;
-    // box-shadow: none;
-  }
 
   .content {
     padding-left: $sidebar-width-closed-large;
@@ -244,28 +442,4 @@
     padding-left: $sidebar-width;
   }
 
-  .closed .sidebar .nav-link {
-    min-height: $sidebar-width-closed-large;
-  }
-
-  .closed .sidebar .sidebar-nav {
-    .nav-title {
-      position: absolute;
-      bottom: 4px;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      font-size: 7pt;
-    }
-
-    .nav-icon {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      font-size: 160%;
-      padding-top: 10%;
-    }
-  }
 }

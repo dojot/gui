@@ -10,7 +10,7 @@ import TemplateActions from '../../actions/TemplateActions';
 import MeasureStore from '../../stores/MeasureStore';
 import MeasureActions from '../../actions/MeasureActions';
 
-import { PageHeader } from "../../containers/full/PageHeader";
+import { NewPageHeader , PageHeader } from "../../containers/full/PageHeader";
 
 import AltContainer from 'alt-container';
 
@@ -821,13 +821,13 @@ class Devices extends Component {
         transitionAppearTimeout={500}
         transitionEnterTimeout={500}
         transitionLeaveTimeout={500} >
-        <PageHeader title="device manager" subtitle="Devices" shadow='true'>
+        <AltContainer store={DeviceStore}>
+          <NewPageHeader title="Devices" subtitle="" icon="device">
           {/* <Filter onChange={this.filterChange} /> */}
           {/*<Link to="/device/new" title="Create a new device" className="btn-item btn-floating waves-effect waves-light cyan darken-2">
             <i className="fa fa-plus"/>
           </Link> */}
-        </PageHeader>
-        <AltContainer store={DeviceStore}>
+          </NewPageHeader>
           <DeviceList deviceid={detail}/>
         </AltContainer>
         {/* <NewDevice /> */}

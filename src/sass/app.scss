@@ -6,19 +6,35 @@ $fresh: #CCDFCB;
 $teal: #056571;
 $watermelon: #FF6a5c;
 $subtle: #9e9e9e;
+$real-white: #fff;
+
+// fifty shades of red
+$magenta: #EB5757;
+$dark-red: #D23F3F;
+$red :#f85252;
+
+// gray
+$porcelain: #ecf0f1;
+$silver: #b8b8b8;
+$dark-silver: #848484;
+$black: #2c3e50;
+$default: rgba(0, 0, 0, 0.87);
+$almost-black: #666666;
+$gray:#f3f3f3;
+$dark-gray:#212121;
+
 
 // this the new color scheme
 // blue
 $soft-blue: #598fe5;
 $almost-white: #fbfbfb;
-$almost-black: #666666;
-$gray:#f3f3f3;
-$dark-gray:#212121;
-$red :#f85252;
+
 $green: #16a085;
 $pink-like: #e02966;
 $ciano-like: #03c9a9;
 $ciano: #3da9bf;
+$dark-ciano:#12BDBA;
+
 $bluewood: #2c3e50;
 $spruce: #3d505b;
 $shark: #1c2733;
@@ -27,29 +43,24 @@ $kashmir: #51779f;
 $kashmir-border: #436788;
 $cornflower: #a4c2f4;
 $default-blue: #588de7;
-// gray
-$porcelain: #ecf0f1;
-$silver: #b8b8b8;
-$dark-silver: #848484;
-$black: #2c3e50;
-$default: rgba(0, 0, 0, 0.87);
+
 // sidebar control variables
-$sidebar-width: 220px;
+$sidebar-width: 250px;
 $sidebar-width-closed: 50px;
 $sidebar-width-closed-large: 80px;
 $right-sidebar-width: 320px;
 $right-sidebar-margin: 50px;
 $sidebar-bg: #283339;
 // $sidebar-bg: #828485;
-$sidebar-bg-active: #03c9a9;
+$sidebar-bg-active: #F4F4F4;
 $sidebar-fg-active: #a5fffa;
 $sidebar-main-ff: 'Open Sans', sans-serif;
 $sidebar-desc-ff: 'Roboto', sans-serif;
 $sidebar-desc: #bfbfbf;
-
+$header-double-height: 115px;
 // header control variables
-$header-height: 45px;
-$page-header-size: 65px;
+$header-height: 50px;
+$page-header-size: 50px;
 
 // $app-background-color: #f3f3f3;
 $element-background-color: #fff;
@@ -57,6 +68,15 @@ $details-background-color: #f3f3f3;
 // $main-font-family: Montserrat, sans-serif;
 $main-font-family: Roboto, sans-serif;
 
+.m0
+{
+  margin: 0px !important;
+}
+
+.p0
+{
+  padding:0px !important;
+}
 
 .full-width {
   position: relative;
@@ -181,6 +201,11 @@ body {
 
 .mt10 {
   margin-top:10px;
+}
+
+.relative
+{
+  position: relative !important;
 }
 
 .todo-div {

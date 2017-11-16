@@ -84,81 +84,81 @@ class Content extends Component {
     }
 
     return (
-      <div className="login">
-        <div className="row">
-          <div className="col s12 m4 login-area-left-side">
-            <div className="row icon">
-              <p><img src="images/main.png"/></p>
-            </div>
-            <div className="row">
-              {/* TODO This really should be in an i18n file somewhere */}
-              <div className="info">
-                dojot IoT platform provides an open and solid foundation for a series of
-                applications that depend on data being collected from a myriad of devices,
-                allowing developers to focus on the real value of their innovative applications.
-              </div>
-            </div>
+      <div className="row m0">
+        <div className="login col s12 p0 bg-left">
+          <div className="col  s4 p0 left-side">
           </div>
-          <div className="col s12 m8 login-area-right-side">
-            <div className="row">
-              <div className="col s12 m5 offset-m3">
-                <div className="login-page-title">Login</div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col s12 m4 offset-m4">
-                <div className="login-page-subtitle">Sign in to start your session</div>
-              </div>
-            </div>
-            { this.props.error && (
+          <div className="col s8 login-area-right-side bg-right">
+            <div className="col s7">
               <div className="row">
-                <div className="col s12 m4 offset-m4">
-                  <div className="login-page-error">
-                    {getError()}<i className="material-icons prefix">info_outline</i>
-                  </div>
+                <div className="col s12  offset-m1">
+                  <div className="login-page-title">[&nbsp;&nbsp;Login&nbsp;&nbsp;]</div>
                 </div>
               </div>
+              <div className="row">
+                <div className="col s12  offset-m2">
+                  <div className="login-page-subtitle">Sign in to start your session</div>
+                </div>
+              </div>
+              { this.props.error && (
+                <div className="row">
+                  <div className="col s12 m4 offset-m2">
+                    <div className="login-page-error">
+                      {getError()}<i className="material-icons prefix">info_outline</i>
+                    </div>
+                  </div>
+                </div>
             )}
-            <form onSubmit={this.login}>
-              <div className="row">
-                  <div className="input-field col s12 m4 offset-m4">
-                    <input id="fld_user" type="text"
-                           name="username"  className={getClass('username')}
-                           onChange={this.handleChange}
-                           value={this.state.login.user} />
-                    <label htmlFor="fld_user" data-success=""
-                           data-error={this.state.invalid.username}>Username</label>
-                    <i className="material-icons prefix">account_circle</i>
-                  </div>
-                  <div className="input-field col s12 m4 offset-m4">
-                    <input id="fld_password" type="password"
-                           name="passwd" className={getClass('passwd')}
-                           onChange={this.handleChange}
-                           value={this.state.login.password} />
-                    <label htmlFor="fld_password" data-success=""
-                           data-error={this.state.invalid.passwd}>Password</label>
-                    <i className="material-icons prefix">lock_open</i>
-                  </div>
-              </div>
-              <div className="row">
-                <div className="col s12 m5 offset-m3">
-                  <div><i> Forgot your password?</i></div>
+              <form onSubmit={this.login}>
+                <div className="row">
+                    <div className="input-field col s12 m6 offset-m2">
+                      <input id="fld_user" type="text"
+                             name="username"  className={getClass('username')}
+                             onChange={this.handleChange}
+                             value={this.state.login.user} />
+                      <label htmlFor="fld_user" data-success=""
+                             data-error={this.state.invalid.username}>Username</label>
+                      <i className="material-icons prefix">account_circle</i>
+                    </div>
+                    <div className="input-field col s12 m6 offset-m2">
+                      <input id="fld_password" type="password"
+                             name="passwd" className={getClass('passwd')}
+                             onChange={this.handleChange}
+                             value={this.state.login.password} />
+                      <label htmlFor="fld_password" data-success=""
+                             data-error={this.state.invalid.passwd}>Password</label>
+                      <i className="material-icons prefix">lock_open</i>
+                    </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col s12 m1 offset-m7">
-                    { this.props.loading ? (
-                      <button type="submit" className="waves-effect waves-dark btn-flat">
-                        <i className="fa fa-circle-o-notch fa-spin fa-fw"/>
-                      </button>
-                    ) : (
-                      <button type="submit" className="waves-effect waves-dark btn-flat">
-                        Login
-                      </button>
-                    )}
+                <div className="row">
+                  <div className="col s12 m5 offset-m1 forget-password">
+                    <div><i> Forgot your password?</i></div>
+                  </div>
                 </div>
+                <div className="row">
+                  <div className="col s12 m1 offset-m7">
+                      { this.props.loading ? (
+                        <button type="submit" className="waves-effect waves-dark red btn-flat">
+                          <i className="fa fa-circle-o-notch fa-spin fa-fw"/>
+                        </button>
+                      ) : (
+                        <button type="submit" className="waves-effect waves-dark red btn-flat">
+                          Login
+                        </button>
+                      )}
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div className="col s5 right-side">
+              <div className="dojot-logo">
+                <img src="images/dojot_white.png" />
               </div>
-            </form>
+              <div className="slogan">
+                <b>Do IoT</b><br />Fácil<br />
+                Rápido<br /> e Seguro
+              </div>
+            </div>
           </div>
         </div>
       </div>

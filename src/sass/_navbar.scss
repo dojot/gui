@@ -1,35 +1,119 @@
+.sub-menu-tem
+{
+
+    padding: 10px;
+}
+
+.header-box
+{
+
+  .page-actions
+  {
+    top: 55px;
+    position: fixed;
+    z-index: 9992;
+    right: 0px;
+    overflow: auto;
+    width: 600px;
+    height: 70px;
+    padding-right: 39px;
+    text-align: right;
+        overflow: hidden;
+  }
+
+  .title-box{
+    position: fixed;
+    z-index: 9992;
+    top: 13px;
+    width: 500px;
+    padding-left: 39px;
+
+    .title
+    {
+      text-transform: capitalize;
+      display: inline-block;
+      font-family: Raleway;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      font-size: 20px;
+      letter-spacing: 0.04em;
+      color: $dark-gray;
+      position: absolute;
+      top: 17px;
+      padding-left: 9px;
+    }
+
+    .icon
+    {
+      display: inline-block;
+      width: 70px;
+      padding-right: 7px;
+
+
+      img{
+        width: 100%;
+        height:100%;
+      }
+
+    }
+  }
+
+
+}
+
 nav.outer-header {
   position: fixed;
   top: 0;
-  z-index: 9999;
-  height: $header-height !important;
-  background: linear-gradient(to right, #588de7, #65ce8f);
+  left: 0;
+  width: 100%;
+  padding: 10px 0px;
+  // left: $sidebar-width;
+  // width: calc(100% - $sidebar-width);
+  z-index: 9990;
+  height: $header-double-height !important;
   font-family: Roboto, sans-serif;
+  background: linear-gradient(270.95deg, #F8F8F8 29.89%, #FFFFFF 96.84%);
+  color: $black;
 
   a {
     padding-left: 40px;
     font-size: 35px;
     margin-left: 0px;
   }
-
-  .nav-status {
+  .nav-line
+  {
     position: absolute;
     right: 0;
     top: 0;
     height: $header-height;
     display: inline;
     line-height: $header-height;
-  }
 
-  .nav-status .status-icon {
-    font-size: 18pt;
-    line-height: $header-height;
-  }
+    .nav-status {
+      height: 100%;
+    }
 
-  .status-item {
-    margin: 0 0.2em;
-    float: left;
-  }
+    .nav-status .status-icon {
+      font-size: 13pt;
+      color: $dark-ciano;
+
+      i{
+        height: auto;
+      }
+    }
+
+    .status-item {
+      margin: 0 0.2em;
+      float: left;
+    }
+
+    .user-name{
+          font-size: 13px;
+          color: $dark-gray;
+    }
+}
+
 }
 
 // TODO: this could (should) be on its own file (when user area gets refactored)
@@ -38,13 +122,13 @@ $pic-border: #2969be;
   border-radius: $header-height;
   border: 3px solid $pic-border;
   margin-top: 5px !important;
-  height: $header-height - 10px;
-  width: $header-height - 10px;
+  height: 30px;
+  width: 30px;
   position: relative;
 }
 
 .user-pic img {
-  height: $header-height - 10 - 6;
+  height: 100%;
   margin: 0px;
 
   position: absolute;

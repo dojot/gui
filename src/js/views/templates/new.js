@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import { PageHeader, ActionHeader } from "../../containers/full/PageHeader";
+import { NewPageHeader, PageHeader, ActionHeader } from "../../containers/full/PageHeader";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Link, hashHistory } from 'react-router'
 
@@ -442,10 +442,9 @@ class NewTemplate extends Component {
           transitionName="first"
           transitionAppear={true} transitionAppearTimeout={500}
           transitionEnterTimeout={500} transitionLeaveTimeout={500} >
-          <PageHeader title="device manager" subtitle="Templates" />
-          <ActionHeader title={title}>
+          <NewPageHeader title="Templates" subtitle="Templates" icon='template'>
             <CreateTemplateActions operator={ops} id={this.props.params.template}/>
-          </ActionHeader>
+          </NewPageHeader>
           <AltContainer store={TemplateFormStore} >
             <TemplateForm />
           </AltContainer>

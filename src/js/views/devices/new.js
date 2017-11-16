@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import { PageHeader, ActionHeader } from "../../containers/full/PageHeader";
+import { NewPageHeader, PageHeader, ActionHeader } from "../../containers/full/PageHeader";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Link, hashHistory } from 'react-router'
 
@@ -597,13 +597,12 @@ class NewDevice extends Component {
           transitionName="first"
           transitionAppear={true} transitionAppearTimeout={500}
           transitionEnterTimeout={500} transitionLeaveTimeout={500} >
-          <PageHeader title="device manager" subtitle="Devices" />
-          <ActionHeader title={title}>
-            <AltContainer store={DeviceStore} >
-              <CreateDeviceActions operator={ops} />
-            </AltContainer>
-          </ActionHeader>
-          <AltContainer store={DeviceFormStore} >
+          <AltContainer store={DeviceStore} >
+          <NewPageHeader title="Devices" subtitle="device manager" icon="device">
+            <CreateDeviceActions operator={ops} />
+            </NewPageHeader>
+          </AltContainer>
+            <AltContainer store={DeviceFormStore} >
             <DeviceForm />
           </AltContainer>
         </ReactCSSTransitionGroup>

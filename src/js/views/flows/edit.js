@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Link, hashHistory } from 'react-router'
 
-import {PageHeader} from "../../containers/full/PageHeader";
+import {NewPageHeader} from "../../containers/full/PageHeader";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import FlowActions from '../../actions/FlowActions';
@@ -299,7 +299,7 @@ class EditFlow extends Component {
       <ReactCSSTransitionGroup transitionName="first"
           transitionAppear={true} transitionAppearTimeout={500}
           transitionEnterTimeout={500} transitionLeaveTimeout={500} >
-        <PageHeader title="flow manager" subtitle="Flow configuration">
+        <NewPageHeader title="flow manager" subtitle="Flow configuration" icon='flow'>
           <div className="row valign-wrapper full-width no-margin">
             <AltContainer store={FlowStore}>
               <NameForm />
@@ -319,7 +319,7 @@ class EditFlow extends Component {
               <Link to="/flows" className="waves-effect waves-light btn-flat btn-ciano">Dismiss</Link>
             </div>
           </div>
-        </PageHeader>
+        </NewPageHeader>
         <AltContainer store={FlowStore}>
           <FlowCanvas flow={this.props.params.flowid}/>
         </AltContainer>

@@ -1,17 +1,127 @@
 
 .login-area-left-side {
   background-color: $gray;
-  // height: 100%;
   position: absolute;
   overflow: auto;
-  // top: calc(50% - 150px);
-  font-family: Open Sans,sans-serif;
+  font-family: "Open Sans", sans-serif;
   left:0 !important;
   color: $almost-black;
   height: 100%;
   top: 0px;
   padding-top: 100px !important;
 }
+
+.login
+{
+  height:100vh;
+
+  &.bg-left
+  {
+    background: url(/images/login/poly-left.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    /* background-attachment: fixed; */
+    background-position: left;
+  }
+
+    .forget-password
+    {
+      font-family: 'Open Sans', sans-serif;
+      font-style: italic;
+      font-weight: normal;
+      line-height: normal;
+      text-align: right;
+      font-size: 10px;
+    }
+
+    .login-page-title {
+      // font-size: 35px;
+      font-family: "Cuprum", "Roboto", sans-serif;
+      // font-family: Open Sans;
+      font-style: normal;
+      font-weight: bold;
+      line-height: normal;
+      font-size: 25px;
+      color: $magenta;
+    }
+
+   .login-page-subtitle {
+      font-family: "Open Sans", "Raleway", sans-serif;
+      font-style: normal;
+      font-weight: normal;
+      line-height: normal;
+      font-size: 16px;
+      color: $black;
+    }
+
+
+   i.material-icons {
+      color: $magenta;
+      padding-top: 10px ;
+      // border-bottom: 2px white solid;
+      font-size: 18px;
+      padding-bottom: 17px;
+      text-align: right;
+    }
+
+   .input-field .prefix {
+      color: $magenta;
+      padding-top: 20px ;
+    }
+
+    .bg-right
+    {
+      padding-top: 98px;
+      height: 100%;
+      background: url(/images/login/poly-right.png);
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: right -222px top -271px;
+    }
+
+    .right-side
+    {
+        height: 100%;
+        position: absolute;
+        top: 10px;
+        right: 0px !important;
+
+
+          .dojot-logo
+          {
+            position: absolute;
+            width: 124px;
+            right: 0px !important;
+            top: 64px;
+
+            img{
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          .slogan{
+            right: 23px;
+            top: 156px;
+            position: relative;
+            font-family: 'Ubuntu', sans-serif;
+            font-style: normal;
+            line-height: 37px;
+            font-size: 18px;
+            text-align: right;
+            letter-spacing: 0.05em;
+            color: $white;
+          }
+    }
+
+    .left-side
+    {
+        display: inline-block;
+        width: 470px;
+    }
+
+}
+
 
 .login-area-left-side p {
   text-align: center;
@@ -22,74 +132,19 @@
 
 /* Right side */
 .login-area-right-side {
-  background: linear-gradient(to right, #3d66bf, #41819c);
-  color: #fff;
-  height: 100%;
-  overflow: auto;
-  position: absolute;
-  top: 0;
-  font-family: "Raleway", sans-serif;
-  right:0 !important;
-  padding-top: 100px !important;
 
   /* label underline focus color */
   input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
-    border-bottom: 1px solid #fff !important;
+    border-bottom: 1px solid $magenta !important;
     box-shadow: none !important;
   }
 
   /* label underline focus color */
   input-field input[type=text]:focus, .input-field input[type=password]:focus {
-    border-bottom: 1px solid #fff !important;
+    border-bottom: 1px solid $magenta !important;
     box-shadow: none !important;
   }
 
-  input:not([type]).invalid + label:after,
-  input:not([type]):focus.invalid + label:after,
-  input[type=text].invalid + label:after,
-  input[type=text]:focus.invalid + label:after,
-  input[type=password].invalid + label:after,
-  input[type=password]:focus.invalid + label:after,
-  input[type=email].invalid + label:after,
-  input[type=email]:focus.invalid + label:after,
-  input[type=url].invalid + label:after,
-  input[type=url]:focus.invalid + label:after,
-  input[type=time].invalid + label:after,
-  input[type=time]:focus.invalid + label:after,
-  input[type=date].invalid + label:after,
-  input[type=date]:focus.invalid + label:after,
-  input[type=datetime].invalid + label:after,
-  input[type=datetime]:focus.invalid + label:after,
-  input[type=datetime-local].invalid + label:after,
-  input[type=datetime-local]:focus.invalid + label:after,
-  input[type=tel].invalid + label:after,
-  input[type=tel]:focus.invalid + label:after,
-  input[type=number].invalid + label:after,
-  input[type=number]:focus.invalid + label:after,
-  input[type=search].invalid + label:after,
-  input[type=search]:focus.invalid + label:after,
-  textarea.materialize-textarea.invalid + label:after,
-  textarea.materialize-textarea:focus.invalid + label:after {
-    color: #fff;
-    font-weight: normal;
-  }
-
-  input:not([type]):focus:not([readonly]) + label,
-  input[type=text]:focus:not([readonly]) + label,
-  input[type=password]:focus:not([readonly]) + label,
-  input[type=email]:focus:not([readonly]) + label,
-  input[type=url]:focus:not([readonly]) + label,
-  input[type=time]:focus:not([readonly]) + label,
-  input[type=date]:focus:not([readonly]) + label,
-  input[type=datetime]:focus:not([readonly]) + label,
-  input[type=datetime-local]:focus:not([readonly]) + label,
-  input[type=tel]:focus:not([readonly]) + label,
-  input[type=number]:focus:not([readonly]) + label,
-  input[type=search]:focus:not([readonly]) + label,
-  textarea.materialize-textarea:focus:not([readonly]) + label {
-    color: #fff;
-    font-weight: 900;
-  }
 }
 
 .login-area-right-side .margin-top {
@@ -102,42 +157,10 @@
 
 /* label color */
 .login-area-right-side .input-field label {
-  color: #fff;
+  color: $black;
   // font-weight: bold;
 }
 
-.login-area-right-side i.material-icons {
-  color: #fff;
-  padding-top: 10px ;
-  // border-bottom: 2px white solid;
-  font-size: 18px;
-  padding-bottom: 17px;
-  text-align: right;
-}
-
-.login-area-right-side .input-field .prefix {
-  color: #fff;
-  padding-top: 20px ;
-}
-
-.login-area-right-side .login-page-title {
-  font-size: 35px;
-  font-family: "Cuprum", "Roboto", sans-serif;
-  font-weight: bold;
-  color: #fff;
-}
-
-.login-area-right-side .login-page-subtitle {
-  font-size: 105%;
-  font-family: "Raleway", sans-serif;
-  font-weight: bold;
-  color: #fff;
-}
-
-.login-area-right-side .btn-flat {
-  background-color: #fff;
-  color: #3d66bf;
-}
 
 .login-area-right-side .btn-flat:hover {
   background-color: #cecece;
@@ -238,4 +261,15 @@
 .logout-page .logout-page-photo {
   padding-left: 35%;
   margin-bottom: 5%;
+}
+
+
+
+@media only screen and (max-width: 1150px) {
+
+  .right-side .slogan
+  {
+    display:none !important;
+  }
+
 }

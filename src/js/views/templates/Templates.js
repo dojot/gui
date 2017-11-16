@@ -7,7 +7,7 @@ import TemplateActions from '../../actions/TemplateActions';
 
 import AltContainer from 'alt-container';
 
-import { PageHeader } from "../../containers/full/PageHeader";
+import {  NewPageHeader, PageHeader } from "../../containers/full/PageHeader";
 
 import Dropzone from 'react-dropzone';
 
@@ -523,12 +523,12 @@ class Templates extends Component {
           transitionAppearTimeout={500}
           transitionEnterTimeout={500}
           transitionLeaveTimeout={500} >
-        <PageHeader title="device manager" subtitle="Templates" shadow='true'>
+        <NewPageHeader title="Templates" subtitle="Templates" icon='template'>
           {/* <Filter onChange={this.filterChange} /> */}
           <Link to="/template/new" className="btn-item btn-floating waves-effect waves-light cyan darken-2" title="Create a new template">
             <i className="fa fa-plus"/>
           </Link>
-        </PageHeader>
+        </NewPageHeader>
         <AltContainer store={TemplateStore}>
           <TemplateList />
         </AltContainer>

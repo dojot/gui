@@ -7,6 +7,9 @@ import AltContainer from 'alt-container';
 import LoginStore from '../../stores/LoginStore';
 import util from '../../comms/util/util';
 
+import { NewPageHeader } from "../../containers/full/PageHeader";
+
+
 var DeviceDashboardStore = require('../../stores/DeviceDashboardStore');
 var DeviceDashboardActions = require('../../actions/DeviceDashboardActions');
 
@@ -257,6 +260,8 @@ class DeviceDashboardImpl extends Component {
       transitionAppearTimeout={500}
       transitionEnterTimeout={500}
       transitionLeaveTimeout={500} >
+      <NewPageHeader title="Devices" subtitle="" icon="device">
+      </NewPageHeader>
       <div className="row main-painel">
          <LeftPainel id='div_devices' mainTitle="Devices" subtitle="Dashboard" stats={this.props.devices.stats} />
          <MainPainel devices={this.props.devices.last_devices} templates={this.props.devices.last_templates} />
