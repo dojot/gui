@@ -74,29 +74,123 @@ class DeviceImageUpload extends Component {
   }
 }
 
-function SummaryItem(props) {
-  let ts = (props.template.updated ? util.printTime(props.template.updated) : "N/A");
-  let attrs = (props.template.attrs ? props.template.attrs.length : '0');
-  return (
-    <div className="lst-entry-wrapper z-depth-2 col s12" title="View details">
-      <div className="lst-entry-title col s12">
-        <div className="user-label truncate">{props.template.label}</div>
-        <div className="label">template name</div>
-      </div>
 
-      <div className="lst-entry-body col s12">
-        {/* TODO fill those with actual metrics */}
-        <div className="col s3 metric">
-          <div className="metric-value">{attrs}</div>
-          <div className="metric-label">Attributes</div>
-        </div>
-        <div className="col s9 metric last">
-          <div className="metric-value">{ts}</div>
-          <div className="metric-label">Last update</div>
-        </div>
-      </div>
-    </div>
-  )
+class SummaryItem extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isSuppressed: false
+        };
+
+        this.suppress = this.suppress.bind(this);
+    }
+
+    suppress() {
+        let state = this.state;
+        state.isSuppressed = !state.isSuppressed;
+        this.setState(state);
+    }
+    render() {
+        let ts = (this.props.template.updated ? util.printTime(this.props.template.updated) : "N/A");
+        let attrs = (this.props.template.attrs ? this.props.template.attrs.length : '0');
+        return (
+            <div className={"card-size lst-entry-wrapper z-depth-2 " + (this.state.isSuppressed ? 'suppressed' : 'fullHeight')}
+                 id={this.props.id}>
+
+              <div className="lst-entry-title col s12">
+                <img className="title-icon" src="images/model-icon.png"/>
+                <div className="title-text">
+                  <span className="text"> {this.props.template.label} </span>
+                </div>
+              </div>
+
+              <div className="lst-entry-body">
+
+                <div className="icon-area center-text-parent">
+                  <span className="center-text-child">{attrs}</span>
+                </div>
+
+                <div className="text-area center-text-parent">
+                  <span className="middle-text-child">Attributes</span>
+                </div>
+
+                <div className={"center-text-parent material-btn expand-btn right-side " + (this.state.isSuppressed ? '' : 'hidden') } onClick={this.suppress}>
+                  <i className="fa fa-angle-down center-text-child text"></i>
+                </div>
+              </div>
+
+              <div className={"attr-list"} id={"style-3"}>
+                  {this.props.template.attrs.map((attributes) =>
+                      <AttributeList attributes={attributes}/>)}
+              </div>
+              <div className="card-footer">
+                <div className="material-btn center-text-parent" title="Edit Attributes">
+                  <span className="text center-text-child">edit</span>
+                </div>
+                  <div className="center-text-parent material-btn right-side" onClick={this.suppress}>
+                      <i className="fa fa-angle-up center-text-child text"></i>
+                  </div>
+
+              </div>
+
+            </div>
+        )
+    }
+}
+
+
+class AttributeList extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isSuppressed: true
+        };
+
+        this.suppress = this.suppress.bind(this);
+    }
+
+    suppress() {
+        let state = this.state;
+        state.isSuppressed = !state.isSuppressed;
+        this.setState(state);
+    }
+
+    render() {
+        return (
+            <div className={"attr-area " + (this.state.isSuppressed ? 'suppressed' : 'fullHeight')}>
+                <div className="attr-row">
+                    <div className="icon">
+                        <img src="images/tag.png"/>
+                    </div>
+
+                    <div className={"attr-content"}>
+                        <input type="text" value={this.props.attributes.label} disabled/>
+                        <span>Name</span>
+                    </div>
+
+                    <div className="center-text-parent material-btn right-side" onClick={this.suppress}>
+                        <i className={(this.state.isSuppressed ? 'fa fa-angle-down' : 'fa fa-angle-up') + " center-text-child text"}></i>
+                    </div>
+                </div>
+                <div className="attr-row">
+                    <div className="icon"></div>
+                    <div className={"attr-content"}>
+                        <input type="text" value={this.props.attributes.value_type} disabled/>
+                        <span>Type</span>
+                    </div>
+                </div>
+                <div className="attr-row">
+                    <div className="icon"></div>
+                    <div className={"attr-content"}>
+                        <input type="text" value="True" disabled/>
+                        <span>{this.props.attributes.type}</span>
+                    </div>
+                </div>
+            </div>
+
+        )
+    }
 }
 
 class ListItem extends Component {
@@ -111,7 +205,7 @@ class ListItem extends Component {
       },
       attribute: "",
       typeAttribute: ""
-    }
+    };
 
     this.handleEdit = this.handleEdit.bind(this);
     this.handleDetail = this.handleDetail.bind(this);
@@ -187,199 +281,9 @@ class ListItem extends Component {
   }
 
   render() {
-    let detail = this.props.detail === this.props.device.id;
-    let edit = (this.props.edit === this.props.device.id) && detail;
-
-    // let labelSize = this.props.device.has_icon ? "lst-title col s10" : "lst-title col s12";
-    // let iconUrl = "http://localhost:5000/template/" + this.props.device.id + "/icon";
-
-    return (
-      <Link to={"/template/id/" + this.props.device.id + "/edit"} >
-        <div className="lst-entry col s12 m4" id={this.props.device.id}>
-          {/* { detail && edit && (
-            <EditWrapper device={this.props.device} handleRemove={this.handleRemove} handleDismiss={this.handleDismiss}/>
-          )}
-          { detail && !edit && (
-            <DetailItem device={this.props.device} handleEdit={this.handleEdit} handleDismiss={this.handleDismiss}/>
-          )} */}
-          { !detail && (
-            <SummaryItem template={this.props.device} />
-          )}
-        </div>
-      </Link>
-    )
-
-
-    return (
-      <div className="lst-entry row"
-           onClick={detail ? null : this.handleDetail }
-           id={this.props.device.id}>
-        <div className="col s1 icon">
-          { this.props.device.has_icon ? (
-            <img src={'http://localhost:5000/template/' + this.props.device.id + '/icon?extra=' + this.props.device.toggle }
-                 alt="this should be an icon" />
-          ) : (
-            <i className="fa fa-microchip" />
-          )}
-        </div>
-        <form role="form">
-          {/* <!-- text status area --> */}
-          {!detail && (
-            <div className="lst-line col s11">
-              <div className={labelSize}>
-                <span>{this.props.device.label}</span>
-              </div>
-              <div className="col m12 hide-on-small-only">
-                <div className="data no-padding-left">{this.props.device.id}</div>
-              </div>
-            </div>
-          )}
-          {detail && (
-            <div className="lst-line col s11">
-              { edit ? (
-                <div className="col s12">
-                  <div className="input-field col s8">
-                    <label htmlFor="fld_name">Name</label>
-                    <input id="fld_name" type="text"
-                           name="label"
-                           autoFocus
-                           onChange={this.handleChange.bind(this)}
-                           value={this.state.device.label} />
-                  </div>
-                  <div className="col s4">
-                    <div className="edit right inline-actions">
-                      <a className="btn-floating waves-green right" onClick={this.handleDismiss}>
-                        <i className="fa fa-times"></i>
-                      </a>
-                      <a className="btn-floating waves-green right red" onClick={this.deleteDevice}>
-                        <i className="fa fa-trash-o"></i>
-                      </a>
-                      <button data-target="imageUpload" className="btn-floating waves-effect waves-light right" >
-                        <i className="fa fa-file-image-o"></i>
-                      </button>
-                      {/* <a className="btn-floating waves-green right" onClick={this.deleteDevice}>
-                      </a> */}
-                    </div>
-                  </div>
-                  <div className="col m12 hide-on-small-only">
-                    <div className="data no-padding-left">{this.props.device.id}</div>
-                  </div>
-
-                  <DeviceImageUpload targetDevice={this.props.device.id}/>
-                </div>
-              ) : (
-                <div className="lst-line col s12">
-                  <div className="lst-title col s10">
-                    <span>{this.props.device.label}</span>
-                  </div>
-                  <div className="col s2">
-                    <div className="edit right inline-actions">
-                      <a className="btn-floating waves-green right" onClick={this.handleDismiss}>
-                        <i className="fa fa-times"></i>
-                      </a>
-                      <a className="btn-floating waves-green right" onClick={this.handleEdit}>
-                        <i className="material-icons">mode_edit</i>
-                      </a>
-                    </div>
-                  </div>
-                  <div className="col m12 hide-on-small-only">
-                    <div className="data no-padding-left">{this.props.device.id}</div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {detail && (
-            <div className="detailArea col m12">
-              { edit ? (
-                <div className="row">
-                  {/* <!-- attributes --> */}
-                  <div className="row">
-                    <div className="col s6">
-                      <div className="input-field">
-                        <label htmlFor="fld_Attributes" >Attributes</label>
-                        <input id="fld_Attributes"
-                               type="text"
-                               name="attribute"
-                               value={this.state.attribute}
-                               key="attributeName"
-                               onChange={this.handleAttribute}></input>
-                      </div>
-                    </div>
-                    <div className="col s4">
-                      <div className="input-field">
-                        <label htmlFor="fld_Type_Attributes" >Type</label>
-                        <input id="fld_Type_Attributes"
-                               type="text"
-                               name="typeAttribute"
-                               value={this.state.typeAttribute}
-                               key="attributeName"
-                               onChange={this.handleAttribute}></input>
-                      </div>
-                    </div>
-                    <div className="col s2" >
-                      <div title="Add Attribute"
-                           className="btn btn-item btn-floating waves-effect waves-light cyan darken-2"
-                           onClick={this.addAttribute}>
-                        <i className="fa fa-plus"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col s12" >
-                      <div className="align-list">
-                        {this.state.device.attributes.map((attribute) =>(
-                          <DeviceAttributes attribute={attribute} removeAttribute={this.removeAttribute} key={attribute.name} />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col s12">
-                    <div className="pull-right">
-                      <a onClick={this.updateDevice}
-                         className=" modal-action modal-close waves-effect waves-green btn-flat">Send
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="row">
-                  <div className="lst-title col s12">
-                    <span>Attributes</span>
-                  </div>
-                  <div className="col s12">
-                    <div className="col s2">
-                      <span>Name</span>
-                    </div>
-                    <div className="col s2">
-                      <span>Type</span>
-                    </div>
-                    <div className="col s8">
-                    </div>
-                  </div>
-                  <div className="col s12">
-                    {this.state.device.attributes.map((attribute) =>(
-                      <div key={attribute.name}>
-                          <div className="col s2">
-                            <i className="fa fa-caret-right" aria-hidden="true"></i> {attribute.name} &nbsp;
-                          </div>
-                          <div className="col s2">
-                            <i className="fa fa-caret-right" aria-hidden="true"></i> {attribute.type} &nbsp;
-                          </div>
-                          <div className="col s8">
-                            &nbsp;
-                          </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </form>
-      </div>
-    )
+      return (
+            <SummaryItem template={this.props.device}/>
+      );
   }
 }
 
@@ -473,7 +377,7 @@ class TemplateList extends Component {
       )
     }
     return (
-      <div className="row full-height relative bg-gray">
+      <div className="full-height relative bg-gray">
         { filteredList.length > 0 ? (
           <div className="col s12 lst-wrapper">
             { filteredList.map((device) =>
@@ -493,9 +397,6 @@ class TemplateList extends Component {
           </div>
         )}
 
-        {/* <!-- footer --> */}
-        <div className="col s12"></div>
-        <div className="col s12">&nbsp;</div>
       </div>
     )
   }
