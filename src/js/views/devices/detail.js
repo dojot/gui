@@ -98,6 +98,14 @@ class Graph extends Component{
   }
 
   render() {
+    function NoData(props) {
+      return (
+        <div className="valign-wrapper full-height background-info">
+          <div className="full-width center">No data available</div>
+        </div>
+      )
+    }
+
     let labels = [];
     let values = [];
 
@@ -118,20 +126,22 @@ class Graph extends Component{
       return undefined;
     }
 
+    if (this.props.data == undefined) {
+      return (<NoData />);
+    }
+
     this.props.data.map((i) => {
       let value = getValue(i);
       if (value !== undefined) {
-        labels.push(util.printTime(Date.parse(i.recvTime)/1000));
-        values.push(value);
+        if (!((value === 0) && (this.props.data.length == 1))){
+          labels.push(util.printTime(Date.parse(i.recvTime)/1000));
+          values.push(value);
+        }
       }
     })
 
     if (values.length == 0) {
-      return (
-        <div className="valign-wrapper full-height background-info">
-          <div className="full-width center">No data available</div>
-        </div>
-      )
+      return (<NoData />);
     }
 
     let filteredLabels = labels.map((i,k) => {
@@ -192,11 +202,8 @@ class PositionRenderer extends Component {
   render() {
     function NoData() {
       return (
-        <div className="full-height valign-wrapper background-info subtle relative graph">
-          <div className="horizontal-center">
-            <i className="material-icons">report_problem</i>
-            <div>No position data available</div>
-          </div>
+        <div className="valign-wrapper full-height background-info">
+          <div className="full-width center">No data available</div>
         </div>
       )
     }
@@ -213,6 +220,9 @@ class PositionRenderer extends Component {
     }
 
     const position = [parseFloat(parsed[1]),parseFloat(parsed[3])];
+    if (position[0] == 0 && position[1] == 0) {
+      return (<NoData />)
+    }
 
     return (
       <div className="map full-height">
@@ -236,8 +246,7 @@ class Position extends Component {
 
   render () {
     let value = undefined;
-
-    if (this.props.data.length > 0) {
+    if (this.props.data && this.props.data.length > 0) {
       value = this.props.data[this.props.data.length - 1];
     }
 
@@ -249,6 +258,18 @@ class Position extends Component {
 
 // TODO move this to its own component
 function HistoryList(props) {
+  function NoData() {
+    return (
+      <div className="full-height background-info valign-wrapper center">
+        <div className="center full-width">No data available</div>
+      </div>
+    )
+  }
+
+  if (props.data === undefined || props.data === null) {
+    return (<NoData />);
+  }
+
   let trimmedList = props.data.filter((i) => {
     return i.attrValue.trim().length > 0
   })
@@ -266,11 +287,7 @@ function HistoryList(props) {
       </div>
     )
   } else {
-    return (
-      <div className="full-height background-info valign-wrapper center">
-        <div className="center full-width">No data available</div>
-      </div>
-    )
+    return (<NoData />);
   }
 }
 
@@ -296,24 +313,56 @@ class DetailAttrs extends Component {
     super(props);
   }
 
-  componentDidMount() {
-    this.props.device.attrs.map((i) => {
-      MeasureActions.fetchMeasures.defer(this.props.device.id, this.props.device.protocol, i);
-    })
-  }
-
   render() {
     const device = this.props.device;
 
-    let filteredStatics = this.props.device.static_attrs.filter((a) => { return (a.type.toLowerCase() != "geo:point")});
+    let renderedAttrs = JSON.parse(JSON.stringify(device.attrs));
+    let filteredStatics = this.props.device.static_attrs.filter((a) => {
+      const isPosition = (a.type.toLowerCase() == "geo:point");
+      if (isPosition) {
+        const local = JSON.parse(JSON.stringify(a));
+        if (typeof(local.value) == "string") {
+          const value = [{attrValue: local.value}];
+          local.value = JSON.parse(JSON.stringify(value));
+        }
+        renderedAttrs.unshift(local);
+      }
+      return !isPosition;
+    });
 
     function AttrList(props) {
+
+      renderedAttrs.map((i) => {
+        if (props.devices[device.id] == undefined) {
+          // initial render (fetch hasn't returned yet)
+          i.loading = true;
+        } else if (props.devices[device.id][i.name]) {
+          // normal operation for dynamic data
+          i.loading = props.devices[device.id][i.name].loading;
+        } else {
+          // statics
+          i.loading = false;
+        }
+        if ((i.value == undefined) && (i.loading == false)  &&
+            props.devices[device.id][i.name] &&  props.devices[device.id]) {
+          i.value = props.devices[device.id][i.name].data;
+        }
+      })
+
       return (
         <span>
-          { device.attrs.map((i, k) =>
+          { renderedAttrs.map((i) =>
               <div className={"col s12 m6 l6 metric-card full-height mt10"} key={i.object_id} >
-                {(props.devices[device.id] && props.devices[device.id][i.name] &&
-                  (props.devices[device.id][i.name].loading == false)) ? (
+                {(i.loading) ? (
+                  <div className="graphLarge z-depth-2 full-height">
+                    <span className="title">{i.name}</span>
+                    <div className="contents">
+                      <div className="background-info valign-wrapper full-height relative bg-gray">
+                        <i className="fa fa-circle-o-notch fa-spin fa-fw horizontal-center"/>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
                   <div className="graphLarge z-depth-2 full-height">
                     <div className="title ">
                       <span>{i.name}</span>
@@ -323,16 +372,7 @@ class DetailAttrs extends Component {
                       </span>
                     </div>
                     <div className="contents no-padding">
-                      <Attr device={device} type={props.devices[device.id][i.name].type} data={props.devices[device.id][i.name].data}/>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="graphLarge z-depth-2 full-height">
-                    <span className="title">{i.name}</span>
-                    <div className="contents">
-                      <div className="background-info valign-wrapper full-height relative bg-gray">
-                        <i className="fa fa-circle-o-notch fa-spin fa-fw horizontal-center"/>
-                      </div>
+                      <Attr device={device} type={i.type} data={i.value}/>
                     </div>
                   </div>
                 )}
@@ -398,7 +438,6 @@ function TagList (props) {
 class DeviceDetail extends Component {
   render() {
     if (this.props.deviceid == null || !this.props.devices.hasOwnProperty(this.props.deviceid)) {
-      console.error('Failed to load device attribute data', this.props.deviceid, this.props.devices);
       return (
         //  TODO This appears so many times it might be worth making it a component on its own
         <div className="background-info valign-wrapper full-height relative bg-gray">
@@ -415,17 +454,6 @@ class DeviceDetail extends Component {
           <i className="fa fa-circle-o-notch fa-spin fa-fw horizontal-center"/>
         </div>
       )
-    }
-
-    let position = null;
-    function getPosition(i) {
-      if (i.type == "geo:point") {
-        position = i;
-      }
-    }
-    device.static_attrs.map((i) => {getPosition(i)})
-    if (position === null) {
-      device.attrs.map((i) => {getPosition(i)})
     }
 
     return (
