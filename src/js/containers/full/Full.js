@@ -202,18 +202,18 @@ class Sidebar extends Component {
 
   render() {
     let entries = [
-      { target: "/device/stats", image: "chip", iconClass: "material-icons mi-ic-memory", label: "Devices", desc: "Known devices and configuration", children: [
+      { target: "/device", iconClass: "material-icons mi-ic-memory", label: "Devices", desc: "Known devices and configuration", children: [
         { target: "/device/list", iconClass: "", label: "device", title: "Devices list", siblings: ['/device/id', '/device/new']},
         { target: "/template/list", iconClass: "", label: "template", title: "Templates list", siblings: ['/template/id', '/template/new']},
         { target: "/alarm?q=device", iconClass: "", label: "alarm", title: "Alarms list"}
       ]},
-      { target: "/flows", image: "graph",  iconClass: "material-icons mi-device-hub", label: "data flows", desc: "Processing flows to be executed"},
-      { target: "/alarm",  image: "bell",  iconClass: "fa fa-bell-o", label: "alarms", desc: "System events and alarms"},
-      { target: "/auth",  image: "auth",  iconClass: "fa fa-unlock-alt", label: "auth", desc: "User and permissions management", children: [
+      { target: "/flows", iconClass: "material-icons mi-device-hub", label: "data flows", desc: "Processing flows to be executed"},
+      { target: "/alarm", iconClass: "fa fa-bell-o", label: "alarms", desc: "System events and alarms"},
+      { target: "/auth", iconClass: "fa fa-unlock-alt", label: "auth", desc: "User and permissions management", children: [
         { target: "/auth/user", iconClass: "", label: "users", title: "Users list"},
         { target: "/auth/permissions", iconClass: "", label: "permissions", title: "Permissions list"}
       ]},
-      { target: "/deploy",  image: "settings",  iconClass: "fa fa-cogs", label: "deploy", desc: "Application and plugin management", children: [
+      { target: "/deploy", iconClass: "fa fa-cogs", label: "deploy", desc: "Application and plugin management", children: [
         { target: "/deploy/plugins", iconClass: "", label: "plugins", title: "Plugins list"},
         { target: "/deploy/applications", iconClass: "", label: "applications", title: "Applications list"},
         { target: "/alarm?q=deploy", iconClass: "", label: "alarm", title: "Alarms list"},
