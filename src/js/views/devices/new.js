@@ -13,6 +13,7 @@ import deviceManager from '../../comms/devices/DeviceManager';
 import DeviceStore from '../../stores/DeviceStore';
 import TagForm from '../../components/TagForm';
 import util from "../../comms/util/util";
+import DojotButton from "../../components/DojotButton";
 
 import MaterialSelect from "../../components/MaterialSelect";
 import MaterialInput from "../../components/MaterialInput";
@@ -475,15 +476,52 @@ class NewAttr extends Component {
   }
 }
 
+
+
+
+
+class AttrBox extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+
+    return (
+      <div className="attr-box">
+        <div className="card col s12">
+            <div className="value title truncate">{this.props.name}</div>
+        </div>
+        <div className="col s12">
+          {
+            this.props.attrs.map((attr) =>
+            <div className="col s4">
+              <div className="attr-name">{attr.name}</div>
+              <div className="attr-type">{attr.type}</div>
+            </div>)
+          }
+        </div>
+      </div>
+    )
+  }
+}
+
 class DeviceForm extends Component {
   constructor(props) {
     super(props);
+    this.state = {selectedTemplates: []};
 
     this.handleChange = this.handleChange.bind(this);
   }
 
   componentWillUnmount() {
     FormActions.set(null);
+  }
+
+  addTemplate(element) {
+    let list = this.state.selected_templates;
+    list.push(element);
+    this.setState({selectedTemplates: list});
   }
 
   handleChange(event) {
@@ -496,8 +534,7 @@ class DeviceForm extends Component {
   render() {
     return (
       <div className={"row device" + " " + (this.props.className ? this.props.className : "")}>
-        <div className="row detail-header">
-          <div className="col s12 m10 offset-m1 valign-wrapper">
+          <div className="col s6 valign-wrapper">
             <div className="col s3">
               {/* TODO clickable, file upload */}
               <div className="img">
@@ -507,55 +544,41 @@ class DeviceForm extends Component {
             <div className="col s9 pt20px">
               <div>
                 <div className="input-field large col s12 ">
-                  <MaterialInput id="fld_label" value={this.props.device.label}
-                                 name="label" onChange={this.handleChange}>
-                    Name
-                  </MaterialInput>
-                </div>
-
-                <div className="col s12">
-                  <MaterialSelect id="fld_prot" name="protocol" className="col s4"
-                                  label="Device type"
-                                  value={this.props.device.protocol}
-                                  onChange={this.handleChange} >
-                    <option value="MQTT">MQTT</option>
-                    <option value="virtual">Virtual</option>
-                  </MaterialSelect>
-                  <div className="col s8" >
-                    <TagForm tags={this.props.device.tags}/>
-                  </div>
+                  <MaterialInput id="fld_label" value={this.props.device.label} name="label" onChange={this.handleChange}> Name </MaterialInput>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="row">
-          <div className="col s10 offset-s1">
-            <div className="title col s11">Attributes</div>
-            <div className="col s1">
-              <NewAttr {...this.props}/>
+            <div className="col s12">
+            {
+              (this.props.selected_templates.length > 0) ? (
+              <div className="react-bug-escape">
+              {// <SpecificAttrs templates={this.state.selectedTemplates} />
+              }
+              { this.state.selectedTemplates.map((tplt) =>
+                <AttrBox key={tplt.tempplate_id} {...tplt}/>)
+              }
+              </div>
+
+              )
+              : (
+                <div className="padding10 background-info">
+                  Select a template to start
+                </div>
+              )
+            }
+            </div>
+            <div className='footer text-right'>
+              <DojotButton color='white' click='' label='Dicard' />
+              <button type="button" className="waves-effect waves-dark red btn-flat">
+                Save
+              </button>
             </div>
           </div>
-        </div>
-        <div className="list row">
-          <div className="col s10 offset-s1">
-            { ((this.props.device.attrs.length > 0) || (this.props.device.static_attrs.length > 0) ) ? (
-              <span>
-                {this.props.device.attrs.map((attr) =>
-                  <AttrCard key={attr.object_id} {...attr}/>
-                )}
-                {this.props.device.static_attrs.map((attr) =>
-                  <AttrCard key={attr.object_id} {...attr}/>
-                )}
-              </span>
-            ) : (
-              <div className="padding10 background-info">
-                No attributes set
-              </div>
-            )}
+
+          <div className="col s6 valign-wrapper">
+            Templates
           </div>
-        </div>
       </div>
     )
   }
@@ -596,7 +619,7 @@ class NewDevice extends Component {
         <ReactCSSTransitionGroup
           transitionName="first"
           transitionAppear={true} transitionAppearTimeout={500}
-          transitionEnterTimeout={500} transitionLeaveTimeout={500} >
+          transitionEntattrTypeerTimeout={500} transitionLeaveTimeout={500} >
           <AltContainer store={DeviceStore} >
           <NewPageHeader title="Devices" subtitle="device manager" icon="device">
             <CreateDeviceActions operator={ops} />
