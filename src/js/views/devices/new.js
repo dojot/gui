@@ -551,7 +551,7 @@ class DeviceForm extends Component {
 
             <div className="col s12">
             {
-              (this.props.selected_templates.length > 0) ? (
+              (this.state.selectedTemplates.length > 0) ? (
               <div className="react-bug-escape">
               {// <SpecificAttrs templates={this.state.selectedTemplates} />
               }
