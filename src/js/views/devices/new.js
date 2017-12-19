@@ -533,18 +533,20 @@ class DeviceForm extends Component {
 
   render() {
     return (
-      <div className={"row device" + " " + (this.props.className ? this.props.className : "")}>
+      <div className={"row device device-frame " + (this.props.className ? this.props.className : "")}>
           <div className="col s6 valign-wrapper">
-            <div className="col s3">
-              {/* TODO clickable, file upload */}
-              <div className="img">
-                <img src="images/ciShadow.svg" />
+            <div className="col s12">
+              <div className="col s3">
+                {/* TODO clickable, file upload */}
+                <div className="img">
+                  <img src="images/ciShadow.svg" />
+                </div>
               </div>
-            </div>
-            <div className="col s9 pt20px">
-              <div>
-                <div className="input-field large col s12 ">
-                  <MaterialInput id="fld_label" value={this.props.device.label} name="label" onChange={this.handleChange}> Name </MaterialInput>
+              <div className="col s9 pt20px">
+                <div>
+                  <div className="input-field large col s12 ">
+                    <MaterialInput id="fld_label" value={this.props.device.label} name="label" onChange={this.handleChange}> Name </MaterialInput>
+                  </div>
                 </div>
               </div>
             </div>
@@ -552,14 +554,13 @@ class DeviceForm extends Component {
             <div className="col s12">
             {
               (this.state.selectedTemplates.length > 0) ? (
-              <div className="react-bug-escape">
-              {// <SpecificAttrs templates={this.state.selectedTemplates} />
-              }
-              { this.state.selectedTemplates.map((tplt) =>
-                <AttrBox key={tplt.tempplate_id} {...tplt}/>)
-              }
-              </div>
-
+                <div className="react-bug-escape">
+                {// <SpecificAttrs templates={this.state.selectedTemplates} />
+                }
+                { this.state.selectedTemplates.map((tplt) =>
+                  <AttrBox key={tplt.tempplate_id} {...tplt}/>)
+                }
+                </div>
               )
               : (
                 <div className="padding10 background-info">
@@ -568,8 +569,8 @@ class DeviceForm extends Component {
               )
             }
             </div>
-            <div className='footer text-right'>
-              <DojotButton color='white' click='' label='Dicard' />
+            <div className='col s12 footer text-right'>
+              <DojotButton color='white' click='' label='Discard' />
               <button type="button" className="waves-effect waves-dark red btn-flat">
                 Save
               </button>
@@ -577,12 +578,47 @@ class DeviceForm extends Component {
           </div>
 
           <div className="col s6 valign-wrapper">
-            Templates
+            <TemplateFrame />
           </div>
       </div>
     )
   }
 }
+
+
+class TemplateFrame extends Component {
+  constructor(props) {
+    super(props);
+    this.handleRemove = this.handleRemove.bind(this);
+
+  }
+
+  handleRemove(event) {
+    event.preventDefault();
+    AttrActions.remove(this.props);
+  }
+
+  render() {
+    const hasValue = (this.props.templates && this.props.templates.length > 0);
+
+    return (
+      <div className="col s12 m6 l4">
+        <div className="card z-depth-2">
+          <div className="card-content row">
+            {(hasValue > 0) && (
+              <div className="col s8">
+                <div className="value full-width truncate">{this.props.value}</div>
+                <div className="label">Static value</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+
 
 class NewDevice extends Component {
   constructor(props) {
