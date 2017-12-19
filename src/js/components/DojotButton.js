@@ -17,4 +17,19 @@ class DojotButton extends Component {
   }
 }
 
-export default DojotButton;
+
+class DojotBtnFlat extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <button type="button" className='btn new-btn-circle' onClick={this.props.click}>
+        <i className={this.props.icon} aria-hidden="true"></i>
+      </button>
+    )
+  }
+}
+
+export default { DojotButton, DojotBtnFlat };

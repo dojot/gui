@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import { NewPageHeader, PageHeader, ActionHeader } from "../../containers/full/PageHeader";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Link, hashHistory } from 'react-router'
-
 import alt from '../../alt';
 import AltContainer from 'alt-container';
 import DeviceActions from '../../actions/DeviceActions';
@@ -13,7 +12,12 @@ import deviceManager from '../../comms/devices/DeviceManager';
 import DeviceStore from '../../stores/DeviceStore';
 import TagForm from '../../components/TagForm';
 import util from "../../comms/util/util";
-import DojotButton from "../../components/DojotButton";
+import { DojotBtnFlat, DojotButton } from "../../components/DojotButton";
+
+import templateManager from '../../comms/templates/TemplateManager';
+import TemplateStore from '../../stores/TemplateStore';
+import TemplateActions from '../../actions/TemplateActions';
+
 
 import MaterialSelect from "../../components/MaterialSelect";
 import MaterialInput from "../../components/MaterialInput";
@@ -194,31 +198,6 @@ class FStore {
   }
 }
 var DeviceFormStore = alt.createStore(FStore, 'DeviceFormStore');
-
-class CreateDeviceActions extends Component {
-  constructor(props) {
-    super(props);
-
-    this.save = this.save.bind(this);
-  }
-
-  save(e) {
-    e.preventDefault();
-    const ongoingOps = DeviceStore.getState().loading;
-    if (ongoingOps == false) {
-      this.props.operator(JSON.parse(JSON.stringify(DeviceFormStore.getState().device)));
-    }
-  }
-
-  render() {
-    return (
-      <div>
-        <a className="waves-effect waves-light btn-flat btn-ciano" onClick={this.save} tabIndex="-1">save</a>
-        <Link to="/device/list" className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1">dismiss</Link>
-      </div>
-    )
-  }
-}
 
 
 class AttrCard extends Component {
@@ -480,25 +459,38 @@ class NewAttr extends Component {
 
 
 
-class AttrBox extends Component {
+class SpecificAttrs extends Component {
   constructor(props) {
     super(props);
+
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) {
+      event.preventDefault();
+      const f = event.target.name;
+      const v = event.target.value;
+      this.props.changeAttr(f,v);
   }
 
   render() {
-
     return (
-      <div className="attr-box">
-        <div className="card col s12">
-            <div className="value title truncate">{this.props.name}</div>
+      <div className="attr-box specific-attr">
+        <div className="col s12">
+            <div className="attr-title">Specific Attributes</div>
         </div>
         <div className="col s12">
           {
             this.props.attrs.map((attr) =>
-            <div className="col s4">
-              <div className="attr-name">{attr.name}</div>
-              <div className="attr-type">{attr.type}</div>
-            </div>)
+                  <div key={attr.label} className="col s4">
+                    <div className="attr-name">{attr.label}</div>
+                    <div className="attr-type">{attr.value_type}</div>
+                    <div className="attr-name input-field">
+                      <MaterialInput id="fld_label" value={attr.value} name="label" onChange={this.handleChange}> Name </MaterialInput>
+                    </div>
+                    <div className="attr-type">Value</div>
+                  </div>
+            )
           }
         </div>
       </div>
@@ -506,22 +498,118 @@ class AttrBox extends Component {
   }
 }
 
+
+class AttrBox extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div className="attr-box">
+        <div className="col s12">
+            <div className="attr-title">{this.props.label}</div>
+        </div>
+        <div className="col s12">
+          {
+            this.props.attrs.map((attr) =>
+                  <div className="col s4">
+                  { String(attr.type) != 'static' ? (
+                      <div>
+                    <div className="attr-name">{attr.label}</div>
+                    <div className="attr-type">{attr.value_type}</div>
+                    </div>) : ( null ) }
+                  </div>
+            )
+          }
+        </div>
+      </div>
+    )
+  }
+}
+
+
+
+
+
+
+
 class DeviceForm extends Component {
   constructor(props) {
     super(props);
-    this.state = {selectedTemplates: []};
-
+    this.state = {
+      templateState: 0,
+      templates: [],
+      selectedTemplates: []
+    };
+    // templateState = 0 - Removal painel
+    // templateState = 1 - Addition painel
     this.handleChange = this.handleChange.bind(this);
+    this.toggleTemplate = this.toggleTemplate.bind(this);
+    this.setTemplateState = this.setTemplateState.bind(this);
+    this.save = this.save.bind(this);
+    this.changeAttr = this.changeAttr.bind(this);
+  }
+
+  save(e) {
+    e.preventDefault();
+    const ongoingOps = DeviceStore.getState().loading;
+    if (ongoingOps == false) {
+      this.props.operator(JSON.parse(JSON.stringify(DeviceFormStore.getState().device)));
+    }
+  }
+
+
+  componentDidMount() {
+    // TemplateActions.fetchDevices.defer();
+    // console.log("this.props.templates", this.props.templates)
+    // let list = this.props.templates.templates;
+    // for(let k in list){
+    //   list[k].active = false;
+    //   // let template = list[k];
+    //   // displayMap[device.id] = false;
+    // }
+    // this.setState({templates: list});
+    // console.log("this.state", this.state)
   }
 
   componentWillUnmount() {
     FormActions.set(null);
   }
 
-  addTemplate(element) {
-    let list = this.state.selected_templates;
-    list.push(element);
-    this.setState({selectedTemplates: list});
+  // addTemplate(element) {
+  //   let list = this.state.selected_templates;
+  //   list.push(element);
+  //   this.setState({selectedTemplates: list});
+  // }
+
+  setTemplateState(state){
+      console.log("changing template state");
+      this.setState({templateState: state});
+  }
+
+  toggleTemplate(tmpt) {
+
+    // check if template is active
+    let selectedTemplate = this.state.selectedTemplates.filter(function(item) {
+        return item.id === tmpt.id
+    })
+
+    let list = [];
+    if (selectedTemplate.length == 0 ) //adding template
+    {
+      list = this.state.selectedTemplates;
+      list.push(tmpt);
+    }
+    else { //removing template
+      list = this.state.selectedTemplates.filter(function(item) {
+          return item.id !== tmpt.id
+      })
+    }
+
+    this.setState({
+      selectedTemplates: list
+    });
   }
 
   handleChange(event) {
@@ -531,21 +619,59 @@ class DeviceForm extends Component {
     FormActions.update({f: f, v: v});
   }
 
+  changeAttr(nam,val){
+    FormActions.update({nam: nam, val: val});
+  }
+
   render() {
+    console.log("this.props", this.props);
+    console.log('this.state.templates', this.state.templates);
+    console.log("this.props.templates", this.props.templates);
+
+    // this.updateStaticValue(template, value);
+
+    let templates = this.props.templates.templates;
+    for(let k in templates){
+      templates[k].active = false;
+      for(let j in this.state.selectedTemplates){
+        if (templates[k].id == this.state.selectedTemplates[j].id)
+        {
+            templates[k].active = true;
+        }
+      }
+    }
+
+    let static_attrs = [];
+    let st = this.state.selectedTemplates;
+    for(let k in st){
+      console.log("st[k].attrs", st[k].attrs);
+      let list = st[k].attrs
+        .filter((i) => {return String(i.type) == "static"})
+        .map(function(attr){
+            attr.value = '';
+            attr.id = util.sid();
+            attr.template_id = st[k].id;
+          return attr;
+        });
+      static_attrs = static_attrs.concat(list);
+    }
+
+    console.log("static_attrs",static_attrs);
+
     return (
       <div className={"row device device-frame " + (this.props.className ? this.props.className : "")}>
-          <div className="col s6 valign-wrapper">
+          <div className="col s6">
             <div className="col s12">
               <div className="col s3">
                 {/* TODO clickable, file upload */}
                 <div className="img">
-                  <img src="images/ciShadow.svg" />
+                  <img src="images/big-chip.png" />
                 </div>
               </div>
               <div className="col s9 pt20px">
                 <div>
                   <div className="input-field large col s12 ">
-                    <MaterialInput id="fld_label" value={this.props.device.label} name="label" onChange={this.handleChange}> Name </MaterialInput>
+                    <MaterialInput id="fld_label" value={this.props.device.device.label} name="label" onChange={this.handleChange}> Name </MaterialInput>
                   </div>
                 </div>
               </div>
@@ -555,15 +681,16 @@ class DeviceForm extends Component {
             {
               (this.state.selectedTemplates.length > 0) ? (
                 <div className="react-bug-escape">
-                {// <SpecificAttrs templates={this.state.selectedTemplates} />
+                {
+                  <SpecificAttrs attrs={static_attrs} change={this.state.changeAttr} />
                 }
                 { this.state.selectedTemplates.map((tplt) =>
-                  <AttrBox key={tplt.tempplate_id} {...tplt}/>)
+                  <AttrBox key={tplt.id} {...tplt}/>)
                 }
                 </div>
               )
               : (
-                <div className="padding10 background-info">
+                <div className="padding10 background-info pb160px">
                   Select a template to start
                 </div>
               )
@@ -574,11 +701,17 @@ class DeviceForm extends Component {
               <button type="button" className="waves-effect waves-dark red btn-flat">
                 Save
               </button>
+              <a className="waves-effect waves-light btn-flat btn-ciano" onClick={this.save} tabIndex="-1">save</a>
+              <Link to="/device/list" className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1">dismiss</Link>
             </div>
           </div>
 
-          <div className="col s6 valign-wrapper">
-            <TemplateFrame />
+          <div className="col s6">
+          { this.state.templateState == 0 ? (
+            <TemplateFrame setTemplateState={this.setTemplateState} toggleTemplate={this.toggleTemplate} templates={this.state.selectedTemplates} state={this.state.templateState} />
+          ) : (
+            <TemplateFrame setTemplateState={this.setTemplateState} toggleTemplate={this.toggleTemplate} templates={templates} state={this.state.templateState} />
+          )}
           </div>
       </div>
     )
@@ -589,36 +722,102 @@ class DeviceForm extends Component {
 class TemplateFrame extends Component {
   constructor(props) {
     super(props);
-    this.handleRemove = this.handleRemove.bind(this);
-
+    // this.handleRemove = this.handleRemove.bind(this);
+    this.toggleTemplate = this.toggleTemplate.bind(this);
+    this.removeTemplate = this.removeTemplate.bind(this);
+    this.setAditionMode = this.setAditionMode.bind(this);
+    this.setRemovalMode = this.setRemovalMode.bind(this);
+    this.showSearchBox = this.showSearchBox. bind(this);
   }
 
-  handleRemove(event) {
-    event.preventDefault();
-    AttrActions.remove(this.props);
+  componentDidMount() {
+      console.log("TemplateFrame = this.props",this.props);
   }
+
+  removeTemplate(template){
+    console.log("remove template", template);
+    this.props.toggleTemplate(template);
+  }
+
+
+  toggleTemplate(template){
+    console.log("template", template);
+    this.props.toggleTemplate(template);
+  }
+
+  setAditionMode(){
+    this.props.setTemplateState(1);
+  }
+
+  setRemovalMode(){
+    this.props.setTemplateState(0);
+  }
+
+  showSearchBox()
+  {
+      console.log("Not implemented yet");
+  }
+
+  // handleRemove(event) {
+  //   event.preventDefault();
+  //   AttrActions.remove(this.props);
+  // }
 
   render() {
-    const hasValue = (this.props.templates && this.props.templates.length > 0);
-
+    // const hasValue = (this.props.templates && this.props.templates.length > 0);
+    console.log("this", this.props.templates);
     return (
-      <div className="col s12 m6 l4">
-        <div className="card z-depth-2">
-          <div className="card-content row">
-            {(hasValue > 0) && (
-              <div className="col s8">
-                <div className="value full-width truncate">{this.props.value}</div>
-                <div className="label">Static value</div>
-              </div>
-            )}
-          </div>
+      <div className="col s12 template-frame">
+        <div className="col s12 header">
+          <label className="col s6 text-left" >All Templates </label>
+
+          <div className="col s6 text-right" >
+          { this.props.state == 0 ? (
+            <DojotBtnFlat click={this.setAditionMode} icon={'fa fa-plus'} tooltip='Add templates' />
+          ) : (
+            <div>
+              <DojotBtnFlat click={this.setRemovalMode} icon={'fa fa-chevron-left'} tooltip='Remove templates'/>
+              <DojotBtnFlat click={this.showSearchBox} icon={'fa fa-search'} />
+            </div>
+          )}
+           </div>
         </div>
+        <div className="col s12 body">
+          {this.props.templates.map((temp) =>
+            <div key={temp.id} className="card template-card">
+            { this.props.state == 0 ? (
+              <div>
+                  <div onClick={this.removeTemplate.bind(this,temp)} className="remove-layer">
+                    <i className="fa fa-remove"> </i>
+                  </div>
+                  <div className="template-name space-p-r">{temp.label}</div>
+              </div>
+            ) : (
+              null
+            )}
+
+            { this.props.state == 1 ? (
+              <div>
+              { temp.active ? (
+              <div onClick={this.toggleTemplate.bind(this,temp)} className="active-layer">
+                <i className="fa fa-check"> </i>
+              </div> ) : (
+                <div onClick={this.toggleTemplate.bind(this,temp)} className="empty-layer">
+                </div>
+              ) }
+              <div className="template-name">{temp.label}</div>
+            </div>
+          ) : (
+             null
+           )}
+        </div>
+      )}
       </div>
-    )
-  }
+    </div>
+  )
 }
 
-
+}
 
 class NewDevice extends Component {
   constructor(props) {
@@ -630,6 +829,8 @@ class NewDevice extends Component {
     if (edit) {
       FormActions.fetch(edit);
     }
+    TemplateActions.fetchTemplates.defer();
+
   }
 
   render() {
@@ -656,13 +857,10 @@ class NewDevice extends Component {
           transitionName="first"
           transitionAppear={true} transitionAppearTimeout={500}
           transitionEntattrTypeerTimeout={500} transitionLeaveTimeout={500} >
-          <AltContainer store={DeviceStore} >
           <NewPageHeader title="Devices" subtitle="device manager" icon="device">
-            <CreateDeviceActions operator={ops} />
-            </NewPageHeader>
-          </AltContainer>
-            <AltContainer store={DeviceFormStore} >
-            <DeviceForm />
+          </NewPageHeader>
+          <AltContainer stores={{devices: DeviceStore, device: DeviceFormStore, templates: TemplateStore}} >
+          <DeviceForm operator={ops} />
           </AltContainer>
         </ReactCSSTransitionGroup>
       </div>

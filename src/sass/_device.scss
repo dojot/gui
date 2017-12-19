@@ -1,3 +1,183 @@
+.attr-box
+{
+  border-bottom: 1px solid $gray;
+  padding: 8px 0px 19px 0px;
+  margin-left: 10%;
+  display: inline-block;
+  width: 80%;
+
+  .attr-title
+  {
+    font-family:"Roboto", sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+    color: $almost-black;
+    padding-bottom: 17px;
+  }
+
+  .attr-name{
+    font-family:"Roboto", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    color: $black;
+  }
+
+  .attr-type{
+      font-family: "Roboto";
+      font-style: normal;
+      font-weight: normal;
+      font-size: 10px;
+      color: $dark-silver;
+      padding-bottom: 10px;
+  }
+
+}
+
+
+.device-frame
+{
+
+  .img
+  {
+      padding: 40px 0px 0px 10px;
+
+      img
+      {
+        width: 100px;
+        height: 100px;
+      }
+  }
+
+  .header
+  {
+      padding: 20px 10px;
+
+      label{
+        font-family:"Roboto", sans-serif;
+        font-style: normal;
+        font-weight: 'bold';
+        font-size: 20px;
+        color:$black;
+      }
+
+
+  }
+
+}
+
+.pb160px{
+
+    padding-bottom: 160px;
+}
+
+
+.template-frame
+{
+  background:#F6F7FB;
+  height: 100vh;
+
+  .header
+  {
+    font-family:"Roboto", sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    line-height: 25px;
+    font-size: 18px;
+    text-align: center;
+      padding-top: 41px;
+    color:$gray;
+  }
+
+  .body{
+    text-align: center;
+  }
+
+
+  .template-card
+  {
+    width: 180px;
+    height: 86px;
+    background: linear-gradient(119.02deg, #28807E 0%, #16A085 100%);
+    border-radius: 2px;
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+    overflow: auto;
+    padding: 0px 10px;
+
+      .remove-layer
+      {
+          position: absolute;
+          cursor: pointer;
+          right: 0px;
+          top: 0px;
+          height: 100%;
+          width: 40px;
+          padding-top: 31px;
+          background: #137363;
+          i{
+            color: $white;
+            font-size: 18px;
+          }
+      }
+
+      .empty-layer
+      {
+        cursor: pointer;
+        height: 100%;
+        width: 100%;
+        display: inline;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+      }
+
+      .active-layer
+      {
+        height: 100%;
+        width: 100%;
+        display: inline;
+        position: absolute;
+        left: 0px;
+        cursor: pointer;
+        top: 0px;
+        opacity: 0.8;
+        background-color: rgba(42, 42, 42, 0.49);
+        text-align: center;
+        font-size: 55px;
+
+        i{
+          color: $white;
+        }
+
+      }
+
+      .template-name{
+          color:$white;
+          font-family: "Open Sans", "Roboto", sans-serif;
+          font-style: normal;
+          color: $white;
+          display: block;
+          height: 100%;
+          text-align: center;
+          padding-top: 17px;
+          text-transform: capitalize;
+          font-weight: bold;
+          font-size: 17px;
+        }
+
+        .space-p-r
+        {
+          padding-right: 40px;
+        }
+      }
+
+}
+
+
+
+
 .devicesSubHeader {
 
   background-color: #fff;;

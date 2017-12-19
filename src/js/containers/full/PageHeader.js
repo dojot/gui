@@ -22,7 +22,6 @@ class SubMenu extends Component {
         { target: "/alarm?q=deploy", iconClass: "", label: "alarm", title: "Alarms list"},
       ];
 
-      console.log("children[this.props.page]", children[this.props.page]);
        if (children[this.props.page]) {
         return (
             <ul className="sub-nav">

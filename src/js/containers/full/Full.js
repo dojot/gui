@@ -50,9 +50,10 @@ class Navbar extends Component {
         <div className="nav-line">
           <div className="nav-status">
             {/* TODO: add props for badge indicator */}
-            <div className="status-item status-icon">
+            { /*<div className="status-item status-icon">
               <i className="fa fa-spinner fa-pulse fa-fw"></i>
-            </div>
+            </div> */
+            }
             <div className="status-item status-icon">
                 {this.state.page} {this.state.page_icon}
             </div>
@@ -202,7 +203,7 @@ class Sidebar extends Component {
 
   render() {
     let entries = [
-      { target: "/device", iconClass: "material-icons mi-ic-memory", label: "Devices", desc: "Known devices and configuration", children: [
+      { image: 'chip', target: "/device", iconClass: "material-icons mi-ic-memory", label: "Devices", desc: "Known devices and configuration", children: [
         { target: "/device/list", iconClass: "", label: "device", title: "Devices list", siblings: ['/device/id', '/device/new']},
         { target: "/template/list", iconClass: "", label: "template", title: "Templates list", siblings: ['/template/id', '/template/new']},
         { target: "/alarm?q=device", iconClass: "", label: "alarm", title: "Alarms list"}
