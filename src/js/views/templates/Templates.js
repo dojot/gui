@@ -79,10 +79,14 @@ class SummaryItem extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isSuppressed: false
+            isSuppressed: true,
+            isEditable: false,
+            isConfiguration: false
         };
 
         this.suppress = this.suppress.bind(this);
+        this.getStatus = this.getStatus.bind(this);
+        this.editCard = this.editCard.bind(this);
     }
 
     suppress() {
@@ -90,49 +94,76 @@ class SummaryItem extends Component {
         state.isSuppressed = !state.isSuppressed;
         this.setState(state);
     }
+
+    getStatus(newState) {
+        let state = this.state;
+        state.isConfiguration = newState;
+        this.setState(state);
+    }
+
+    editCard() {
+        let state = this.state;
+        state.isEditable = !state.isEditable;
+        this.setState(state);
+    }
+
     render() {
         let ts = (this.props.template.updated ? util.printTime(this.props.template.updated) : "N/A");
         let attrs = (this.props.template.attrs ? this.props.template.attrs.length : '0');
         return (
-            <div className={"card-size lst-entry-wrapper z-depth-2 " + (this.state.isSuppressed ? 'suppressed' : 'fullHeight')}
-                 id={this.props.id}>
+            <div
+                className={"card-size lst-entry-wrapper z-depth-2 " + (this.state.isSuppressed ? 'suppressed' : 'fullHeight')}
+                id={this.props.id}>
 
-              <div className="lst-entry-title col s12">
-                <img className="title-icon" src="images/model-icon.png"/>
-                <div className="title-text">
-                  <span className="text"> {this.props.template.label} </span>
-                </div>
-              </div>
-
-              <div className="lst-entry-body">
-
-                <div className="icon-area center-text-parent">
-                  <span className="center-text-child">{attrs}</span>
+                <div className="lst-entry-title col s12">
+                    <img className="title-icon" src="images/model-icon.png"/>
+                    <div className="title-text">
+                        <span className="text"> {this.props.template.label} </span>
+                    </div>
                 </div>
 
-                <div className="text-area center-text-parent">
-                  <span className="middle-text-child">Attributes</span>
+                <div className="lst-entry-body">
+
+                    <div className="icon-area center-text-parent">
+                        <span className="center-text-child">{attrs}</span>
+                    </div>
+
+                    <div className="text-area center-text-parent">
+                        <span className="middle-text-child">Properties</span>
+                    </div>
+
+                    <div
+                        className={"center-text-parent material-btn expand-btn right-side " + (this.state.isSuppressed ? '' : 'invisible')}
+                        onClick={this.suppress}>
+                        <i className="fa fa-angle-down center-text-child text"></i>
+                    </div>
                 </div>
 
-                <div className={"center-text-parent material-btn expand-btn right-side " + (this.state.isSuppressed ? '' : 'hidden') } onClick={this.suppress}>
-                  <i className="fa fa-angle-down center-text-child text"></i>
+                <div className={"attr-list"} id={"style-3"}>
+                    {this.props.template.attrs.map((attributes) =>
+                        <AttributeList attributes={attributes}/>)}
                 </div>
-              </div>
 
-              <div className={"attr-list"} id={"style-3"}>
-                  {this.props.template.attrs.map((attributes) =>
-                      <AttributeList attributes={attributes}/>)}
-              </div>
-              <div className="card-footer">
-                <div className="material-btn center-text-parent" title="Edit Attributes">
-                  <span className="text center-text-child">edit</span>
+
+                <div className={"attr-list"} id={"style-3"}>
+                    {this.props.template.config.map((attributes) =>
+                        <ConfigList attributes={attributes}/>)}
                 </div>
-                  <div className="center-text-parent material-btn right-side" onClick={this.suppress}>
-                      <i className="fa fa-angle-up center-text-child text"></i>
-                  </div>
 
-              </div>
 
+                <div className={"card-footer  " + (this.state.isConfiguration ? 'config-footer' : '')}>
+                    <div className={(this.state.isEditable ? '' : 'invisible zero-height')}>
+                    <NewAttribute onChangeStatus={this.getStatus} ></NewAttribute>
+                </div>
+                    <div >
+                        <div className="material-btn center-text-parent" title="Edit Attributes" onClick={this.editCard}>
+                            <span className="text center-text-child">edit</span>
+                        </div>
+                        <div className="center-text-parent material-btn right-side" onClick={this.suppress}>
+                            <i className="fa fa-angle-up center-text-child text"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }
@@ -158,7 +189,7 @@ class AttributeList extends Component {
 
     render() {
         return (
-            <div className={"attr-area " + (this.state.isSuppressed ? 'suppressed' : 'fullHeight')}>
+            <div className={"attr-area " + (this.state.isSuppressed ? 'suppressed' : '')}>
                 <div className="attr-row">
                     <div className="icon">
                         <img src="images/tag.png"/>
@@ -185,6 +216,171 @@ class AttributeList extends Component {
                     <div className={"attr-content"}>
                         <input type="text" value="True" disabled/>
                         <span>{this.props.attributes.type}</span>
+                    </div>
+                </div>
+            </div>
+
+        )
+    }
+}
+
+class ConfigList extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isSuppressed: true
+        };
+
+        this.suppress = this.suppress.bind(this);
+    }
+
+    suppress() {
+        let state = this.state;
+        state.isSuppressed = !state.isSuppressed;
+        this.setState(state);
+    }
+
+    render() {
+        return (
+            <div className={"attr-area " + (this.state.isSuppressed ? 'suppressed' : '')}>
+                <div className="attr-row">
+                    <div className="icon">
+                        <img src="images/gear-dark.png"/>
+                    </div>
+                    <div className={"attr-content"}>
+                        <input type="text" value={this.props.attributes.type} disabled/>
+                        <span>Type</span>
+                    </div>
+                    <div className="center-text-parent material-btn right-side" onClick={this.suppress}>
+                        <i className={(this.state.isSuppressed ? 'fa fa-angle-down' : 'fa fa-angle-up') + " center-text-child text"}></i>
+                    </div>
+                </div>
+                <div className="attr-row">
+                    <div className="icon"></div>
+                    <div className={"attr-content"}>
+                        <input type="text" value={this.props.attributes.value_type} disabled/>
+                        <span>Value</span>
+                    </div>
+                </div>
+            </div>
+
+        )
+    }
+}
+
+class TemplateTypes {
+    constructor() {
+        this.availableTypes = [
+            {"value": "geo:point", "label": "Geo"},
+            {"value": "float", "label": "Float"},
+            {"value": "integer", "label": "Integer"},
+            {"value": "string", "label": "Text"},
+            {"value": "boolean", "label": "Boolean"}
+        ]
+    }
+
+    getTypes() {
+        let list = this.availableTypes;
+        return list;
+
+    }
+}
+
+let attrType = new TemplateTypes();
+
+class NewAttribute extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isSuppressed: true,
+            isConfiguration: false
+        };
+
+        this.suppress = this.suppress.bind(this);
+        this.availableTypes = attrType.getTypes();
+        this.handleChangeStatus = this.handleChangeStatus.bind(this);
+    }
+
+
+    handleChangeStatus(newStatus) {
+        this.props.onChangeStatus(newStatus);
+    }
+
+    suppress(property) {
+        let state = this.state;
+        state.isSuppressed = !state.isSuppressed;
+        state.isConfiguration = property;
+        this.setState(state);
+        this.handleChangeStatus(property);
+    }
+
+    render() {
+        var newAttr = {
+            "type": null,
+            "value": null,
+            "text": null
+        };
+        return (
+            <div className={"new-attr-area attr-area " + (this.state.isSuppressed ? 'suppressed-shadow' : '')}>
+
+                <div className={"add-row " + (this.state.isSuppressed ? '' : 'invisible zero-height')}>
+                    <div className={"add-btn add-config"} onClick={this.suppress.bind(this, true)}
+                         title={"Add New Configuration"}>
+                        <div className={"icon"}>
+                            <img src="images/add-gear.png"/>
+                        </div>
+                        <div className={"text"}>
+                            <span>configuration</span>
+                        </div>
+                    </div>
+                    <div className={"add-btn add-attr"} onClick={this.suppress.bind(this, false)}
+                         title={"Add New Attribute"}>
+                        <div className={"icon"}>
+                            <img src="images/add-tag.png"/>
+                        </div>
+                        <div className={"text"}>
+                            <span>attribute</span>
+                        </div>
+                    </div>
+                    <div className={"middle-line"}></div>
+                </div>
+
+                <div className={(this.state.isSuppressed ? 'invisible' : '')}>
+                    <div className={"attr-row " + (this.state.isConfiguration ? 'none' : '')}>
+                        <div className="icon">
+                            <img src="images/add-tag.png"/>
+                        </div>
+
+                        <div className={"attr-content "}>
+                            <input type="text" value={newAttr.text}/>
+                            <span>Name</span>
+                        </div>
+                    </div>
+                    <div className="attr-row">
+                        <div className="icon">
+                            <img className={(this.state.isConfiguration ? '' : 'none')} src="images/add-gear.png"/>
+                        </div>
+                        <div className={"attr-content"}>
+                            <input type="text" value={newAttr.type}/>
+                            <span>Type</span>
+                        </div>
+                    </div>
+                    <div className="attr-row">
+                        <div className="icon"></div>
+                        <div className={"attr-content"}>
+                            <input type="text" value={newAttr.value}/>
+                            <span>Value</span>
+                        </div>
+                    </div>
+
+
+                    <div className="material-btn center-text-parent" title="Add a new Attribute">
+                        <span className="text center-text-child light-text">add</span>
+                    </div>
+                    <div className="material-btn center-text-parent" title="Discard Changes" onClick={this.suppress}>
+                        <span className="text center-text-child light-text">discard</span>
                     </div>
                 </div>
             </div>
