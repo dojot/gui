@@ -249,6 +249,16 @@ body {
 {
   margin: 0px !important;
 }
+
+.mt0px,.mt0
+{
+  margin-top: 0px !important;
+}
+
+.mb0px,.mb0{
+  margin-bottom: 0px !important;
+}
+
 @import 'inputs';
 @import 'shadow';
 @import 'list';

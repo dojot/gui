@@ -1,3 +1,20 @@
+.no-data-notification
+{
+    width: 100%;
+    display: block;
+    text-align: center;
+    color: #9e9e9e;
+    font-size: 13px;
+    font-family: 'Cuprum', sans-serif;
+
+}
+
+
+.specific-attr
+{
+  padding-top: 30px;
+}
+
 .attr-box
 {
   border-bottom: 1px solid $gray;
@@ -5,6 +22,21 @@
   margin-left: 10%;
   display: inline-block;
   width: 80%;
+
+  .attr-fields
+  {
+    // padding-top: 10px;
+  }
+
+  .fix-inputs
+  {
+    margin: 0px !important;
+    margin-top: -15px !important;
+  }
+  .fix-value
+  {
+    margin-top: -15px;
+  }
 
   .attr-title
   {
@@ -57,7 +89,7 @@
         font-family:"Roboto", sans-serif;
         font-style: normal;
         font-weight: 'bold';
-        font-size: 20px;
+        font-size: 17px;
         color:$black;
       }
 
@@ -71,6 +103,11 @@
     padding-bottom: 160px;
 }
 
+.data-frame{
+  overflow: auto;
+  height: 100vh;
+  padding-bottom: 20px !important;
+}
 
 .template-frame
 {
@@ -180,12 +217,13 @@
 
 .devicesSubHeader {
 
-  background-color: #fff;;
-  padding-top:10px;
+  background-color: #fff;
   padding-bottom:62px;
   font-size: 16pt;
   font-family: 'Droid Sans', sans-serif;
   color: #666;
+  height: 92px;
+  padding-top: 4px !important;
   margin: 0;
   z-index: 1000;
   overflow: hidden;
