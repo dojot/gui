@@ -129,7 +129,7 @@ class FStore {
       if (String(attr_list[k].type) == "static") {
         this.device.static_attrs.push(JSON.parse(JSON.stringify(attr_list[k])));
       } else {
-        delete attr_list[k].value;
+        delete attr_list[k].static_value;
         this.device.attrs.push(JSON.parse(JSON.stringify(attr_list[k])));
       }
     }
@@ -267,7 +267,7 @@ class SpecificAttrs extends Component {
                         <div className="attr-name">{attr.label}</div>
                         <div className="attr-type">{attr.value_type}</div>
                         <div className="attr-name input-field fix-inputs">
-                          <MaterialInput className='mt0px' id="fld_label" value={attr.value} name="label" onChange={this.handleChange}></MaterialInput>
+                          <MaterialInput className='mt0px' id="fld_label" value={attr.static_value} name="label" onChange={this.handleChange}></MaterialInput>
                         </div>
                         <div className="attr-type fix-value ">Value</div>
                       </div>
@@ -351,15 +351,22 @@ class DeviceForm extends Component {
       // We should update  selectedTemplates;
   }
 
+  componentDidUpdate() {
+      console.log("componentDidUpdate");
+  }
+
   save(e) {
     e.preventDefault();
 
     // First at all, checks all static values
 
     // @TODO we should show the errors
-    // if (!util.isNameValid(this.props.newAttr.name)) {
-    //   return;
-    // }
+    console.log("checks")
+    let to_be_checked = DeviceFormStore.getState().device;
+    if (!util.isNameValid(to_be_checked.label)) {
+      Materialize.toast("Missing label.", 4000);
+      return;
+    }
     // if(!util.isTypeValid(this.props.newAttr.value,this.props.newAttr.type)){
     //   return;
     // }
@@ -373,10 +380,9 @@ class DeviceForm extends Component {
       template_list.push(this.state.selectedTemplates[k].id);
     }
 
-    console.log("template_list ", template_list);
     FormActions.update({f:"templates", v:template_list});
 
-    console.log("Objeto antes de ir",JSON.parse(JSON.stringify(DeviceFormStore.getState().device)));
+    console.log("Object to go: ",JSON.parse(JSON.stringify(DeviceFormStore.getState().device)));
 
     // Now, saves the device;
     const ongoingOps = DeviceStore.getState().loading;

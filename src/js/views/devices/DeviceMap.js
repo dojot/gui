@@ -9,7 +9,6 @@ import TemplateActions from '../../actions/TemplateActions';
 import MeasureStore from '../../stores/MeasureStore';
 import MeasureActions from '../../actions/MeasureActions';
 
-import { PageHeader } from "../../containers/full/PageHeader";
 import AltContainer from 'alt-container';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Link } from 'react-router'
@@ -23,8 +22,12 @@ class PositionRenderer extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      visible: false,  // is ctxMenu visible?
+      selected_device_id : -1,
       isTerrain: true,
-      selectedPin: true
+      selectedPin: true,
+      center: (this.props.center ? this.props.center : [-21.277057924195354, -47.9590129852295]),
+      zoom: (this.props.zoom ? this.props.zoom : 13)
     }
 
     this.setTiles = this.setTiles.bind(this);
@@ -55,14 +58,15 @@ class PositionRenderer extends Component {
     }
 
     let parsedEntries = this.props.devices.reduce((result,k) => {
+      console.log("device : ", k.static_attrs[0].value, k.position);
       if(!k.hide){
         result.push({
           id: k.id,
           type: k.static_attrs[0].type,
-          pos: k.static_attrs[0].value,
+          pos: (k.position != undefined ? k.position : k.static_attrs[0].value.split(",") ),
           name: k.label,
           pin: getPin(k),
-          key: k.id
+          key: (k.unique_key ? k.unique_key : k.id)
         });
       }
       return result;
@@ -91,7 +95,7 @@ class PositionRenderer extends Component {
         {parsedEntries.map((k) => {
         return (
           <Marker
-            position={k.pos.split(",")} key={k.key} icon={k.pin}>
+            position={k.pos} key={k.key} icon={k.pin}>
             <Tooltip>
               <span>{k.id} : {k.name}</span>
             </Tooltip>

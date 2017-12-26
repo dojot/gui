@@ -1,4 +1,5 @@
 import LoginActions from '../../actions/LoginActions';
+import moment from 'moment'
 
 function FetchError(data, message) {
   this.name = "FetchError";
@@ -128,25 +129,25 @@ class Util {
 
   // to get formatted date
   timestamp_to_date(timestamp) {
-      let date = new Date(null);
-      date.setSeconds(Math.floor(timestamp));
-      return date.toLocaleString();
+      return moment(timestamp).format('MMM, D, YYYY HH:mm:ss');
   }
+
+  iso_to_date(timestamp) {
+    return moment(timestamp).format('MMM, D, YYYY HH:mm:ss');
+  }
+
 
   isNameValid(name) {
     if (name.length == 0) {
-      ErrorActions.setField('name', "You can't leave this empty");
+      // ErrorActions.setField('name', "You can't leave this empty");
       return false;
     }
 
     if (name.match(/^\w+$/) == null) {
-      ErrorActions.setField('name', "Please use only letters (a-z), numbers (0-9) and underscores (_).");
-      return false;
-    } if (this.props.attrNames.hasOwnProperty(name)) {
-      ErrorActions.setField('name', "There is already an attribute named '" + name + "'");
+      // ErrorActions.setField('name', "Please use only letters (a-z), numbers (0-9) and underscores (_).");
       return false;
     } else {
-      ErrorActions.setField('name', "");
+      // ErrorActions.setField('name', "");
       return true;
     }
   }
