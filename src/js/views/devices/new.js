@@ -505,6 +505,8 @@ class DeviceForm extends Component {
               )
             }
             </div>
+            {(this.state.selectedTemplates.length > 0) && (
+
             <div className='col s12 footer text-right'>
             {
               // <button type="button" className="waves-effect waves-dark red btn-flat">
@@ -514,7 +516,8 @@ class DeviceForm extends Component {
             }
               <a className="waves-effect waves-light btn-flat btn-ciano" onClick={this.save} tabIndex="-1">save</a>
               <Link to="/device/list" className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1">dismiss</Link>
-            </div>
+            </div>)}
+
           </div>
 
           <div className="col s6 p0">
@@ -638,8 +641,8 @@ class NewDevice extends Component {
     if (edit) {
       FormActions.fetch(edit);
     }
+    // DeviceActions.fetchStats(this.props.user.user.service);
     TemplateActions.fetchTemplates.defer();
-
   }
 
   render() {
