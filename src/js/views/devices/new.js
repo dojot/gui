@@ -334,7 +334,8 @@ class DeviceForm extends Component {
     this.state = {
       templateState: 0,
       templates: [],
-      selectedTemplates: []
+      selectedTemplates: [],
+      loaded:false,
     };
     // templateState = 0 - Removal painel
     // templateState = 1 - Addition painel
@@ -348,11 +349,24 @@ class DeviceForm extends Component {
 
   componentDidMount() {
       console.log("Edition mode: ", this.props.edition);
-      // We should update  selectedTemplates;
   }
 
   componentDidUpdate() {
-      console.log("componentDidUpdate");
+      console.log("componentDidUpdate,",DeviceStore.getState().loading);
+      // @TODO probably not the best way to do it
+      if (this.props.edition && !this.state.loaded && DeviceFormStore.getState().device.id  != "" )
+      {
+          console.log("device", this.device, DeviceFormStore.getState().device);
+          let dev = DeviceFormStore.getState().device;
+          console.log("templates", dev.templates);
+
+          // let selectedTemplates = [];
+          // for(let k in this.state.selectedTemplates){
+          //   template_list.push(this.state.selectedTemplates[k].id);
+          // }
+          // this.state.selectedTemplates
+          this.setState({selectedTemplates: dev.templates,loaded:true});
+      }
   }
 
   save(e) {
@@ -361,7 +375,6 @@ class DeviceForm extends Component {
     // First at all, checks all static values
 
     // @TODO we should show the errors
-    console.log("checks")
     let to_be_checked = DeviceFormStore.getState().device;
     if (!util.isNameValid(to_be_checked.label)) {
       Materialize.toast("Missing label.", 4000);
@@ -381,7 +394,6 @@ class DeviceForm extends Component {
     }
 
     FormActions.update({f:"templates", v:template_list});
-
     console.log("Object to go: ",JSON.parse(JSON.stringify(DeviceFormStore.getState().device)));
 
     // Now, saves the device;
@@ -681,8 +693,8 @@ class NewDevice extends Component {
           transitionEntattrTypeerTimeout={500} transitionLeaveTimeout={500} >
           <NewPageHeader title="Devices" subtitle="device manager" icon="device">
           </NewPageHeader>
-          <AltContainer stores={{devices: DeviceStore, device: DeviceFormStore, templates: TemplateStore}} >
-          <DeviceForm edition={edition} operator={ops} />
+          <AltContainer stores={{device: DeviceFormStore, templates: TemplateStore}} >
+          <DeviceForm deviceid={this.props.params.device} edition={edition} operator={ops} />
           </AltContainer>
         </ReactCSSTransitionGroup>
       </div>

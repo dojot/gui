@@ -35,7 +35,7 @@ class DeviceUserActions extends Component {
           <i className="clickable fa fa-trash"/>
         </a>
         <Link to={"/device/list"} className="waves-effect waves-light btn-flat btn-ciano" tabIndex="-1" title="Return to device list">
-          <i className="clickable fa fa-times" />
+          <i className="clickable fa fa-arrow-left" />
         </Link>
       </div>
     )
@@ -79,7 +79,7 @@ class Graph extends Component{
 
     if (values.length == 0) {
       return (
-        <div className="valign-wrapper full-height background-info">
+        <div className="valign-wrapper full-height background-info no-data-av">
           <div className="full-width center">No data available</div>
         </div>
       )
@@ -179,7 +179,7 @@ function Attr(props) {
     'integer': Graph,
     'float': Graph,
     'string': HistoryList,
-    'geo:point': Position,
+    'geo:point': HistoryList,
     'default': HistoryList
   }
 
@@ -354,7 +354,6 @@ class AttrSelector extends Component {
     if (this.props.selected.includes(this.state.new_attr)) { return; }
 
     const attrList = this.props.selected.concat([this.state.new_attr]);
-    MeasureActions.fetchMeasure.defer(this.props.deviceid,attrList,1);
     this.props.onChange(attrList);
   }
 
@@ -401,17 +400,69 @@ class AttrSelector extends Component {
   }
 }
 
+class PositionWrapper extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      wasChecked: false,
+      hasPosition: false,
+      pos: []
+    };
 
-// TODO do this properly, using props.children
-function PositionWrapper(props) {
-  const device = props.devices[props.device_id];
-  if (device && device.position) {
-    return (
-      <PositionRenderer devices={[device]} allowContextMenu={false} center={device.position}/>
-    )
+    this.hasPosition = this.hasPosition.bind(this);
   }
 
-  return null;
+  hasPosition(device)
+  {
+      if (this.state.wasChecked)
+        return;
+      let position = [];
+      let hasPosition = device.hasOwnProperty('position');
+
+      if (!hasPosition) // check in static attrs
+      {
+        for (let j in device.static_attrs) {
+          if (device.static_attrs[j].type == "geo:point"){
+            let hasPosition = true;
+            position = device.static_attrs[j].value.split(",");
+          }
+        }
+      }
+      else {
+        position = device.position;
+      }
+      this.setState({wasChecked: true, hasPosition: hasPosition, pos: position});
+  }
+
+
+  render() {
+    function NoData() {
+        return (
+          <div className="valign-wrapper full-height background-info">
+            <div className="full-width center">No position available</div>
+          </div>
+        )
+    }
+
+    console.log("PositionWrapper:", device);
+    let device = this.props.devices[this.props.device_id];
+    this.hasPosition(device);
+    if (!this.state.hasPosition)
+    {
+      return (<NoData />);
+    }
+    device.position = this.state.pos;
+
+    // let pos = this.props.value.attrValue;
+    // let parsed = pos.match(/^([+-]?\d+(\.\d+)?)\s*[,]\s*([+-]?\d+(\.\d+)?)$/)
+    // const position = [parseFloat(parsed[1]),parseFloat(parsed[3])];
+    // if (position[0] == 0 && position[1] == 0) {
+      // return (<NoData />)
+    // }
+    return (
+      <PositionRenderer devices={[device]} allowContextMenu={false} center={this.state.pos}/>
+    )
+  }
 }
 
 // TODO do this properly, using props.children
@@ -419,7 +470,8 @@ function HeaderWrapper(props) {
   const device = props.devices[props.device_id];
   let location = "";
   if (device.position !== undefined) {
-    location = "Lat: "+device.position[0].toFixed(6)+" Lng: "+device.position[1].toFixed(6);
+    // location = "Lat: "+device.position[0].toFixed(6)+" Lng: "+device.position[1].toFixed(6);
+    location = device.position;
   }
   return (
     <StatusDisplay location={location} device={device} />
@@ -433,7 +485,8 @@ class DeviceDetail extends Component {
     this.state = {
       selected_attributes: [
         "ts",
-        "device-status"
+        "temperature",
+        'sinr'
       ]
     }
 
@@ -445,6 +498,7 @@ class DeviceDetail extends Component {
   }
 
   onChange(attrs) {
+    MeasureActions.fetchMeasure.defer(this.props.deviceid,attrs,1);
     this.setState({selected_attributes: attrs});
   }
 
@@ -542,7 +596,7 @@ class ViewDevice extends Component {
     this.io.on(this.props.params.device, function(data) {
       MeasureActions.appendMeasures(data);
 
-      const fields = ['ts', 'device-status'];
+      const fields = ['ts', 'temperature', 'sinr'];
       let device_data = {device_id: data.device_id};
       device_data.position = [data.lat.value, data.lng.value]
       fields.map((field) => {
