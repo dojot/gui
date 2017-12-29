@@ -61,6 +61,7 @@ class FStore {
         templates: [],
         tags: [],
         attrs: [],
+        config: [],
         static_attrs: []
       };
     } else {
