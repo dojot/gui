@@ -9,6 +9,8 @@ import util from "../../comms/util/util";
 import {NewPageHeader} from "../../containers/full/PageHeader";
 import { hashHistory } from 'react-router';
 
+import {ConfirmModal} from "../../components/ConfirmModal";
+
 // import ReactDOM from 'react-dom';
 // import Dropzone from 'react-dropzone';
 // import {Link} from 'react-router'
@@ -529,7 +531,8 @@ class ListItem extends Component {
             template: this.props.template,
             isSuppressed: true,
             isEditable: false,
-            isConfiguration: false
+            isConfiguration: false,
+            show_modal: false
         };
 
         this.clone = JSON.parse(JSON.stringify(this.state.template));
@@ -546,6 +549,8 @@ class ListItem extends Component {
         this.handleChangeConfig = this.handleChangeConfig.bind(this);
         this.addTemplate = this.addTemplate.bind(this);
         this.discardUnsavedTemplate = this.discardUnsavedTemplate.bind(this);
+        this.handleModal = this.handleModal.bind(this);
+        this.openModal = this.openModal.bind(this);
     }
 
     componentDidMount() {
@@ -689,6 +694,14 @@ class ListItem extends Component {
         TemplateActions.fetchTemplates.defer();
     }
 
+    handleModal(){
+      this.setState({show_modal: true});
+    }
+
+    openModal(status){
+      this.setState({show_modal: status});
+    }
+
 
     render() {
         let attrs = this.state.template.data_attrs.length + this.state.template.config_attrs.length;
@@ -696,7 +709,11 @@ class ListItem extends Component {
             <div
                 className={"card-size lst-entry-wrapper z-depth-2 " + (this.state.isSuppressed ? 'suppressed' : 'fullHeight')}
                 id={this.props.id}>
-                <RemoveDialog callback={this.deleteTemplate} target="confirmDiag" />
+                {this.state.show_modal ?(
+                  <ConfirmModal openModal={this.openModal} name={"template"} remove={this.deleteTemplate} />
+                ) : (
+                  <div></div>
+                )}
                 <div className="lst-entry-title col s12">
                     <img className="title-icon" src={"images/model-icon.png"}/>
                     <div className="title-text">
@@ -739,7 +756,7 @@ class ListItem extends Component {
                             <span className="text center-text-child">edit</span>
                         </div>
                         <div className={"material-btn center-text-parent raised-btn " + (this.state.isEditable ? 'none' : '')}
-                            title="Remove template" onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}>
+                            title="Remove template" onClick={this.handleModal}>
                             <span className="text center-text-child">remove</span>
                         </div>
                         <div className={(this.state.isEditable ? (this.state.template.isNewTemplate ? 'none' : '') : 'none')}>
