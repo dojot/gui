@@ -1,0 +1,73 @@
+.modal-background{
+  display: block;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  padding:24px;
+}
+
+.confirm-modal {
+  position: fixed;
+  left: 40%;
+  top: 160px;
+  z-index: 10002 !important;
+  width: 500px;
+  height: 300px;
+  background-color: #fff;
+  box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.5);
+
+  .confirm-modal-head{
+    height: 75%;
+    padding: 50px;
+
+    i{
+      font-size: 6em;
+      color: #D23F3F;
+      padding-top: 10px;
+    }
+    .message{
+      .message-title{
+        font-size: 2em;
+        color: #4F4F4F;
+        text-transform: capitalize;
+      }
+
+      .message-subtitle{
+        font-size: 1.140em;
+        color: #828282;
+      }
+    }
+  }
+
+  .confirm-modal-footer{
+    height: 25%;
+    padding-right: 150px;
+    padding-left: 100px;
+  }
+
+  #btn-cancel{
+    width: 120px;
+    height: 35px;
+    font-weight: bold;
+    color: #4F4F4F;
+    font-size: 1.2em;
+
+    &:hover{
+      color: #000000;
+      background-color: #f2f2f2;
+    }
+  }
+
+  #btn-remove{
+    width: 120px;
+    height: 35px;
+    background-color: #D23F3F;
+    font-weight: bold;
+    font-size: 1.2em;
+    padding-left: 25px;
+  }
+}
