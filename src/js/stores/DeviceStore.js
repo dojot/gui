@@ -26,6 +26,7 @@ class DeviceStore {
 
       fetchSingle: DeviceActions.FETCH_SINGLE,
 
+      fetchDevicesByTemplate: DeviceActions.FETCH_DEVICES_BY_TEMPLATE,
     });
   }
 
@@ -118,6 +119,11 @@ class DeviceStore {
   handleFetchDeviceList() {
     this.devices = {};
     this.loading = true;
+  }
+
+  fetchDevicesByTemplate() {
+    this.devices = {};
+    this.loading = false;
   }
 
   fetchSingle(deviceid) {

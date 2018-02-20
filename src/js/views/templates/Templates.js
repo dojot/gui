@@ -876,14 +876,14 @@ class TemplateList extends Component {
 
         if (this.props.loading) {
             return (
-                <div className="row full-height relative bg-gray">
+                <div className="row full-height relative">
                     <div className="background-info valign-wrapper full-height">
                         <i className="fa fa-circle-o-notch fa-spin fa-fw horizontal-center"/>
                     </div>
                 </div>
             )
         }
-        return <div className="full-height relative bg-gray">
+        return <div className="full-height relative">
             {filteredList.length > 0 ? <div className="col s12 lst-wrapper">
                 {filteredList.map(template => (
                   <ListItem

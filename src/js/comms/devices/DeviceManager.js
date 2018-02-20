@@ -22,6 +22,9 @@ class DeviceManager {
     return util.GET(this.baseUrl + "/device/" + id);
   }
 
+  getDeviceByTemplateId(templateId) {
+    return util.GET(this.baseUrl + "/device/template/" + templateId);
+  }
 
   setDevice(detail) {
     return util.PUT(this.baseUrl + "/device/" + detail.id, detail);

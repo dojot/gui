@@ -15,14 +15,239 @@ import deviceManager from '../../comms/devices/DeviceManager';
 import util from "../../comms/util/util";
 
 import DeviceMeta from '../../stores/DeviceMeta';
-import {Loading} from "../../components/Loading";
-
+import { Loading } from "../../components/Loading";
+import { Attr } from "../../components/HistoryElements"; 
 import { Line } from 'react-chartjs-2';
 import { PositionRenderer } from './DeviceMap.js'
 import { MapWrapper } from './Devices.js'
+import { DojotBtnRedCircle } from "../../components/DojotButton";
 import MaterialSelect from "../../components/MaterialSelect";
 
 import io from 'socket.io-client';
+
+
+class DeviceHeader extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return <div className="row devicesSubHeader p0 device-details-header">
+        <div className="col s4 m4">
+          <label className="col s12 device-label"> {this.props.device.label}</label>
+          <div className="col s12 device-label-name">Name</div>
+        </div>
+        {/* <div className="col s8 m8 infos">
+          <div className="title">Created at</div>
+          <div className="value">{this.props.device.created}</div>
+        </div> */}
+      </div>;
+  }
+}
+
+
+
+class Attribute extends Component {
+  constructor(props) {
+    super(props);
+      this.state = {
+      opened: false,
+    };
+    this.toogleExpand = this.toogleExpand.bind(this);
+  }
+
+  componentDidMount(){
+     console.log("componentDidMount",this.props);
+    //  MeasureActions.fetchMeasure(this.props.device, this.props.device.id, this.props.device.templates, this.props.attr.id, 250);
+  }
+
+  toogleExpand(state) {
+    console.log("state", state);
+    this.setState({opened: state});
+  }
+
+  render() {
+    console.log("attrs", this.props.attr,this.props.expand);
+
+    return <div className={"attributeBox " + (this.state.opened ? "expanded" : "compressed")}>
+        <div className="header">
+          <label>{this.props.attr.label}</label>
+          {!this.state.opened ? <i onClick={this.toogleExpand.bind(this, true)} className="fa fa-expand" /> : <i onClick={this.toogleExpand.bind(this, false)} className="fa fa-compress" />}
+        </div>
+
+        {/* <AttributeBox attrs={this.state.selected_attributes} /> */}
+        <div className="body">
+          <AttrHistory device={this.props.device} type={this.props.attr.value_type} attr={this.props.attr.label} />
+        </div>
+      </div>;
+  }
+}
+
+
+
+class Configurations extends Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return <div>
+        <GenericList img="images/gear-dark.png" attrs={this.props.attrs} box_title="Configurations" />
+      </div>;
+  }
+}
+
+class StaticAttributes extends Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return <div>
+        <GenericList img="images/tag.png" attrs={this.props.attrs} box_title="Static Attributes" />
+      </div>;
+  }
+}
+
+class GenericList extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return <div className="row stt-attributes">
+        <div className="col s12 header">
+          <div className="icon">
+            <img src={this.props.img} />
+          </div>
+          <label>{this.props.box_title}</label>
+        </div>
+        <div className="col s12 body">
+          {this.props.attrs.map(attr => (
+            <div key={attr.label} className="line">
+              <div className="col s4">
+                <div className="name-value">{attr.label}</div>
+                <div className="value-label">Name</div>
+              </div>
+              <div className="col s8">
+                  <div className="value-value">{attr.static_value}</div>
+                  <div className="value-label">{attr.value_type}</div>
+              </div>
+                {/* <div className="col s4">
+                <div className="template-value">Template</div>
+                <div className="template-label">Template</div>
+              </div> */}
+             </div>
+          ))}
+        </div>
+      </div>;
+  }
+}
+
+
+
+class DyAttributeArea extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { selected_attributes: [], visible_attributes: {} };
+    this.toggleAttribute = this.toggleAttribute.bind(this);
+  }
+
+  toggleAttribute(attr)
+  {
+    let sa = this.state.selected_attributes;
+    let current_attrs = this.state.visible_attributes;
+    if (current_attrs[attr.id])
+    {
+      sa = sa.filter(i => {
+        return i.id != attr.id;
+      });
+      delete current_attrs[attr.id];
+    }
+    else
+    {
+       sa.push(attr);
+       current_attrs[attr.id] = true;
+    }
+
+    // iterate over attrs
+    this.setState({
+        selected_attributes: sa,
+        visible_attributes: current_attrs
+      });
+  }
+
+    // onChange(attrs) {
+  //   MeasureActions.fetchMeasure.defer(this.props.deviceid,this.props.device.templates, attrs, 1);
+  //   this.setState({ selected_attrs: attrs });
+  // }
+
+  render() {
+    let lista = this.props.attrs;
+    for (let index in lista)
+    {
+      if (this.state.visible_attributes[lista[index].id])
+        lista[index].visible = true;
+      else
+        lista[index].visible = false;
+    }
+
+     return <div className="" >
+         <div className="second-col">
+           {this.state.selected_attributes.map(at => (
+            <Attribute key={at.id} device={this.props.device} attr={at} />
+           ))}
+         </div>
+         <div className="third-col">
+           <DynamicAttributeList device={this.props.device} attrs={lista} change_attr={this.toggleAttribute} />
+         </div>
+       </div>;
+  }
+}
+
+
+class DynamicAttributeList extends Component {
+  constructor(props) {
+    super(props);
+    this.clickAttr = this.clickAttr.bind(this);
+  }
+
+  clickAttr(attr)
+  {
+      console.log("clickAttr");
+      this.props.change_attr(attr);
+  }
+
+  render() {
+    console.log("attrs -> ", this.props.attrs);
+
+    return <div className=" dy_attributes">
+        <div className="col s12 header">
+          <div className="col s2 filter-icon">
+            {/* <i className="fa fa-filter" /> */}
+          </div>
+          <label className="col s8">Dynamic Attributes</label>
+          <div className="col s2 search-icon">
+            <i className="fa fa-search" />
+          </div>
+        </div>
+        <div className="col s12 body">
+          {this.props.attrs.map(attr => (
+            <div key={attr.label} className="line">
+              <div className="col offset-s2 s8">
+                <div className="label">{attr.label}</div>
+                {/* <div className="value-label">{attr.value_type}</div> */}
+              </div>
+              <div className="col s2">
+                <div className="star" onClick={this.clickAttr.bind(this, attr)}>
+                    <i className={"fa " + (attr.visible ? "fa-star" : "fa-star-o")} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>;
+  }
+}
+
 
 
 class RemoveDialog extends Component {
@@ -74,195 +299,60 @@ class RemoveDialog extends Component {
 }
 
 class DeviceUserActions extends Component {
+  constructor(props) {
+    super(props);
+    this.removeDevice = this.removeDevice.bind(this);
+  }
+
+  removeDevice(event) {
+      event.preventDefault();
+      $("#" + this.props.confirmTarget).modal("open");
+    // };
+  }
+
+
   render() {
     return (
       <div>
-        <Link to={"/device/id/" + this.props.deviceid + "/edit"} className="waves-effect waves-light btn-flat edit-btn-flat" tabIndex="-1" title="Edit device">
-          <i className="clickable fa fa-pencil" />
-        </Link>
-        <a className="waves-effect waves-light btn-flat remove-btn-flat" tabIndex="-1" title="Remove device"
-           onClick={(e) => {e.preventDefault(); $('#' + this.props.confirmTarget).modal('open');}}>
-          <i className="clickable fa fa-trash"/>
-        </a>
-        <Link to={"/device/list"} className="waves-effect waves-light btn-flat return-btn-flat" tabIndex="-1" title="Return to device list" >
-          <i className="clickable fa fa-arrow-left" />
-        </Link>
+        <DojotBtnRedCircle
+          to={"/device/id/" + this.props.deviceid + "/edit"}
+          icon="fa fa-pencil"
+          tooltip="Edit device"
+        />
+        <DojotBtnRedCircle
+          icon=" fa fa-trash"
+          tooltip="Remove device"
+          click={this.removeDevice}
+        />
+        <DojotBtnRedCircle
+          to={"/device/list"}
+          icon="fa fa-arrow-left"
+          tooltip="Return to device list"
+        />
       </div>
-    )
-  }
-}
-
-// TODO move this to its own component
-class Graph extends Component{
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    let labels = [];
-    let values = [];
-
-    function getValue(tuple) {
-      let val_type = typeof tuple.attrValue;
-      if (val_type === "string" && tuple.attrType !== "string") {
-        if (tuple.attrValue.trim().length > 0) {
-          if (tuple.attrType.toLowerCase() === 'integer') {
-            return parseInt(tuple.attrValue);
-          } else if (tuple.attrType.toLowerCase() === 'float'){
-            return parseFloat(tuple.attrValue);
-          }
-        }
-      } else if (val_type === "number") {
-        return tuple.attrValue;
-      }
-
-      return undefined;
-    }
-
-    this.props.data.value.map((i) => {
-      labels.push(util.iso_to_date(i.ts));
-      values.push(i.trim());
-    })
-
-    if (values.length === 0) {
-      return (
-        <div className="valign-wrapper full-height background-info no-data-av">
-          <div className="full-width center">No data available</div>
-        </div>
-      )
-    }
-
-    let filteredLabels = labels.map((i,k) => {
-      if ((k === 0) || (k === values.length - 1)) {
-        return i;
-      } else {
-        return "";
-      }
-    });
-
-    const data = {
-      labels: labels,
-      xLabels: filteredLabels,
-      datasets: [
-        {
-          label: 'Device data',
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: 'rgba(75,192,192,0.4)',
-          borderColor: 'rgba(235,87,87,1)',
-          borderCapStyle: 'butt',
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: 'miter',
-          pointBorderColor: 'rgba(235,87,87,1)',
-          pointBackgroundColor: '#fff',
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: 'rgba(235,87,87,1)',
-          pointHoverBorderColor: 'rgba(220,220,220,1)',
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: values
-        }
-      ]
-    };
-
-    const options = {
-      maintainAspectRatio: false,
-      legend: { display: false },
-      scales: {
-        xAxes: [{ display: false }]
-      },
-      layout: {
-        padding: { left: 10, right: 10 }
-      }
-    };
-
-    return (
-      <Line data={data} options={options}/>
-    )
+    );
   }
 }
 
 
-// TODO move this to its own component
-function HistoryList(props) {
-  const empty = (
-    <div className="full-height background-info valign-wrapper no-data-av">
-      <div className="center full-width">No data available</div>
-    </div>
-  );
-
-  // handle values
-  let value = []
-  for(let k in props.device.value){
-     value[k] = props.device.value[k];
-  }
-
-
-  if (value){
-    let data = value;
-    let trimmedList = data.filter((i) => {
-      return i.trim().length > 0
-    })
-
-    trimmedList.reverse();
-
-    if (trimmedList.length > 0) {
-      return (
-        <div className="relative full-height" >
-          <div className="full-height full-width scrollable history-list">
-            {trimmedList.map((i,k) => {
-              return (<div className={"row " + (k % 2 ? "alt-row" : "")} key={i.ts}>
-                <div className="col s7 value">{i}</div>
-                <div className="col s5 label">{util.iso_to_date(i.ts)}</div>
-              </div>
-            )})}
-          </div>
-        </div>
-      )
-    }
-  }
-  return empty;
-}
-
-
-// TODO move this to its own component
-function Attr(props) {
-  const known = {
-    'integer': Graph,
-    'float': Graph,
-    'string': HistoryList,
-    'geo': HistoryList,
-    'default': HistoryList
-  };
-
-  const Renderer = props.type in known ? known[props.type] : known['default'];
-  return (
-    <Renderer {...props} />
-  )
-}
-
-
-class AttributeSelector extends Component {
-  render() {
-    const outerClass = this.props.active ? " active" : "";
-    return (
-      <div className={"col s12 p0 attr-line" + outerClass}>
-        <a className="waves-effect waves-light"
-           onClick={() => {this.props.onClick(this.props.label)}} >
-          <span className="attr-name">{this.props.label}</span>
-          {this.props.currentValue ? (
-            <span>Last received value: {this.props.currentValue}</span>
-          ) : (
-            <span>No data available to display</span>
-          )}
-        </a>
-      </div>
-    )
-  }
-}
+// class AttributeSelector extends Component {
+//   render() {
+//     const outerClass = this.props.active ? " active" : "";
+//     return (
+//       <div className={"col s12 p0 attr-line" + outerClass}>
+//         <a className="waves-effect waves-light"
+//            onClick={() => {this.props.onClick(this.props.label)}} >
+//           <span className="attr-name">{this.props.label}</span>
+//           {this.props.currentValue ? (
+//             <span>Last received value: {this.props.currentValue}</span>
+//           ) : (
+//             <span>No data available to display</span>
+//           )}
+//         </a>
+//       </div>
+//     )
+//   }
+// }
 
 class AttrHistory extends Component {
   constructor(props){
@@ -288,83 +378,100 @@ class AttrHistory extends Component {
   }
 }
 
-class AttributeBox extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {selected: null};
-    this.changeAttribute = this.changeAttribute.bind(this);
-  }
+// class AttrHistoryWrapper extends Component {
+//   constructor(props) {
+//     super(props);
+//   }
 
-  changeAttribute(attr_id) {
-    this.setState({selected: attr_id});
-    MeasureActions.fetchMeasure(this.props.device, this.props.device.id, this.props.device.templates, attr_id, 250);
-  }
+//   componentDidMount() {
+//     // this.setState({ selected: attr_id });
+//     MeasureActions.fetchMeasure(
+//       this.props.device,
+//       this.props.device.id,
+//       this.props.device.templates,
+//       this.props.attr.id,
+//       250
+//     );
+//   }
 
-  render() {
-    let device = this.props.device;
-    let attr = [];
+//   render() {
+//     // let device = this.props.device;
+//     // let attr = [];
 
-    if (this.state.selected !== null) {
-      attr = device.attrs[device.templates].filter((k) => {
-        return k.label.toUpperCase() == this.state.selected.toUpperCase();
-      });
-    }
+//     // if (this.state.selected !== null) {
+//     //   attr = device.attrs[device.templates].filter(k => {
+//     //     return k.label.toUpperCase() == this.state.selected.toUpperCase();
+//     //   });
+//     // }
 
-    let timeRange = undefined;
+//     // let timeRange = undefined;
 
-    /*
-    * Maybe it's better to talk about time range. Think about the best way to show this value
-    * or even if it's necessary to show this value.
-    */
-    if(attr[0]){
-      for(let k in this.props.data.attrs[device.templates]){
-        if(this.props.data.attrs[device.templates][k].label == this.state.selected){
-          if(this.props.data.value.length !== 0){
-            let length = this.props.data.value.length;
-            const from = util.iso_to_date(this.props.data.value[length - 1]['ts']);
-            timeRange = "Data from " + from;
-            //const to = util.iso_to_date(this.props.data.value['ts']);
-          }
-        }
-      }
-    }
+//     /*
+//     * Maybe it's better to talk about time range. Think about the best way to show this value
+//     * or even if it's necessary to show this value.
+//     */
+//     console.log("this.props.data.attrs", this.props.data.attrs);
+//     // if (attr[0]) {
+//     //   for (let k in this.props.data.attrs[device.templates]) {
+//     //     if (
+//     //       this.props.data.attrs[device.templates][k].label ==
+//     //       this.state.selected
+//     //     ) {
+//     //       if (this.props.data.value.length !== 0) {
+//     //         let length = this.props.data.value.length;
+//     //         const from = util.iso_to_date(
+//     //           this.props.data.value[length - 1]["ts"]
+//     //         );
+//     //         timeRange = "Data from " + from;
+//     //         //const to = util.iso_to_date(this.props.data.value['ts']);
+//     //       }
+//     //     }
+//     //   }
+//     // }
 
-
-    return (
-      <div className="col s12 p0 full-height">
-        <div className="col s5 card-box">
-          <div className="detail-box-header">Attributes</div>
-          <div className='col s12 attr-box-body'>
-          {this.props.attrs.map((attr) => {
-            let data = undefined;
-            let active = this.state.selected && (attr.toUpperCase() === this.state.selected.toUpperCase());
-            if (this.props.data && this.props.data.hasOwnProperty('value')) {
-                if (this.props.data.value.length > 0){
-                  data = this.props.data.value[this.props.data.value.length - 1];
-                }
-            }
-            return (
-              <AttributeSelector label={attr} key={attr}
-                                 currentValue={data}
-                                 active={active}
-                                 onClick={this.changeAttribute} />
-          )})}
-          </div>
-        </div>
-        <div className="col s7 graph-box">
-          {attr[0] !== undefined ? (
-            <span>
-              <div className='col s12 legend'>{timeRange}</div>
-              <AttrHistory device={device} type={attr[0].value_type} attr={attr[0].label}/>
-            </span>
-          ) : (
-            null
-          )}
-        </div>
-      </div>
-    )
-  }
-}
+//     return (
+//       <div className="col s12 p0 full-height">
+//         {/* <div className="col s5 card-box">
+//           <div className="detail-box-header">Attributes</div>
+//           <div className="col s12 attr-box-body">
+//             {this.props.attrs.map(attr => {
+//               let data = undefined;
+//               let active =
+//                 this.state.selected &&
+//                 attr.toUpperCase() === this.state.selected.toUpperCase();
+//               if (this.props.data && this.props.data.hasOwnProperty("value")) {
+//                 if (this.props.data.value.length > 0) {
+//                   data = this.props.data.value[
+//                     this.props.data.value.length - 1
+//                   ];
+//                 }
+//               }
+//               return (
+//                 <AttributeSelector
+//                   label={attr}
+//                   key={attr}
+//                   currentValue={data}
+//                   active={active}
+//                   onClick={this.changeAttribute}
+//                 />
+//               );
+//             })}
+//           </div>
+//         </div> */}
+//         {/* <div className="col s12 legend">{timeRange}</div> */}
+//         <div className="col s7 graph-box">
+//           {attr[0] !== undefined ? (
+//               <AttrHistory
+//                 device={this.props.device}
+//                 type={attr[0].value_type}
+//                 attr={attr[0].label}
+//               />
+//           ) : null}
+//         </div>
+//       </div>
+//     );
+//   }
+// }
 
 
 function getAttrsLength(attrs){
@@ -399,108 +506,142 @@ function StatusDisplay(props) {
   )
 }
 
-class AttrSelector extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {attributes: [], new_attr: ""};
-    this.handleSelectedAttribute = this.handleSelectedAttribute.bind(this);
-    this.handleAddAttribute = this.handleAddAttribute.bind(this);
-    this.handleClear = this.handleClear.bind(this);
-    this.getAttrList = this.getAttrList.bind(this);
-  }
+// class AttrSelector extends Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {attributes: [], new_attr: ""};
+//     this.handleSelectedAttribute = this.handleSelectedAttribute.bind(this);
+//     this.handleAddAttribute = this.handleAddAttribute.bind(this);
+//     this.handleClear = this.handleClear.bind(this);
+//     this.getAttrList = this.getAttrList.bind(this);
+//   }
 
-  componentWillMount(){
-    let attrs = [];
-    console.log("this.props.device", this.props.device);
-    for (let index in this.props.device.attrs) {
-      attrs = attrs.concat(this.props.device.attrs[index]);
-    }
-     this.setState({ attributes: attrs });
-    console.log("Attr list", attrs);
-  }
+//   componentWillMount(){
+//     let attrs = [];
+//     console.log("this.props.device", this.props.device);
+//     for (let index in this.props.device.attrs) {
+//       attrs = attrs.concat(this.props.device.attrs[index]);
+//     }
+//      this.setState({ attributes: attrs });
+//     console.log("Attr list", attrs);
+//   }
 
-  handleSelectedAttribute(event) {
-    event.preventDefault();
-    this.setState({new_attr: event.target.value});
-  }
+//   handleSelectedAttribute(event) {
+//     event.preventDefault();
+//     this.setState({new_attr: event.target.value});
+//   }
 
-  handleAddAttribute(event) {
-    event.preventDefault();
-    this.setState({new_attr: ""});
-    if (this.state.new_attr === ""){ return; }
-    if (this.props.selected.includes(this.state.new_attr)) { return; }
+//   handleAddAttribute(event) {
+//     event.preventDefault();
+//     this.setState({new_attr: ""});
+//     if (this.state.new_attr === ""){ return; }
+//     if (this.props.selected.includes(this.state.new_attr)) { return; }
 
-    const attrList = this.props.selected.concat([this.state.new_attr]);
-    this.props.onChange(attrList);
-  }
+//     const attrList = this.props.selected.concat([this.state.new_attr]);
+//     this.props.onChange(attrList);
+//   }
 
-  handleClear(event) {
-    event.preventDefault();
-    this.props.onChange([]);
-  }
+//   handleClear(event) {
+//     event.preventDefault();
+//     this.props.onChange([]);
+//   }
 
-  getAttrList(attributes) {
-    let attrList = [];
-    for (let templateID in attributes) {
-      for (let attributeID in attributes[templateID]) {
-        attrList.push(attributes[templateID][attributeID]);
-      }
-    }
-    return attrList;
-  }
+//   getAttrList(attributes) {
+//     let attrList = [];
+//     for (let templateID in attributes) {
+//       for (let attributeID in attributes[templateID]) {
+//         attrList.push(attributes[templateID][attributeID]);
+//       }
+//     }
+//     return attrList;
+//   }
 
-  render() {
+//   render() {
 
-    console.log("Checking props ",this.props);
-    return (
-      <div className="col 12 attribute-box">
-        <div className="col 12 attribute-header">All Attributes</div>
-        <span className="highlight">
-          Showing <b> {this.props.selected.length} </b>
-          of <b> {this.state.attributes.length} </b> attributes
-        </span>
-        <div className="col s12 p16">
-          <div className="input-field col s12">
-            <MaterialSelect id="attributes-select" style="color: #D23F3F;" name="attribute"
-                            value={this.state.new_attr}
-                            onChange={this.handleSelectedAttribute}>
-              <option value="">Select attribute to display</option>
-                {this.getAttrList(this.props.attrs).map((attr) => (
-                    <option value={attr.label} key={attr.id}>{attr.label}</option>
-                ))}
+//     console.log("Checking props ",this.props);
+//     return (
+//       <div className="col 12 attribute-box">
+//         <div className="col 12 attribute-header">All Attributes</div>
+//         <span className="highlight">
+//           Showing <b> {this.props.selected.length} </b>
+//           of <b> {this.state.attributes.length} </b> attributes
+//         </span>
+//         <div className="col s12 p16">
+//           <div className="input-field col s12">
+//             <MaterialSelect id="attributes-select" style="color: #D23F3F;" name="attribute"
+//                             value={this.state.new_attr}
+//                             onChange={this.handleSelectedAttribute}>
+//               <option value="">Select attribute to display</option>
+//                 {this.getAttrList(this.props.attrs).map((attr) => (
+//                     <option value={attr.label} key={attr.id}>{attr.label}</option>
+//                 ))}
 
-            </MaterialSelect>
-          </div>
-          <div className="col s12 actions-buttons">
-            <div className="col s6 button ta-center">
-              <a className="waves-effect waves-light btn btn-light" id="btn-clear" tabIndex="-1"
-                 title="Clear" onClick={this.handleClear}>
-                Clear
-              </a>
-            </div>
-            <div className="col s6 button ta-center" type="submit" onClick={this.handleAddAttribute}>
-              <a className="waves-effect waves-light btn red lighten-1" id="btn-add" tabIndex="-1" title="Add">
-                <i className="clickable fa fa-plus"/>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-}
+//             </MaterialSelect>
+//           </div>
+//           <div className="col s12 actions-buttons">
+//             <div className="col s6 button ta-center">
+//               <a className="waves-effect waves-light btn btn-light" id="btn-clear" tabIndex="-1"
+//                  title="Clear" onClick={this.handleClear}>
+//                 Clear
+//               </a>
+//             </div>
+//             <div className="col s6 button ta-center" type="submit" onClick={this.handleAddAttribute}>
+//               <a className="waves-effect waves-light btn red lighten-1" id="btn-add" tabIndex="-1" title="Add">
+//                 <i className="clickable fa fa-plus"/>
+//               </a>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     )
+//   }
+// }
 
 
 class PositionWrapper extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      opened: false, 
       hasPosition: false,
       pos: []
     };
+    this.getDevicesWithPosition = this.getDevicesWithPosition.bind(this);
+    this.toogleExpand = this.toogleExpand.bind(this);
+  }
+
+  toogleExpand(state) {
+    console.log("state", state);
+    this.setState({opened: state});
+  }
+
+
+  getDevicesWithPosition(device){
+    function parserPosition(position){
+      let parsedPosition = position.split(", ");
+      return [parseFloat(parsedPosition[0]), parseFloat(parsedPosition[1])];
+    }
+
+    let validDevices = [];
+      for(let j in device.attrs){
+        for(let i in device.attrs[j]){
+          if(device.attrs[j][i].type == "static"){
+            if(device.attrs[j][i].value_type == "geo:point"){
+              device.position = parserPosition(device.attrs[j][i].static_value);
+            }
+          }
+        }
+      }
+
+      device.select = true;
+      if(device.position !== null && device.position !== undefined){
+        validDevices.push(device);
+      }
+    return validDevices;
   }
 
   render() {
+
     function NoData() {
         return (
           <div className="valign-wrapper full-height background-info">
@@ -508,127 +649,119 @@ class PositionWrapper extends Component {
           </div>
         )
     }
-
-    let device = this.props.device;
-
-    for (let k in device.attrs){
-      if(device.attrs[k][0].type == 'static'){
-        device.position = device.attrs[k][0].static_value.split(", ");
-      }
-    }
-
-    if (!device.hasOwnProperty('position') || device.position == null)
+ 
+    console.log("Position Renderer ", this.props.device);
+    if (this.props.device === undefined)
     {
       return (<NoData />);
+    }
+
+    let validDevices = this.getDevicesWithPosition(this.props.device);
+    console.log("validDevices", validDevices);
+    if (validDevices[0].position == null) {
+      return <NoData />;
     } else {
-      return (<PositionRenderer devices={[device]} allowContextMenu={false} center={device.position} />)
+      return <div className={"PositionRendererDiv " + (this.state.opened ? "expanded" : "compressed")}> 
+          <div className="floating-icon">
+            {!this.state.opened ? <i onClick={this.toogleExpand.bind(this, true)} className="fa fa-expand" /> : <i onClick={this.toogleExpand.bind(this, false)} className="fa fa-compress" />}
+          </div>
+          <PositionRenderer devices={validDevices} allowContextMenu={false} center={validDevices[0].position} />
+        </div>
     }
   }
 }
 
+// // TODO do this properly, using props.children
+// function HeaderWrapper(props) {
+//   const device = props.device;
 
-class HeaderWrapper extends Component {
-  constructor(props){
-    super(props);
+//   let location = "";
+//   if (device.position !== undefined && device.position !== null) {
+//      location = "Lat: "+device.position[0].toFixed(4)+", Lng: "+device.position[1].toFixed(4);
+//   }
 
-    this.state = {
-      device: [],
-    };
-  }
-
-  componentWillMount(){
-    this.setState({device: this.props.device});
-  }
-
-  componentWillUnmount(){
-    delete this.state.device;
-  }
-
-  render(){
-    const device = this.state.device;
-    let location = "";
-
-    if (this.state,device.position !== undefined && this.state.device.position !== null) {
-          location = "Lat: "+this.state.device.position[0]+", Lng: "+this.state.device.position[1];
-      }
-
-    return (
-      <StatusDisplay location={location} device={device} />
-    )
-  }
-}
+//   return (
+//     <StatusDisplay location={location} device={device} />
+//   )
+// }
 
 class DeviceDetail extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      device: [0],
-      selected_attributes: [
-        //"ts",
-        //"temperature",
-        //'sinr'
-      ]
-    };
-
-    this.onChange = this.onChange.bind(this);
-  }
-
-  onChange(attrs) {
-    MeasureActions.fetchMeasure.defer(this.props.deviceid,this.props.devices[this.props.deviceid].templates, attrs, 1);
-    this.setState({selected_attributes: attrs});
-  }
-
-  componentWillMount(){
-    this.setState({device: this.props.devices[this.props.deviceid]});
-  }
-
-  componentWillUnmount(){
-    delete this.state.device;
   }
 
   render() {
-    const device = this.state.device;
+     console.log("device : ",this.props.device);
+     let attr_list = [];
+     let dal = [];
+     let config_list = [];
+     for (let index in this.props.device.attrs)
+     {
+       let tmp = this.props.device.attrs[index];
+       attr_list = attr_list.concat(tmp.filter(i => {
+         return String(i.type) == "static";
+       }));
+       dal = dal.concat(tmp.filter(i => {
+           i.visible = false;
+           return String(i.type) == "dynamic";
+         }));
+      config_list = config_list.concat(tmp.filter(i => {
+           return String(i.type) == "meta";
+         }));     
+     };
+     return <div className="row detail-body">
+         <div className="first-col full-height">
+           <div className="col s12 device-map-box">
+             <AltContainer store={DeviceStore}>
+               <PositionWrapper device={this.props.device} />
+             </AltContainer>
+           </div>
+           <Configurations device={this.props.device} attrs={config_list} />
+           <StaticAttributes device={this.props.device} attrs={attr_list} />
+         </div>
+        <DyAttributeArea device={this.props.device} attrs={dal}/>
+       </div>;
 
-     return (
-      <div className="row detail-body">
-        <div className="col s3 detail-box full-height">
-          <div className="detail-box-header">General</div>
-            <HeaderWrapper device={device} />
-          <AttrSelector device = {device}
-                        attrs={device.attrs}
-                        selected={this.state.selected_attributes}
-                        onChange={this.onChange} />
-        </div>
-        <div className="col s9 device-map full-height">
-          <div className="col s12 device-map-box">
-            <AltContainer store={MeasureStore} >
-              <PositionWrapper device={device}/>
-            </AltContainer>
-          </div>
-          <div className="col s12 p0 data-box full-height">
-            <AltContainer store={MeasureStore} inject={{device: device}}>
-              <AttributeBox attrs={this.state.selected_attributes}/>
-            </AltContainer>
-          </div>
-        </div>
-      </div>
-    )
+       // <div className="row detail-body">
+       //   <div className="col s3 detail-box full-height">
+       //     <div className="detail-box-header">General</div>
+       //       <HeaderWrapper device={device} />
+       //     <AttrSelector device = {device}
+       //                   attrs={device.attrs}
+       //                   selected={this.state.selected_attributes}
+       //                   onChange={this.onChange} />
+       //   </div>
+       //   <div className="col s9 device-map full-height">
+       //     <div className="col s12 device-map-box">
+       //       <AltContainer store={DeviceStore} >
+       //         <PositionWrapper device={device}/>
+       //       </AltContainer>
+       //     </div>
+       //     <div className="col s12 p0 data-box full-height">
+       //       <AltContainer store={MeasureStore} inject={{device: device}}>
+       //         <AttributeBox attrs={this.state.selected_attributes}/>
+       //       </AltContainer>
+       //     </div>
+       //   </div>
+       //  </div> */}
   }
 }
 
-function ConnectivityStatus(props) {
-  const status = props.devices[props.device_id]['_status'];
-  if (status === "online") {
-    return (
-      <span className='status-on-off clr-green'><i className="fa fa-info-circle" />Online</span>
-    )
-  }
+// function ConnectivityStatus(props) {
+//   const status = props.devices[props.device_id]['_status'];
+//   if (status === "online") {
+//     return (
+//       <span className='status-on-off clr-green'><i className="fa fa-info-circle" />Online</span>
+//     )
+//   }
 
-  return (
-    <span className='status-on-off clr-red'><i className="fa fa-info-circle" />Offline</span>
-  )
-}
+//   return (
+//     <span className='status-on-off clr-red'><i className="fa fa-info-circle" />Offline</span>
+//   )
+// }
+
+
+
 
 class ViewDeviceImpl extends Component {
   constructor(props) {
@@ -644,7 +777,7 @@ class ViewDeviceImpl extends Component {
 
     for (let i in device.attrs) {
       for (let j in device.attrs[i]) {
-        if (device.attrs[i][j].value_type == "geo:point") {
+        if (device.attrs[i][j].value_type == "geo") {
           MeasureActions.fetchPosition.defer(device, device.id, device.templates, device.attrs[i][j].label);
         }
       }
@@ -687,23 +820,17 @@ class ViewDeviceImpl extends Component {
       return (<Loading />);
     }
 
-    return (
+     return (
       <div className="full-height bg-light-gray">
       <NewPageHeader title="Devices" subtitle="device manager" icon="device">
-          <div className="box-sh box-sh-2">
-            <label> Viewing Device </label> <div className="device_name">{device.label}</div>
-          </div>
           <div className="box-sh">
             <DeviceUserActions devices={this.props.devices} deviceid={device.id} confirmTarget="confirmDiag"/>
           </div>
-          <div className="box-sh">
-            <AltContainer store={DeviceStore}>
-              <ConnectivityStatus device_id={device.id} />
-            </AltContainer>
-          </div>
           <RemoveDialog callback={this.remove} target="confirmDiag" />
         </NewPageHeader>
-        <DeviceDetail deviceid={device.id} devices={this.props.devices}/>
+        <DeviceHeader device={device}>
+        </DeviceHeader> 
+        <DeviceDetail deviceid={device.id} device={device}/>
       </div>
     )
   }

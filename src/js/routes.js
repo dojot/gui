@@ -14,6 +14,8 @@ import { Flows, EditFlow } from './views/flows';
 
 import Todo from './views/utils/todo';
 
+import PasswordRecovery from './containers/login/PasswordRecovery';
+
 export default (
   <Router history={hashHistory}>
     <Route path="/" component={Full}>
@@ -57,6 +59,9 @@ export default (
       </Route>
 
       <Route path="todo" name="To be implemented" component={Todo} />
+    </Route>
+    <Route path="/passwordrecovery">
+      <IndexRoute component={PasswordRecovery} />
     </Route>
   </Router>
 );

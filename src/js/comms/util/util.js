@@ -230,7 +230,6 @@ class Util {
     //   if (result) { ErrorActions.setField('value', ''); }
     //   return result;
     // }
-
     return ret;
   }
 

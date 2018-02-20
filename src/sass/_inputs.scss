@@ -1,3 +1,10 @@
+.btn-red
+{
+  &:hover{
+    background-color: #eb5757;
+  }
+}
+
 .new-btn-circle
 {
       position: relative;
@@ -41,7 +48,7 @@
     // background: linear-gradient(269.31deg, #F2994A 9.21%, #FF7800 84.23%);
     background: $white !important;
     color: $almost-black;
-    border: 1px solid yellow;
+    border: 1px solid $gray;
   }
 
   i {
