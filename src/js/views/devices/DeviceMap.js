@@ -21,6 +21,7 @@ import Script from 'react-load-script';
 import ReactResizeDetector from 'react-resize-detector';
 import Sidebar from '../../components/DeviceRightSidebar';
 import { DojotBtnLink } from "../../components/DojotButton";
+import { Loading } from "../../components/Loading";
 
 import io from 'socket.io-client';
 
@@ -232,24 +233,8 @@ class DeviceMap extends Component {
   //}
 
   componentDidMount() {
-    const options = {
-      transports: ['websocket']
-    }
-    this.io = io(window.location.host, options);
-    this.io.on('gps', function(data) {
-      data.position = [data.lat, data.lng]
-      delete data.lat;
-      delete data.lng;
-      MeasureActions.updatePosition(data);
-    });
-
-    // initially, shows all devices;
     this.showAll();
    }
-
-  componentWillUnmount() {
-    this.io.close();
-  }
 
   mqLoaded(){
     this.setState({mapquest: true});
@@ -414,7 +399,7 @@ class DeviceMap extends Component {
           {this.state.mapquest ? (
             <PositionRenderer devices={pointList} toggleTracking={this.toggleTracking} allowContextMenu={true}/>
           ) : (
-            <div>loading</div>
+            <div><Loading /></div>
           )}
           <Sidebar devices={validDevices} hideAll={this.hideAll} showAll={this.showAll} selectedDevice={this.selectedDevice} toggleDisplay={this.toggleDisplay} />
         </div>

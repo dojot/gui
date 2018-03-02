@@ -50,6 +50,7 @@
     "ace-builds": "^1.2.6",
     "alt": "^0.18.6",
     "alt-container": "^1.0.2",
+    "axios": "^0.18.0",
     "babel-core": "^5.3.3",
     "babel-loader": "^5.0.0",
     "chart.js": "^2.6.0",

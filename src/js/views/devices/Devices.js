@@ -16,6 +16,10 @@ import { DojotBtnLink } from "../../components/DojotButton";
 import {DeviceMap, PositionRenderer} from './DeviceMap';
 import {DeviceCard} from './DeviceCard';
 
+import util from '../../comms/util';
+
+import LoginStore from '../../stores/LoginStore';
+
 // UI elements
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Toggle from 'material-ui/Toggle';
@@ -55,8 +59,8 @@ class MapWrapper extends Component {
         }
       }
     }
-
   }
+
   render(){
     return(
       <AltContainer store={MeasureStore}>
@@ -79,6 +83,33 @@ class Devices extends Component {
 
   componentDidMount() {
     DeviceActions.fetchDevices.defer();
+
+    // Realtime
+    var socketio = require('socket.io-client');
+
+    const target = 'http://' + window.location.host;
+    const token_url = target + "/stream/socketio";
+
+    const url = token_url;
+    const config = {}
+
+    util._runFetch(url, config)
+      .then((reply) => {
+        init(reply.token);
+      })
+      .catch((error) => {console.log("Failed!", error);
+    });
+
+
+    function init(token){
+      var socket = socketio(target, {query: "token=" + token, transports: ['websocket']});
+
+      socket.on('all', function(data){
+        let label = Object.keys(data.attrs);
+        MeasureActions.updatePosition.defer(data.attrs[label[0]]);
+      });
+    }
+
   }
 
   filterChange(newFilter) {}
@@ -116,7 +147,7 @@ class Devices extends Component {
           {/*<Link to="/device/new" title="Create a new device" className="btn-item btn-floating waves-effect waves-light cyan darken-2">
             <i className="fa fa-plus"/>
           </Link> */}
-          
+
           <div className="pt10">
             <div className="searchBtn" title="Show search bar" onClick={this.toggleSearchBar.bind(this)}>
               <i className="fa fa-search" />

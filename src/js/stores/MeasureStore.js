@@ -14,6 +14,7 @@ class MeasureStore {
       handleAppendMeasures: MeasureActions.APPEND_MEASURES,
       handleUpdateMeasures: MeasureActions.UPDATE_MEASURES,
       handleFailure: MeasureActions.MEASURES_FAILED,
+      handleUpdatePosition: MeasureActions.UPDATE_POSITION,
 
       handleTrackingFetch: TrackingActions.FETCH,
       handleTrackingSet: TrackingActions.SET,
@@ -32,6 +33,19 @@ class MeasureStore {
     if (this.tracking.hasOwnProperty(device_id)){
       delete this.tracking[device_id];
     }
+  }
+
+  handleUpdatePosition(data){
+    function parserPosition(position){
+      let parsedPosition = position.split(", ");
+      if(parsedPosition.length > 1){
+        return [parseFloat(parsedPosition[0]), parseFloat(parsedPosition[1])];
+      }
+    }
+    if(data !== undefined){
+      this.data.position = parserPosition(data);
+    }
+
   }
 
   handleUpdateMeasures(measureData) {
