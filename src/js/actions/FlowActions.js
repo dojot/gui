@@ -7,7 +7,7 @@ class FlowActions {
   fetch() {
     return (dispatch) => {
       util.GET('flows/v1/flow')
-        .then((data) => { this.set(data); })
+        .then((data) => { this.set(data.flows); })
         .catch((error) => { this.fail(error); })
     }
   }
@@ -56,18 +56,12 @@ class FlowActions {
   triggerUpdate(id, flow, cb) {
     return (dispatch) => {
       dispatch();
-      // TODO replace this with proper usage of PUT/PATCH
-      util.DELETE('flows/v1/flow/' + id)
-        .then((response) => {
-          util.POST('flows/v1/flow', flow)
-            .then((response) => {
-              this.update(response.flow);
-              if (cb) {
-                cb(response.flow);
-              }
-            })
-        })
-        .catch((error) => { this.fail(error); })
+      util.PUT('flows/v1/flow/' + id, flow)
+          .then((response) => {
+            this.update(response.flow);
+            if (cb) { cb(response.flow); }
+          })
+          .catch((error) => { this.fail(error); })
     }
   }
 

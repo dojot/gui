@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import util from "../comms/util/util";
+import { Line } from 'react-chartjs-2';
+
 
 class Graph extends Component{
   constructor(props) {
@@ -28,7 +31,7 @@ class Graph extends Component{
       return undefined;
     }
 
-    this.props.data.value.map((i) => {
+    this.props.data[this.props.attr].map((i) => {
       labels.push(util.iso_to_date(i.ts));
       values.push(i.trim());
     })
@@ -104,10 +107,9 @@ function HistoryList(props) {
 
   // handle values
   let value = []
-  for(let k in props.device.value){
-     value[k] = props.device.value[k];
+  for(let k in props.data[props.attr]){
+     value[k] = props.data[props.attr][k];
   }
-
 
   if (value){
     let data = value;
@@ -146,7 +148,6 @@ function Attr(props) {
   };
 
   const Renderer = props.type in known ? known[props.type] : known['default'];
-  console.log("Attr!!! ",props);
   function NoData() {
       return (
         <div className="mt60px full-height background-info">
@@ -166,17 +167,17 @@ function Attr(props) {
   if (props.data === undefined) {
     return <NoData />;
   }
-  
-    if (props.data.value.length == 0) {
+
+  let label = props.attr;
+  if (props.data[props.attr].length == 0) {
       return <NoDataAv />;
-    }
-  
+  }
+
 
   return (
     <Renderer {...props} />
   )
-  
+
 }
 
 export { Attr };
-

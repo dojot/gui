@@ -12,8 +12,6 @@ import util from '../../comms/util/util';
 
 import MaterialInput from "../../components/MaterialInput";
 
-// require('./vendor.js')
-
 class FlowCanvas extends Component {
   constructor(props) {
     super(props);
@@ -26,7 +24,6 @@ class FlowCanvas extends Component {
     FlowActions.load.defer();
     let dynRED = require('./red.js');
     var RED = dynRED.RED;
-    let dynMain = require('./main.js');
 
     // This is required since the nodes' code are run outside of react's scope
     // Since node-red compatibility is an interesting plus, this workaround is needed
@@ -35,7 +32,12 @@ class FlowCanvas extends Component {
     window.util = util;
 
     function initNodes() {
-      const config = { headers: {'accept': 'application/json'}}
+      const config = {
+        headers: {
+          'accept': 'application/json',
+          'authorization': 'Bearer: ' + util.getToken()
+        }
+      }
       fetch('mashup/nodes', config)
         .then((response) => { return response.json(); })
         .then((nodes) => {
@@ -67,7 +69,12 @@ class FlowCanvas extends Component {
 
     const domEntryPoint = this.scriptHolder;
     function initDOM(dom) {
-      const config = { headers: {'accept': 'text/html'}}
+      const config = {
+        headers: {
+          'accept': 'text/html',
+          'authorization': 'Bearer: ' + util.getToken()
+        }
+      }
       fetch('mashup/nodes', config)
         .then((response) => { return response.text(); })
         .then((dom) => {
@@ -81,7 +88,7 @@ class FlowCanvas extends Component {
         .catch((error) => { console.error('failed to fetch nodes dom', error); });
     }
 
-    RED.i18n.init(() => {
+    RED.i18n.init('Bearer: ' + util.getToken(), () => {
       RED.palette.init();
       RED.workspaces.init();
       RED.view.init();

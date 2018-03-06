@@ -1,7 +1,7 @@
 .flows-wrapper {
   position: relative;
   width: 100%;
-  height: calc(100% - #{$page-header-size});
+  height: 100%;
 
   @import 'red/style';
 
@@ -44,5 +44,9 @@
     cursor: move;
     cursor: -webkit-grabbing;
     cursor:  -moz-grabbing;
+  }
+
+  .expanded {
+    width: auto;
   }
 }

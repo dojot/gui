@@ -16,7 +16,7 @@ import util from "../../comms/util/util";
 
 import DeviceMeta from '../../stores/DeviceMeta';
 import { Loading } from "../../components/Loading";
-import { Attr } from "../../components/HistoryElements"; 
+import { Attr } from "../../components/HistoryElements";
 import { Line } from 'react-chartjs-2';
 import { PositionRenderer } from './DeviceMap.js'
 import { MapWrapper } from './Devices.js'
@@ -602,7 +602,7 @@ class PositionWrapper extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      opened: false, 
+      opened: false,
       hasPosition: false,
       pos: []
     };
@@ -623,15 +623,15 @@ class PositionWrapper extends Component {
     }
 
     let validDevices = [];
-      for(let j in device.attrs){
-        for(let i in device.attrs[j]){
-          if(device.attrs[j][i].type == "static"){
-            if(device.attrs[j][i].value_type == "geo:point"){
-              device.position = parserPosition(device.attrs[j][i].static_value);
-            }
-          }
-        }
-      }
+       for(let j in device.attrs){
+         for(let i in device.attrs[j]){
+           if(device.attrs[j][i].type == "static"){
+             if(device.attrs[j][i].value_type == "geo:point"){
+               device.position = parserPosition(device.attrs[j][i].static_value);
+             }
+           }
+         }
+       }
 
       device.select = true;
       if(device.position !== null && device.position !== undefined){
@@ -641,7 +641,6 @@ class PositionWrapper extends Component {
   }
 
   render() {
-
     function NoData() {
         return (
           <div className="valign-wrapper full-height background-info">
@@ -649,7 +648,7 @@ class PositionWrapper extends Component {
           </div>
         )
     }
- 
+
     console.log("Position Renderer ", this.props.device);
     if (this.props.device === undefined)
     {
@@ -661,7 +660,7 @@ class PositionWrapper extends Component {
     if (validDevices.length == 0) {
       return <NoData />;
     } else {
-      return <div className={"PositionRendererDiv " + (this.state.opened ? "expanded" : "compressed")}> 
+      return <div className={"PositionRendererDiv " + (this.state.opened ? "expanded" : "compressed")}>
           <div className="floating-icon">
             {!this.state.opened ? <i onClick={this.toogleExpand.bind(this, true)} className="fa fa-expand" /> : <i onClick={this.toogleExpand.bind(this, false)} className="fa fa-compress" />}
           </div>
@@ -690,6 +689,20 @@ class DeviceDetail extends Component {
     super(props);
   }
 
+  //  componentWillMount(){
+  //    const device = this.props.device;
+  //    if (device == undefined)
+  //      return; //not ready
+   //
+  //    for (let i in device.attrs) {
+  //      for (let j in device.attrs[i]) {
+  //        if(device.attrs[i][j].value_type == "geo:point"){
+  //          MeasureActions.fetchPosition.defer(device, device.id, device.attrs[i][j].label);
+  //        }
+  //      }
+  //    }
+  //  }
+
   render() {
      console.log("device : ",this.props.device);
      let attr_list = [];
@@ -707,12 +720,13 @@ class DeviceDetail extends Component {
          }));
       config_list = config_list.concat(tmp.filter(i => {
            return String(i.type) == "meta";
-         }));     
+         }));
      };
+
      return <div className="row detail-body">
          <div className="first-col full-height">
            <div className="col s12 device-map-box">
-             <AltContainer store={DeviceStore}>
+             <AltContainer store={MeasureStore}>
                <PositionWrapper device={this.props.device} />
              </AltContainer>
            </div>
@@ -770,27 +784,45 @@ class ViewDeviceImpl extends Component {
     this.remove = this.remove.bind(this);
   }
 
-  componentDidMount(){
+  componentWillMount(){
     const device = this.props.devices[this.props.device_id];
     if (device == undefined)
       return; //not ready
 
     for (let i in device.attrs) {
       for (let j in device.attrs[i]) {
-        if (device.attrs[i][j].value_type == "geo") {
-          MeasureActions.fetchPosition.defer(device, device.id, device.templates, device.attrs[i][j].label);
-        }
+          MeasureActions.fetchMeasure.defer(device, device.id, device.attrs[i][j].label, 10);
       }
     }
+  }
 
-    let devices = this.props.devices;
-    for(let k in devices){
-      for(let j in devices[k].attrs){
-        for(let i in devices[k].attrs[j]){
-          MeasureActions.fetchMeasure.defer(devices[k], devices[k].id, devices[k].templates, devices[k].attrs[j][i].label, 10);
-        }
-      }
+  componentDidMount(){
+    // Realtime
+    var socketio = require('socket.io-client');
+
+    const target = 'http://' + window.location.host;
+    const token_url = target + "/stream/socketio";
+
+    const url = token_url;
+    const config = {}
+
+    util._runFetch(url, config)
+      .then((reply) => {
+        init(reply.token);
+      })
+      .catch((error) => {console.log("Failed!", error);
+    });
+
+    function init(token){
+      var socket = socketio(target, {query: "token=" + token, transports: ['websocket']});
+
+      socket.on('all', function(data){
+        let device_data = {device_id: data.metadata.deviceid}
+        let label = Object.keys(data.attrs);
+        MeasureActions.appendMeasures(data)
+      });
     }
+    //------------------------------------------------------------------------
   }
 
   remove(e) {
@@ -829,7 +861,7 @@ class ViewDeviceImpl extends Component {
           <RemoveDialog callback={this.remove} target="confirmDiag" />
         </NewPageHeader>
         <DeviceHeader device={device}>
-        </DeviceHeader> 
+        </DeviceHeader>
         <DeviceDetail deviceid={device.id} device={device}/>
       </div>
     )
@@ -846,31 +878,31 @@ class ViewDevice extends Component {
       DeviceActions.fetchSingle.defer(this.props.params.device);
   }
 
-  componentDidMount() {
-    const options = { transports: ["websocket"] };
-    this.io = io(window.location.host, options);
-    this.io.on(this.props.params.device, function(data) {
-      MeasureActions.appendMeasures(data);
-
-      const fields = ["ts", "temperature", "sinr"];
-      let device_data = { device_id: data.device_id };
-      device_data.position = [data.lat.value, data.lng.value];
-      fields.map(field => {
-        if (data.hasOwnProperty(field)) {
-          if (field === "ts") {
-            device_data[field] = util.timestamp_to_date(Date.now());
-          } else {
-            device_data[field] = data[field].value;
-          }
-        }
-      });
-      MeasureActions.updatePosition(device_data);
-    });
+  componentDidUpdate() {
+    // const options = { transports: ["websocket"] };
+    // this.io = io(window.location.host, options);
+    // this.io.on(this.props.params.device, function(data) {
+    //   MeasureActions.appendMeasures(data);
+    //
+    //   const fields = ["ts", "temperature", "sinr"];
+    //   let device_data = { device_id: data.device_id };
+    //   device_data.position = [data.lat.value, data.lng.value];
+    //   fields.map(field => {
+    //     if (data.hasOwnProperty(field)) {
+    //       if (field === "ts") {
+    //         device_data[field] = util.timestamp_to_date(Date.now());
+    //       } else {
+    //         device_data[field] = data[field].value;
+    //       }
+    //     }
+    //   });
+    //   MeasureActions.updatePosition(device_data);
+    // });
   }
 
-  componentWillUnmount() {
-    this.io.close();
-  }
+  // componentWillUnmount() {
+  //   this.io.close();
+  // }
 
   render() {
     return (

@@ -54,31 +54,48 @@ RED.events = (function() {
  })();
 
 RED.i18n = (function() {
-     return {
-         init: function(done) {
-             i18n.init({
-                // TODO how to recriate/emulate this?
-                //  resGetPath: 'http://localhost:1880/locales/__ns__',
-                 resGetPath: 'mashup/locales/__ns__',
-                 dynamicLoad: false,
-                 load:'current',
-                 ns: {
-                     namespaces: ["editor","node-red","jsonata","infotips"],
-                     defaultNs: "editor"
-                 },
-                 fallbackLng: ['en-US'],
-                 useCookie: false
-             },function() {
-                 done();
-             });
-             RED["_"] = function() {
-                 return i18n.t.apply(null,arguments);
-             }
+    return {
+        init: function(accessToken, done) {
+            i18next
+              .use(i18nextXHRBackend)
+              .init({
+                fallbackLng: 'en',
+                ns: ["editor","node-red","jsonata","infotips"],
+                defaultNS: 'editor',
+                backend: {
+                  loadPath: 'mashup/locales/__ns__',
+                  withCredentials: true,
+                  customHeaders: {'Authorization': accessToken},
+                },
+                interpolation: {
+                  prefix: "__",
+                  suffix: "__",
+                }
+              }, function(t) {
+                jqueryI18next.init(i18next, $, {
+                  tName: 't', // --> appends $.t = i18next.t
+                  i18nName: 'i18n', // --> appends $.i18n = i18next
+                  handleName: 'i18n', // --> appends $(selector).localize(opts);
+                  selectorAttr: 'data-i18n', // selector for translating elements
+                  targetAttr: 'i18n-target', // data-() attribute to grab target element to translate (if diffrent then itself)
+                  optionsAttr: 'i18n-options', // data-() attribute that contains options, will load/set if useOptionsAttr = true
+                  useOptionsAttr: false, // see optionsAttr
+                  parseDefaultValueFromContent: true // parses default values from content ele.val or ele.text
+                });
+                RED["_"] = function() {
+                  for (let k in arguments) {
+                    if (typeof arguments[k] == 'string') {
+                      return i18next.t(arguments[k]);
+                    }
+                  }
+                }
 
-         },
-         loadCatalog: function(namespace,done) {
-             i18n.loadNamespace(namespace,done);
-         }
+                done();
+              });
+        },
+        loadCatalog: function(namespace,done) {
+            i18next.loadNamespaces(namespace.replace('/', '.'),done);
+        }
      }
  })();
 

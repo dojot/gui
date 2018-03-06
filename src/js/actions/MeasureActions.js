@@ -39,7 +39,7 @@ class MeasureActions {
             }
           }
 
-          device.value = values;
+          device[attrs] = values;
           this.updateMeasures(device);
         })
         .catch((error) => {console.error("failed to fetch data", error);});
