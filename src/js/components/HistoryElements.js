@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import util from "../comms/util/util";
 import { Line } from 'react-chartjs-2';
+import { PositionRenderer } from '../views/devices/DeviceMap';
 
 
 class Graph extends Component{
@@ -31,9 +32,9 @@ class Graph extends Component{
       return undefined;
     }
 
-    this.props.data[this.props.attr].map((i) => {
+    this.props.data[this.props.device.id][this.props.attr].map((i) => {
       labels.push(util.iso_to_date(i.ts));
-      values.push(i.trim());
+      values.push(i.value);
     })
 
     if (values.length === 0) {
@@ -107,8 +108,8 @@ function HistoryList(props) {
 
   // handle values
   let value = []
-  for(let k in props.data[props.attr]){
-     value[k] = props.data[props.attr][k];
+  for(let k in props.data[props.device.id][props.attr]){
+     value[k] = props.data[props.device.id][props.attr][k];
   }
 
   if (value){
@@ -137,6 +138,77 @@ function HistoryList(props) {
   return empty;
 }
 
+class PositionWrapper extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      opened: false,
+      hasPosition: false,
+      pos: []
+    };
+    this.getDevicesWithPosition = this.getDevicesWithPosition.bind(this);
+    this.toogleExpand = this.toogleExpand.bind(this);
+  }
+
+  toogleExpand(state) {
+    console.log("state", state);
+    this.setState({opened: state});
+  }
+
+
+  getDevicesWithPosition(device){
+    function parserPosition(position){
+      let parsedPosition = position.split(", ");
+      return [parseFloat(parsedPosition[0]), parseFloat(parsedPosition[1])];
+    }
+
+    let validDevices = [];
+    let length = device[this.props.attr].length;
+       for(let j in device.attrs){
+         for(let i in device.attrs[j]){
+           if(device.attrs[j][i].type == "static"){
+             if(device.attrs[j][i].value_type == "geo:point"){
+               device.position = parserPosition(device.attrs[j][i].static_value);
+             }
+           } else{
+             device.position = parserPosition(device[this.props.attr][0].value);
+           }
+         }
+       }
+
+      device.select = true;
+      if(device.position !== null && device.position !== undefined){
+        validDevices.push(device);
+      }
+    return validDevices;
+  }
+
+  render() {
+    function NoData() {
+        return (
+          <div className="valign-wrapper full-height background-info">
+            <div className="full-width center">No position <br />available</div>
+          </div>
+        )
+    }
+
+    console.log("Position Renderer ", this.props.device);
+    if (this.props.device === undefined)
+    {
+      return (<NoData />);
+    }
+
+    let validDevices = this.getDevicesWithPosition(this.props.data[this.props.id]);
+    console.log("validDevices", validDevices);
+    if (validDevices.length == 0) {
+      return <NoData />;
+    } else {
+      return <div className={"PositionRendererDiv " + (this.state.opened ? "expanded" : "compressed")}>
+          <PositionRenderer devices={validDevices} allowContextMenu={false} center={validDevices[0].position} />
+        </div>
+    }
+  }
+}
 
 function Attr(props) {
   const known = {
@@ -144,9 +216,11 @@ function Attr(props) {
     'float': Graph,
     'string': HistoryList,
     'geo': HistoryList,
-    'default': HistoryList
+    'default': HistoryList,
+    'geo:point': PositionWrapper
   };
 
+  console.log("PROPS: ", props);
   const Renderer = props.type in known ? known[props.type] : known['default'];
   function NoData() {
       return (
@@ -164,12 +238,12 @@ function Attr(props) {
       )
   }
 
-  if (props.data === undefined) {
+  if (props.data[props.device.id] === undefined) {
     return <NoData />;
   }
 
   let label = props.attr;
-  if (props.data[props.attr].length == 0) {
+  if (props.data[props.device.id][props.attr] == undefined) {
       return <NoDataAv />;
   }
 

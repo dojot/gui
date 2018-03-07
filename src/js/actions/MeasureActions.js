@@ -11,8 +11,8 @@ class MeasureActions {
     return data;
   }
 
-  fetchMeasure(device, device_id, attrs, history_length, callback) {
-    console.log("MeasureActions, fetchMeasure", device_id, attrs, history_length, callback);
+  fetchMeasure(device, device_id, attrs, history_length) {
+    console.log("MeasureActions, fetchMeasure", device, device_id, attrs, history_length);
     function getUrl() {
       if (history_length === undefined) { history_length = 1; }
       let url = '/history/device/' + device_id + '/history?lastN=' + history_length + '&attr=' + attrs;
@@ -32,14 +32,9 @@ class MeasureActions {
       }
       util._runFetch(getUrl(), config)
         .then((reply) => {
-          let values = [];
-          for(let k in reply){
-            if(reply[k].value !== null){
-              values[k] = reply[k].value;
-            }
+          if(reply !== null || reply !== undefined){
+              device[attrs] = reply.reverse();
           }
-
-          device[attrs] = values;
           this.updateMeasures(device);
         })
         .catch((error) => {console.error("failed to fetch data", error);});

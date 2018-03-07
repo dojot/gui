@@ -7,6 +7,7 @@ import util from '../comms/util';
 class MeasureStore {
   constructor() {
     //this.devices = {};
+    this.data = {}
     this.tracking = {};
     this.error = null;
 
@@ -43,41 +44,30 @@ class MeasureStore {
       }
     }
     if(data !== undefined){
-      this.data.position = parserPosition(data);
+      let label = Object.keys(data.attrs);
+      if(this.data[data.metadata.deviceid] !== undefined){
+          this.data[data.metadata.deviceid].position = parserPosition(data.attrs[label[0]]);
+      }
     }
-
   }
 
   handleUpdateMeasures(measureData) {
-    if (this.data == undefined)
-      this.data = measureData;
-    else if (this.data.device == measureData.device) {
-      for (let k in measureData.data) {
-        if (measureData.data.hasOwnProperty(k)) {
-          this.data.data[k] = measureData.data[k];
-        }
-      }
-    } else {
-      this.data = measureData;
+    if(measureData !== null || measureData !== undefined){
+      this.data[measureData.id] = measureData;
     }
-    // if (! ('device' in measureData)) { console.error("Missing device id"); }
-    // if (! ('attr' in measureData)) { console.error("Missing attr id"); }
-    // if (! ('data' in measureData)) { console.error("Missing device data"); }
-    //
-    // if (measureData.device in this.devices) {
-    //   this.devices[measureData.device][measureData.attr.name].loading = false;
-    //   this.devices[measureData.device][measureData.attr.name].data = measureData.data;
-    // } else {
-    //   this.error = "Device not found"
-    //   console.error('failed to find device in current measures');
-    // }
   }
 
 
   handleAppendMeasures(measureData) {
-    if(this.data.id === measureData.metadata.deviceid){
-      let label = Object.keys(measureData.attrs);
-      this.data[label[0]] = this.data[label[0]].concat(measureData.attrs[label[0]]);
+    for(let k in this.data){
+      if(k == measureData.metadata.deviceid){
+        let label = Object.keys(measureData.attrs);
+        if(this.data[k][label[0]] !== undefined){
+          this.data[k][label[0]] = this.data[k][label[0]].concat(measureData.attrs[label[0]]);
+        } else{
+          this.data[k] = measureData.attrs[label[0]];
+        }
+      }
     }
   }
 

@@ -370,7 +370,7 @@ class AttrHistory extends Component {
         </div> */}
         <div className="contents no-padding">
           <AltContainer store={MeasureStore}>
-            <Attr device={this.props.device} type={this.props.type} attr={this.props.attr}/>
+            <Attr device={this.props.device} type={this.props.type} attr={this.props.attr} />
           </AltContainer>
         </div>
       </div>
@@ -598,77 +598,84 @@ function StatusDisplay(props) {
 // }
 
 
-class PositionWrapper extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      opened: false,
-      hasPosition: false,
-      pos: []
-    };
-    this.getDevicesWithPosition = this.getDevicesWithPosition.bind(this);
-    this.toogleExpand = this.toogleExpand.bind(this);
-  }
-
-  toogleExpand(state) {
-    console.log("state", state);
-    this.setState({opened: state});
-  }
-
-
-  getDevicesWithPosition(device){
-    function parserPosition(position){
-      let parsedPosition = position.split(", ");
-      return [parseFloat(parsedPosition[0]), parseFloat(parsedPosition[1])];
-    }
-
-    let validDevices = [];
-       for(let j in device.attrs){
-         for(let i in device.attrs[j]){
-           if(device.attrs[j][i].type == "static"){
-             if(device.attrs[j][i].value_type == "geo:point"){
-               device.position = parserPosition(device.attrs[j][i].static_value);
-             }
-           }
-         }
-       }
-
-      device.select = true;
-      if(device.position !== null && device.position !== undefined){
-        validDevices.push(device);
-      }
-    return validDevices;
-  }
-
-  render() {
-    function NoData() {
-        return (
-          <div className="valign-wrapper full-height background-info">
-            <div className="full-width center">No position <br />available</div>
-          </div>
-        )
-    }
-
-    console.log("Position Renderer ", this.props.device);
-    if (this.props.device === undefined)
-    {
-      return (<NoData />);
-    }
-
-    let validDevices = this.getDevicesWithPosition(this.props.device);
-    console.log("validDevices", validDevices);
-    if (validDevices.length == 0) {
-      return <NoData />;
-    } else {
-      return <div className={"PositionRendererDiv " + (this.state.opened ? "expanded" : "compressed")}>
-          <div className="floating-icon">
-            {!this.state.opened ? <i onClick={this.toogleExpand.bind(this, true)} className="fa fa-expand" /> : <i onClick={this.toogleExpand.bind(this, false)} className="fa fa-compress" />}
-          </div>
-          <PositionRenderer devices={validDevices} allowContextMenu={false} center={validDevices[0].position} />
-        </div>
-    }
-  }
-}
+// class PositionWrapper extends Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       opened: false,
+//       hasPosition: false,
+//       pos: []
+//     };
+//     this.getDevicesWithPosition = this.getDevicesWithPosition.bind(this);
+//     this.toogleExpand = this.toogleExpand.bind(this);
+//   }
+//
+//   toogleExpand(state) {
+//     console.log("state", state);
+//     this.setState({opened: state});
+//   }
+//
+//
+//   getDevicesWithPosition(device){
+//     function parserPosition(position){
+//       let parsedPosition = position.split(", ");
+//       return [parseFloat(parsedPosition[0]), parseFloat(parsedPosition[1])];
+//     }
+//
+//     let validDevices = [];
+//        for(let j in device.attrs){
+//          for(let i in device.attrs[j]){
+//            if(device.attrs[j][i].type == "static"){
+//              if(device.attrs[j][i].value_type == "geo:point"){
+//                device.position = parserPosition(device.attrs[j][i].static_value);
+//              }
+//            } else{
+//              if(device.attrs[j][i].value_type == "geo:point"){
+//                let label = device.attrs[j][i].label;
+//                console.log("Label: ", label);
+//               //  console.log("PROPS: ", parserPosition(device[label][0]));
+//               //  device.position = parserPosition(device[label][0]);
+//              }
+//            }
+//          }
+//        }
+//
+//       device.select = true;
+//       if(device.position !== null && device.position !== undefined){
+//         validDevices.push(device);
+//       }
+//     return validDevices;
+//   }
+//
+//   render() {
+//     function NoData() {
+//         return (
+//           <div className="valign-wrapper full-height background-info">
+//             <div className="full-width center">No position <br />available</div>
+//           </div>
+//         )
+//     }
+//
+//     console.log("Position Renderer ", this.props.device);
+//     if (this.props.device === undefined)
+//     {
+//       return (<NoData />);
+//     }
+//
+//     let validDevices = this.getDevicesWithPosition(this.props.device);
+//     console.log("validDevices", validDevices);
+//     if (validDevices.length == 0) {
+//       return <NoData />;
+//     } else {
+//       return <div className={"PositionRendererDiv " + (this.state.opened ? "expanded" : "compressed")}>
+//           <div className="floating-icon">
+//             {!this.state.opened ? <i onClick={this.toogleExpand.bind(this, true)} className="fa fa-expand" /> : <i onClick={this.toogleExpand.bind(this, false)} className="fa fa-compress" />}
+//           </div>
+//           <PositionRenderer devices={validDevices} allowContextMenu={false} center={validDevices[0].position} />
+//         </div>
+//     }
+//   }
+// }
 
 // // TODO do this properly, using props.children
 // function HeaderWrapper(props) {
@@ -693,7 +700,7 @@ class DeviceDetail extends Component {
   //    const device = this.props.device;
   //    if (device == undefined)
   //      return; //not ready
-   //
+
   //    for (let i in device.attrs) {
   //      for (let j in device.attrs[i]) {
   //        if(device.attrs[i][j].value_type == "geo:point"){
@@ -725,11 +732,6 @@ class DeviceDetail extends Component {
 
      return <div className="row detail-body">
          <div className="first-col full-height">
-           <div className="col s12 device-map-box">
-             <AltContainer store={MeasureStore}>
-               <PositionWrapper device={this.props.device} />
-             </AltContainer>
-           </div>
            <Configurations device={this.props.device} attrs={config_list} />
            <StaticAttributes device={this.props.device} attrs={attr_list} />
          </div>
