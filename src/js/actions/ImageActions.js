@@ -67,15 +67,13 @@ class ImageActions {
     return image;
   }
 
-  fetchSingle(id, callback) {
+  fetchSingle(label, callback) {
     return (dispatch) => {
       dispatch();
 
-      imageManager.getImages(id)
+      imageManager.getImages(label)
         .then((images) => {
-          console.log("imageManager.getImages()", images);
           this.updateImages(images);
-          // this.updateSingle(images);
           if (callback) {
             callback(images);
           }

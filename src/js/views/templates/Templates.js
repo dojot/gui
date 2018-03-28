@@ -607,7 +607,7 @@ class ListItem extends Component {
 
     refreshImages()
     {
-        ImageActions.fetchSingle.defer(this.state.template.id, () => {
+        ImageActions.fetchSingle.defer(this.state.template.label, () => {
             let fw_version = null;
             
             let attr = this.state.template.config_attrs.filter(
