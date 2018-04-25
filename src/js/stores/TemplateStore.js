@@ -6,6 +6,7 @@ import util from '../comms/util';
 class TemplateStore {
   constructor() {
     this.templates = [];
+    this.pagination = null;
     this.error = null;
     this.loading = false;
 
@@ -46,8 +47,9 @@ class TemplateStore {
     }
   }
 
-  handleUpdateTemplateList(templates) {
-    this.templates = templates;
+  handleUpdateTemplateList(data) {
+    this.templates = data.templates;
+    this.pagination = data.pagination;
     this.error = null;
     this.loading = false;
   }
@@ -92,9 +94,9 @@ class TemplateStore {
     this.error = null;
     this.loading = true;
   }
-
   handleFetchTemplateList() {
     this.templates = [];
+    // this.pagination = null;
     this.loading = true;
   }
 

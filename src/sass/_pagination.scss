@@ -1,0 +1,33 @@
+ 
+.pagination
+{
+    li a
+    {
+        cursor:pointer;
+        font-size: 14px;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .previous a,.next a
+    {
+        // font-family: 'Droid Sans', sans-serif;
+        // font-size: 11pt;
+        font-family: 'Roboto';
+        line-height: 23px;
+        font-size: 10px;
+        letter-spacing: 0.05em;
+        // color: #BDBDBD;
+        text-transform: uppercase;
+    }
+
+  .active
+  {
+
+    background-color: #ee6e73;
+    border-radius: 50%;
+    box-shadow: 1px 0px 4px rgba(0, 0, 0, 0.3);
+    font-weight: 900;
+    height: 29px;
+    width: 28px;
+  }
+}

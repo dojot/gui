@@ -12,9 +12,10 @@ import ImageActions from '../../actions/ImageActions';
 
 import { ImageCard, NewImageCard } from "../firmware/elements";
 
-
+import { Filter, Pagination } from '../utils/Manipulation';
 import util from "../../comms/util/util";
-import {NewPageHeader} from "../../containers/full/PageHeader";
+
+import { NewPageHeader } from "../../containers/full/PageHeader";
 import { hashHistory } from 'react-router';
 
 import { GenericModal, RemoveModal } from "../../components/Modal";
@@ -984,25 +985,13 @@ class TemplateList extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            filter: ''
-        };
-
+        this.state = {};
         this.filteredList = [];
 
-        this.handleSearchChange = this.handleSearchChange.bind(this);
-        this.applyFiltering = this.applyFiltering.bind(this);
         this.detailedTemplate = this.detailedTemplate.bind(this);
         this.editTemplate = this.editTemplate.bind(this);
         this.updateTemplate = this.updateTemplate.bind(this);
         this.deleteTemplate = this.deleteTemplate.bind(this);
-        this.filterListByName = this.filterListByName.bind(this);
-        this.clearInputField = this.clearInputField.bind(this);
-    }
-
-    filterListByName (event){
-      event.preventDefault();
-      this.setState({filter: event.target.value});
     }
 
     detailedTemplate(id) {
@@ -1012,7 +1001,6 @@ class TemplateList extends Component {
         let temp = this.state;
         temp.detail = id;
         this.setState(temp);
-        return true;
     }
 
     editTemplate(id) {
@@ -1026,19 +1014,7 @@ class TemplateList extends Component {
         return false;
     }
 
-    handleSearchChange(event) {
-        const filter = event.target.value;
-        let state = this.state;
-        state.filter = filter;
-        state.detail = undefined;
-        this.setState(state);
-    }
-
-    applyFiltering(list) {
-        return list;
-    }
-
-    // @TO_CHECK but every call to the function below don't pass any parameter
+    // @TO_CHECK I guess that every call to the function below aren't passing any parameter
     updateTemplate(template) {
         this.props.updateTemplate(template);
 
@@ -1049,35 +1025,19 @@ class TemplateList extends Component {
 
     deleteTemplate(id) {
         this.props.deleteTemplate(id);
-
         let state = this.state;
         state.edit = undefined;
         this.setState(state);
     }
 
     convertTemplateList() {
-      if (this.state.filter != "") {
-        var updatedList = this.filteredList.filter(function(template) {
-          return template.label.includes(event.target.value);
-        });
-        this.filteredList = updatedList;
-      } else {
         this.filteredList = [];
         for (let k in this.props.templates) {
-          if (this.props.templates.hasOwnProperty(k)){
             this.filteredList.push(this.props.templates[k]);
-          }
         }
-      }
     }
 
-    clearInputField(){
-        this.state.filter = "";
-      }
-
     render() {
-        this.filteredList = this.applyFiltering(this.props.templates);
-
         this.convertTemplateList();
 
         if (this.props.loading) {
@@ -1115,28 +1075,7 @@ class TemplateList extends Component {
             }
         }
 
-        let header = null;
-        if (this.props.showSearchBox){
-            header = <div className={"row z-depth-2 templatesSubHeader " + (this.props.showSearchBox ? "show-dy" : "hide-dy")} id="inner-header">
-            <div className="col s3 m3 main-title">
-              Showing {this.filteredList.length} template(s)
-            </div>
-            <div className="col s1 m1 header-info hide-on-small-only">
-            </div>
-            <div className="col s4 m4">
-              <label htmlFor="fld_template_name">Template Name</label>
-              <input id="fld_template_name" type="text" name="Template Name" className="form-control form-control-lg" placeholder="Search" value={this.state.filter} onChange={this.filterListByName} />
-            </div>
-          </div>;
-        } else {
-            this.filteredList = this.applyFiltering(this.props.templates);
-            this.clearInputField();
-        }
-
         return <div className="full-height relative">
-        <ReactCSSTransitionGroup transitionName="templatesSubHeader">
-          {header}
-        </ReactCSSTransitionGroup>
             {this.filteredList.length > 0 ? <div className="col s12 lst-wrapper w100">
                 {this.filteredList.map(template => (
                   <ListItem
@@ -1161,15 +1100,51 @@ class TemplateList extends Component {
     }
 }
 
-class Templates extends Component {
 
+
+class TemplateOperations {
+
+    constructor() {
+        this.filterParams = {};
+
+        this.paginationParams = {  
+            page_size: 6,
+            page_num: 1
+        }; // default parameters
+    }
+    
+    whenUpdatePagination(config) {
+        for (let key in config)
+            this.paginationParams[key] = config[key];
+        this._fetch();
+    }
+
+    whenUpdateFilter(config)
+    {
+        this.filterParams = config;
+        this._fetch();
+    }
+    
+    _fetch() {
+        let res = Object.assign({},this.paginationParams, this.filterParams);
+        console.log("fetching: ", res);
+        TemplateActions.fetchTemplates(res);
+    }
+}
+
+let opex = new TemplateOperations();
+console.log("opex", opex);
+
+class Templates extends Component {
+    
     constructor(props) {
         super(props);
-
+        
         this.addTemplate = this.addTemplate.bind(this);
         this.toggleSearchBar = this.toggleSearchBar.bind(this);
         this.enableNewTemplate = this.enableNewTemplate.bind(this);
         this.state = { showFilter: false,
+            showPagination: false,
             has_new_template: false
         };
     }
@@ -1201,7 +1176,8 @@ class Templates extends Component {
     }
 
     componentDidMount() {
-        TemplateActions.fetchTemplates.defer();
+        opex._fetch();
+        this.setState({ 'has_new_template': false });
     }
 
     render() {
@@ -1230,5 +1206,26 @@ class Templates extends Component {
         );
     }
 }
+
+function OperationsHeader(props) {
+    return (
+        <div className="col s5 pull-right pt10">
+            <div className="searchBtn" title="Show search bar" onClick={props.toggleSearchBar}>
+                <i className="fa fa-search" />
+            </div>
+            <div onClick={props.addTemplate} className="new-btn-flat red waves-effect waves-light" title="Create a new template">
+                New Template<i className="fa fa-plus" />
+            </div>
+        </div>
+    )
+}
+
+function FilterFields(props) {
+    return (
+    <div className="col s12 m12">
+      <input id="fld_name" type="text" name="Label" className="form-control form-control-lg" placeholder="Label" value={props.value} onChange={props.onChange} />
+    </div> );
+}
+
 
 export {Templates as TemplateList};

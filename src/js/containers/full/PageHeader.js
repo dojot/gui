@@ -56,6 +56,10 @@ function SubMenuItem(props) {
 function NewPageHeader(props) {
   // let isActive = props.router.location.pathname === props.item.target;
 
+
+  var childrenWithProps = React.Children.map(props.children, child =>
+    React.cloneElement(child, { ...props }));
+  
   return (
     <div className="header-box">
       <div className="title-box">
@@ -71,8 +75,8 @@ function NewPageHeader(props) {
         <div className="sub-menu">
           <SubMenu page={props.icon} />
         </div>
-        <div className="page-actions">
-          {props.children}
+        <div className="row page-actions">
+          {childrenWithProps}
         </div>
       </div>
     </div>

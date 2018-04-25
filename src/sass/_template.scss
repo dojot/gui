@@ -32,13 +32,16 @@
 
 
 .show-dy{
-  visibility:visible;
-
+  display: block;
+  // visibility:visible;
+  animation-name:  opa-hei-76px;
+  animation-duration: 1s;
 }
 
 .hide-dy
 {
-  visibility: hidden;
+  display: none;
+  // visibility: hidden;
 }
 
 .templatesSubHeader {
