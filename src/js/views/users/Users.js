@@ -234,7 +234,7 @@ function SummaryItem(props) {
         <div className={"card-size card-hover lst-entry-wrapper z-depth-2 fullHeight"}>
             <div className="lst-entry-title col s12">
                 <img className="title-icon" src={"images/generic-user-icon.png"}/>
-                <div className="title-text" title={props.user.name}>
+                <div className="title-text truncate" title={props.user.name}>
                     <span className="text"> {props.user.name} </span>
                 </div>
             </div>

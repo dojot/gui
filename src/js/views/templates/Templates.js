@@ -177,9 +177,11 @@ class AttributeList extends Component {
            this.setState({fieldSizeDyAttrStatus: true});
         }
 
-        console.log(this.props.attributes.static_value, ": ", this.props.attributes.static_value.length);
-        if(this.props.attributes.static_value.length > 18){
-            this.setState({fieldSizeStaticAttrStatus: true});
+        if (this.props.attributes.hasOwnProperty('static_value')) {
+            console.log(this.props.attributes.static_value, ": ", this.props.attributes.static_value.length);
+            if(this.props.attributes.static_value.length > 18){
+                this.setState({fieldSizeStaticAttrStatus: true});
+            }
         }
     }
 
@@ -1179,19 +1181,29 @@ class Templates extends Component {
     }
 
     render() {
-
-        this.metaData = { 'alias': 'template' };
-    
-        return <ReactCSSTransitionGroup transitionName="first" transitionAppear={true} transitionAppearTimeout={100} transitionEnterTimeout={100} transitionLeaveTimeout={100}>
-            <AltContainer store={TemplateStore}>
-              <NewPageHeader title="Templates" subtitle="Templates" icon="template">
-                <Pagination showPainel={this.state.showPagination} ops={opex} />
-                <OperationsHeader addTemplate={this.addTemplate} toggleSearchBar={this.toggleSearchBar.bind(this)} />
-              </NewPageHeader>
-              <Filter showPainel={this.state.showFilter} metaData={this.metaData} ops={opex} fields={FilterFields} />
-              <TemplateList enableNewTemplate={this.enableNewTemplate} />
-            </AltContainer>
-          </ReactCSSTransitionGroup>;
+        return (
+            <ReactCSSTransitionGroup
+                transitionName="first"
+                transitionAppear={true}
+                transitionAppearTimeout={100}
+                transitionEnterTimeout={100}
+                transitionLeaveTimeout={100}>
+                <NewPageHeader title="Templates" subtitle="Templates" icon='template'>
+                    <div className="pt10">
+                        {/* <div className="searchBtn" title="Show search bar" onClick={this.toggleSearchBar.bind(this)}>
+                          <i className="fa fa-search" />
+                        </div> */}
+                        <div onClick={this.addTemplate} className="new-btn-flat red "
+                              title="Create a new template">
+                            New Template<i className="fa fa-plus"/>
+                        </div>
+                    </div>
+                </NewPageHeader>
+                <AltContainer store={TemplateStore}>
+                    <TemplateList enableNewTemplate={this.enableNewTemplate} showSearchBox={this.state.showFilter}/>
+                </AltContainer>
+            </ReactCSSTransitionGroup>
+        );
     }
 }
 

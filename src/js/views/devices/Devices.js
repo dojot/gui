@@ -147,9 +147,9 @@ class Devices extends Component {
         return <div className={'full-device-area'}>
             <NewPageHeader title="Devices" subtitle="" icon="device">
                 <div className="pt10">
-                    <div className="searchBtn" title="Show search bar" onClick={this.toggleSearchBar.bind(this)}>
+                    {/* <div className="searchBtn" title="Show search bar" onClick={this.toggleSearchBar.bind(this)}>
                         <i className="fa fa-search"/>
-                    </div>
+                    </div> */}
                     {displayToggle}
                     <DojotBtnLink linkto="/device/new" label="New Device" alt="Create a new device" icon="fa fa-plus"/>
                 </div>

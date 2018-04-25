@@ -182,7 +182,7 @@ class GenericList extends Component {
         </div>
         <div className="col s12 body">
           {this.props.box_title == "Configurations" ? (
-            <div key="id" className="line">
+            <div key="id" className="line col s12">
               <div className="col s5">
                 <div className="name-value">device id</div>
                 <div className="value-label">Name</div>
