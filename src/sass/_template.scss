@@ -5,23 +5,6 @@
   }
 }
 
-.template-title-text{
-  height: 100%;
-  width: calc(100% - 75px);
-  float: left;
-  display: inline;
-  font-size: 18px;
-
-  textarea {
-    float: left;
-    resize: none;
-    border: none;
-    vertical-align: middle;
-    height: 62px;
-    margin: 6.5px 0;
-  }
-}
-
 @keyframes opa-hei-90px {
     from {opacity: 0.2;height:10px;}
     to {opacity: 1;height:90px;}
@@ -97,7 +80,6 @@
 }
 
 .template-title-text{
-  padding-top: 10px !important;
   font-size: 1em !important;
   border-bottom: none !important;
 }
