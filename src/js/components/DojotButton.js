@@ -7,7 +7,7 @@ class DojotBtnLink extends Component {
   }
 
   render() {
-  return <Link to={this.props.linkto} className="new-btn-flat red " title={this.props.alt}>
+    return <Link to={this.props.linkto} className={"new-btn-flat red " + this.props.className } title={this.props.alt}>
       {this.props.label} <i className={this.props.icon} />
     </Link>;
   }

@@ -1262,4 +1262,24 @@ class Templates extends Component {
     }
 }
 
+function OperationsHeader(props) {
+    return (
+        <div className="col s6 pull-right pt10">
+            <div className="searchBtn" title="Show search bar" onClick={props.toggleSearchBar}>
+                <i className="fa fa-search" />
+            </div>
+            <div onClick={props.addTemplate} className="new-btn-flat red waves-effect waves-light" title="Create a new template">
+                New Template<i className="fa fa-plus" />
+            </div>
+        </div>
+    )
+}
+
+function FilterFields(props) {
+    return <div className="col s12 m12">
+        <input id="fld_name" type="text" className="form-control form-control-lg" placeholder="Label" name="label" value={props.fields.label} onChange={props.onChange} />
+      </div>;
+}
+
+
 export {Templates as TemplateList};
