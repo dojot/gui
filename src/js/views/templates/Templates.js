@@ -635,7 +635,7 @@ class ListItem extends Component {
         this.toggleImageModal = this.toggleImageModal.bind(this);
         this.refreshImages = this.refreshImages.bind(this);
         this.updateDefaultVersion = this.updateDefaultVersion.bind(this);
-        //this.getDataAttrs = this.getDataAttrs.bind(this);
+        this.removeAttributeId = this.removeAttributeId.bind(this);
     }
 
 
@@ -706,9 +706,17 @@ class ListItem extends Component {
         this.state.template.attrs.push.apply(this.state.template.attrs, this.state.template.data_attrs);
         this.state.template.attrs.push.apply(this.state.template.attrs ,this.state.template.config_attrs);
 
+        this.removeAttributeId(this.state.template);
+
         TemplateActions.triggerUpdate(this.state.template, (template) => {
           Materialize.toast('Template updated', 4000);
         });
+    }
+
+    removeAttributeId(template){
+        for(let index in template.attrs){
+            delete template.attrs[index].id;
+        }
     }
 
     deleteTemplate(e) {
