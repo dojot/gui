@@ -42,6 +42,19 @@ $status: #0c343d;
   float: left;
 }
 
+#user-wrapper{
+  padding-bottom: 30px !important;
+
+  display: inline-grid;
+  grid-template-columns: 300px 300px 300px 300px;
+  grid-row-gap: 25px;
+  grid-column-gap: 50px;
+
+  .card-size{
+    margin: 0 !important;
+  }
+}
+
 .lst-entry {
   border-color: black;
   transition: 0.3s;
