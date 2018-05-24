@@ -56,7 +56,7 @@ class MeasureStore {
             }
         }
 
-        let now = new Date();
+        let now = measureData.metadata.timestamp;
         let deviceID = measureData.metadata.deviceid;
         if (typeof this.data[deviceID] !== "undefined") {
             for (let templateID in this.data[deviceID].attrs) {
@@ -64,7 +64,7 @@ class MeasureStore {
                     for (let label in measureData.attrs) {
                         if (this.data[deviceID].attrs[templateID][attrID].label === label) {
                             let attrValue = {
-                                "ts": now.toISOString(),
+                                "ts": now,
                                 "value": measureData.attrs[label]
                             };
                             if (this.data[deviceID].attrs[templateID][attrID].value_type === "geo:point") {
