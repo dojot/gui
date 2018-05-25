@@ -504,14 +504,8 @@ class Users extends Component {
             return (
                 <span id="userMain">
                     <NewPageHeader title="Auth" subtitle="Users" icon='user'>
-                    <div className={'pt10'}>
-                        {/*<Filter onChange={this.filterChange}/>*/}
-                        <div onClick={this.newUser} className="new-btn-flat red waves-effect waves-light"
-                             title="Create a new user">
-                            New User<i className="fa fa-plus"/>
-                        </div>
-                    </div>
-                    </NewPageHeader>
+                        <OperationsHeader newUser={this.newUser}/>
+                     </NewPageHeader>
                     <AltContainer store={UserStore}>
                         <UserFilter filter={this.state.filter} {...this.state} visibility={this.visibility}/>
                     </AltContainer>
@@ -525,6 +519,15 @@ class Users extends Component {
             );
         }
     }
+}
+
+
+function OperationsHeader(props) {
+    return <div className="col s12 pull-right pt10">
+        <div onClick={props.newUser} className="new-btn-flat red waves-effect waves-light" title="Create a new user">
+          New User<i className="fa fa-plus" />
+        </div>
+      </div>;
 }
 
 export default Users;
