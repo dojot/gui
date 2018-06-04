@@ -285,20 +285,25 @@ class Flows extends Component {
           transitionName="first"
           transitionAppear={true} transitionAppearTimeout={100}
           transitionEnterTimeout={100} transitionLeaveTimeout={100} >
-        <NewPageHeader title="data flows" subtitle="" icon="flow">
-          <div className="pt10">
-            <Link to="/flows/new" className="new-btn-flat red waves-effect waves-light " title="Create a new data flow">
-              New Flow <i className="fa fa-plus"/>
-            </Link>
-          </div>
+        <NewPageHeader title="Data flows" subtitle="" icon="flow">
+          <OperationsHeader />
         </NewPageHeader>
-
         <AltContainer store={FlowStore}>
           <ListRender showSearchBox={this.state.showFilter}/>
         </AltContainer>
       </ReactCSSTransitionGroup>
     );
   }
+}
+
+function OperationsHeader(props) {
+  return (
+    <div className="col s12 pull-right pt10">
+      <Link to="/flows/new" className="new-btn-flat red waves-effect waves-light " title="Create a new data flow">
+        New Flow <i className="fa fa-plus" />
+      </Link>
+    </div>
+  )
 }
 
 export { Flows };

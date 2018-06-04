@@ -155,7 +155,7 @@ class Devices extends Component {
                 </div>
             </NewPageHeader>
             <AltContainer store={DeviceStore}>
-                {this.state.displayList ? (
+              {this.state.displayList ? (
                     <DeviceCard deviceid={detail} toggle={displayToggle} showSearchBox={this.state.showFilter}/>
                 ) : (
                     <MapWrapper deviceid={detail} toggle={displayToggle} showSearchBox={this.state.showFilter}/>
@@ -163,6 +163,27 @@ class Devices extends Component {
             </AltContainer>
         </div>;
     }
+}
+
+function OperationsHeader(props) {
+  return (
+    <div className="col s6 pull-right pt10">
+      <div
+        className="searchBtn"
+        title="Show search bar"
+        onClick={props.toggleSearchBar}>
+        <i className="fa fa-search" />
+      </div>
+      {props.displayToggle}
+      <DojotBtnLink
+        linkto="/device/new"
+        label="New Device"
+        alt="Create a new device"
+        icon="fa fa-plus"
+        className="w130px"
+      />
+    </div>
+  )
 }
 
 export { Devices };

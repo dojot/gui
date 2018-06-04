@@ -1,3 +1,61 @@
+/* The CSS */
+.card-select-2 
+{
+  position:relative;
+    
+  select{
+    z-index:20;
+    padding: 0px;
+    -webkit-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
+    -moz-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
+    background: none;
+    color: #888;
+    border: none;
+    outline: none;
+    display: inline-block;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    top: -14px;
+    position: relative;
+    
+    option
+    {
+      padding:10px;
+    }
+  }
+
+  &:after {
+    z-index:10;
+    content: '';
+    position: absolute;
+    right: 1px;
+    top: 21px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #888;
+    clear: both;
+  }
+}
+/*
+
+*****************
+
+*/
+
+.margin-top-mi7px
+{
+    margin-top: -7px !important;
+}
+
+.dev_field_filter{
+    position: absolute;
+    top: 5px;
+}
+
 .icon-marker {
   padding: 3px;
   margin: 0 auto;
@@ -244,10 +302,12 @@
 .fix-map-bug{
     height: 100%;
     width: 100%;
+    padding-top: 2px;
 
     .flex-wrapper
     {
-      //margin-top: 3px;
+      height: 100%;
+      // margin-top: 3px;
     }
 }
 
@@ -544,6 +604,7 @@
 
   .deviceCanvas {
     width: 100% !important;
+    height: calc(100% - 60px) !important;
 
     .background-info {
       float: left;

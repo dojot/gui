@@ -206,8 +206,6 @@ class StaticAttributes extends Component {
   }
 
   render() {
-
-
     if (!this.props.attrs.length) {
       return (
         <div> </div>
@@ -388,6 +386,7 @@ class DeviceForm extends Component {
     this.save = this.save.bind(this);
 
     this.getStaticAttributes = this.getStaticAttributes.bind(this);
+    this.handleStaticsAttributes = this.handleStaticsAttributes.bind(this);
     this.removeStaticAttributes = this.removeStaticAttributes.bind(this);
   }
 
@@ -399,6 +398,7 @@ class DeviceForm extends Component {
   componentDidUpdate() {
     // if is edition mode, we should wait for templates and iterate over them updating the selected templates
     let templates = this.props.templates.templates;
+    let device = this.props.device.device
     if (
       !this.state.loaded &&
       templates != undefined &&
@@ -414,13 +414,40 @@ class DeviceForm extends Component {
           if (templates[k].id == this.props.device.usedTemplates[tmp_id]) {
             templates[k].active = true;
             list.push(JSON.parse(JSON.stringify(templates[k])));
-            currentAttrs = currentAttrs.concat(this.getStaticAttributes(templates[k]));
+            currentAttrs = currentAttrs.concat(this.handleStaticsAttributes(templates[k], device));
             break;
           }
         }
       }
       this.setState({ selectedTemplates: list, loaded: true, staticAttrs: currentAttrs });
     }
+  }
+
+  handleStaticsAttributes(template, device){
+    function getAttributesFromDevice(deviceAttrs){
+      let configAttrs = []
+      for(let tmp in deviceAttrs){
+        for(let index in deviceAttrs[tmp]){
+          if(deviceAttrs[tmp][index].type == "static" || deviceAttrs[tmp][index].type == "meta"){
+            configAttrs = configAttrs.concat(deviceAttrs[tmp][index]);
+          }
+        }
+      }
+      return configAttrs;
+    }
+    let listAttrs = [];
+    listAttrs = listAttrs.concat(getAttributesFromDevice(device.attrs)); // Handle config attributes from device
+
+    if(this.props.edition){
+      let list = listAttrs.map((attr) => {
+        attr.value = attr.static_value;
+        return attr;
+      });
+      return list;
+    } else {
+      return this.getStaticAttributes(template);
+    }
+
   }
 
   save(e) {

@@ -136,6 +136,139 @@ class RecoveryPasswordModal extends Component {
   }
 }
 
+class ChangePasswordModal extends Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      password: "",
+      confirmPassword: "",
+      oldPassword: "",
+      invalid: {confirm: "", password: ""},     
+    }
+
+    this.dismiss = this.dismiss.bind(this);
+    this.password = this.password.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.validate = this.validate.bind(this);
+  }
+
+  dismiss(){
+    this.props.openChangePasswordModal(false);
+    this.props.toggleSidebar();
+  }
+
+  componentWillMount(){
+    this.setState({username: this.props.username});
+  }
+
+  validate() {
+    let errorMessage = this.state.invalid;
+
+    if (this.state.password.trim().length < 8) {
+        errorMessage.password = "Password must be at least 8 characters";
+        this.setState({invalid: errorMessage});
+        return false;
+    } else {
+        delete errorMessage.password;
+        this.setState({invalid: errorMessage});
+    }
+    if (this.state.confirmPassword !== this.state.password) {
+        errorMessage.confirm = "Password mismatch";
+        this.setState({invalid: errorMessage});
+        return false;
+    } else {
+        delete errorMessage.confirm;
+        this.setState({invalid: errorMessage});
+    }
+    return true;
+  }
+
+  password(e) {
+    e.preventDefault();
+    let errorMsg = this.state.invalid
+
+    if (this.validate()){
+        let password = {"passwd": this.state.password, "token": this.state.token};
+        let passwordData = {"oldpasswd":this.state.oldPassword, "newpasswd": this.state.password};
+        LoginActions.updatePassword(passwordData);
+        this.dismiss();
+    } else {
+      errorMsg.confirm = "Password mismatch";
+      this.setState({invalid: errorMsg});
+    }
+  }
+
+  handleChange(event) {
+    const inputValue = event.target;
+    let stateValue = this.state;
+    stateValue[inputValue.name] = inputValue.value;
+    this.setState(stateValue);
+    this.validate();
+  }
+
+  render(){
+    const state = this.state;
+    
+    function getClass(field) {
+      if (state.invalid.hasOwnProperty(field)) {
+          return "react-validate invalid";
+      } else {
+          return "react-validate";
+      }
+    }
+    return(
+      <div className="row">
+        <div className="confirm-password-modal">
+          <div className="row">
+            <div className="confirm-password-title">[&nbsp;&nbsp;Change Password&nbsp;&nbsp;]</div>
+          </div>
+          <form onSubmit={this.password}>
+            <div className="row">
+              <div className="confirm-password-body"> 
+                <div className="input-field col s12 m12">
+                  <input id="fld_oldPassword" type="password"
+                          name="oldPassword"
+                          onChange={this.handleChange}
+                          value={this.state.oldPassword} />
+                  <label htmlFor="fld_oldPassword" data-success=""
+                          data-error={this.state.invalid.password}>Old password</label>                          
+                </div>
+                <div className="input-field col s12 m12">
+                  <input id="fld_newPassword" type="password"
+                          name="password" className={getClass('password')}
+                          onChange={this.handleChange}
+                          minLength={8}
+                          value={this.state.password}/>
+                  <label htmlFor="fld_newPassword" data-success=""
+                          data-error={this.state.invalid.password}>Password</label>
+                </div>
+                <div className="input-field col s12 m12"> 
+                  <input id="fld_confirmPassword" type="password"
+                            name="confirmPassword" className={getClass('confirm')}
+                            onChange={this.handleChange}
+                            minLength={8}
+                            value={this.state.confirm}/>
+                  <label htmlFor="fld_confirmPassword" data-success=""
+                            data-error={this.state.invalid.confirm}>Confirm your password</label>                 
+                </div>
+              </div>              
+            </div>
+            <div className="row">
+              <div className="col s12 m1 offset-m7">
+                <button type="submit" className="waves-effect waves-dark red btn-flat" >
+                  Save
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div className="rightsidebar" onClick={this.dismiss}></div>
+      </div>
+    )
+  }
+}
+
 class GenericModal extends Component {
   constructor(props) {
     super(props);

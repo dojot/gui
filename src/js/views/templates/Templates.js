@@ -635,7 +635,7 @@ class ListItem extends Component {
         this.toggleImageModal = this.toggleImageModal.bind(this);
         this.refreshImages = this.refreshImages.bind(this);
         this.updateDefaultVersion = this.updateDefaultVersion.bind(this);
-        //this.getDataAttrs = this.getDataAttrs.bind(this);
+        this.removeAttributeId = this.removeAttributeId.bind(this);
     }
 
 
@@ -706,9 +706,17 @@ class ListItem extends Component {
         this.state.template.attrs.push.apply(this.state.template.attrs, this.state.template.data_attrs);
         this.state.template.attrs.push.apply(this.state.template.attrs ,this.state.template.config_attrs);
 
+        this.removeAttributeId(this.state.template);
+
         TemplateActions.triggerUpdate(this.state.template, (template) => {
           Materialize.toast('Template updated', 4000);
         });
+    }
+
+    removeAttributeId(template){
+        for(let index in template.attrs){
+            delete template.attrs[index].id;
+        }
     }
 
     deleteTemplate(e) {
@@ -1261,5 +1269,25 @@ class Templates extends Component {
         );
     }
 }
+
+function OperationsHeader(props) {
+    return (
+        <div className="col s6 pull-right pt10">
+            <div className="searchBtn" title="Show search bar" onClick={props.toggleSearchBar}>
+                <i className="fa fa-search" />
+            </div>
+            <div onClick={props.addTemplate} className="new-btn-flat red waves-effect waves-light" title="Create a new template">
+                New Template<i className="fa fa-plus" />
+            </div>
+        </div>
+    )
+}
+
+function FilterFields(props) {
+    return <div className="col s12 m12">
+        <input id="fld_name" type="text" className="form-control form-control-lg" placeholder="Label" name="label" value={props.fields.label} onChange={props.onChange} />
+      </div>;
+}
+
 
 export {Templates as TemplateList};

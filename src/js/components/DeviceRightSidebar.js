@@ -105,22 +105,25 @@ class List extends Component {
     return(
       <div className="list-of-devices">
         <div className="row device-list">
-          <div className="col s12 main-title center-align">Devices</div>
-            <div className="col s12 info-header">
-              <div className="col s1 subtitle"></div>
-              <div className="col s5 title">Devices</div>
-              <div className="col s6 device-list-actions">
-                <div className="col s6 action-hide">
-                  <a className="waves-effect waves-light" onClick={this.hideDevices}>HIDE ALL</a>
-                </div>
-                <div className="col s6 action-show">
-                  <a className="waves-effect waves-light" onClick={this.showDevices}>SHOW ALL</a>
-                </div>
+          <div className="col s12 info-header">
+            <div className="col s1 " />
+            <div className="col s5 subtitle">{this.props.deviceInfo}</div>
+            <div className="col s6 device-list-actions">
+              <div className="col s6 action-hide">
+                <a className="waves-effect waves-light" onClick={this.hideDevices}>
+                  HIDE ALL
+                </a>
+              </div>
+              <div className="col s6 action-show">
+                <a className="waves-effect waves-light" onClick={this.showDevices}>
+                  SHOW ALL
+                </a>
               </div>
             </div>
-            <div className="deviceCanvas">
-              <ListRender devices={this.props.devices} selectedDevice={this.props.selectedDevice}/>
-            </div>
+          </div>
+          <div className="deviceCanvas">
+            <ListRender toggleVisibility={this.props.toggleVisibility} devices={this.props.devices} displayMap={this.props.displayMap} />
+          </div>
         </div>
       </div>
 
@@ -157,8 +160,7 @@ class Sidebar extends Component {
         { this.state.sideBarOpened ? (
           <div className="col device-painel full-height">
             <div className="col device-painel-body relative">
-              <List devices={this.props.devices} hideAll={this.props.hideAll} showAll={this.props.showAll}
-                            selectedDevice={this.props.selectedDevice}/>
+              <List deviceInfo={this.props.deviceInfo} toggleVisibility={this.props.toggleVisibility} devices={this.props.devices} hideAll={this.props.hideAll} showAll={this.props.showAll} displayMap={this.props.displayMap} />
             </div>
           </div>
         ) : (

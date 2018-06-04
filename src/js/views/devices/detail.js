@@ -69,11 +69,18 @@ class Attribute extends Component {
   }
 
   render() {
+    // check the current window, if less then 1024px, blocks compressed state
+    let width = window.innerWidth
+      || document.documentElement.clientWidth
+      || document.body.clientWidth;
+    let opened = this.state.opened; 
+      if (width < 1168 )
+      opened = true;
 
-    return <div className={"attributeBox " + (this.state.opened ? "expanded" : "compressed")}>
+    return <div className={"attributeBox " + (opened ? "expanded" : "compressed")}>
         <div className="header">
           <label>{this.props.attr.label}</label>
-          {!this.state.opened ? <i onClick={this.toogleExpand.bind(this, true)} className="fa fa-expand" /> : <i onClick={this.toogleExpand.bind(this, false)} className="fa fa-compress" />}
+          {!opened ? <i onClick={this.toogleExpand.bind(this, true)} className="fa fa-expand" /> : <i onClick={this.toogleExpand.bind(this, false)} className="fa fa-compress" />}
         </div>
 
         {/* <AttributeBox attrs={this.state.selected_attributes} /> */}

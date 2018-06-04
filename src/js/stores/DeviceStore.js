@@ -141,7 +141,7 @@ class DeviceStore {
 
   fetchDevicesByTemplate() {
     this.devices = {};
-    this.loading = false;
+    this.loading = true;
   }
 
   fetchSingle(deviceid) {

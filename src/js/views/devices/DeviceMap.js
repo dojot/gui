@@ -407,32 +407,16 @@ class DeviceMap extends Component {
         }
 
         return <div className="fix-map-bug">
-            <div className="row z-depth-2 devicesSubHeader" id="inner-header">
-                <div className="col s4 m4 main-title">Map Visualization</div>
-                <div className="col s8 m8 header-info hide-on-small-only">
-                    <div className="subtitle">{displayDevicesCount}</div>
-                    {/*<div className="title"># Devices</div>*/}
-                </div>
-            </div>
             <div className="flex-wrapper">
-                <div className="deviceMapCanvas deviceMapCanvas-map col m12 s12 relative">
-                    <Script
-                        url="https://www.mapquestapi.com/sdk/leaflet/v2.s/mq-map.js?key=zvpeonXbjGkoRqVMtyQYCGVn4JQG8rd9"
-                        onLoad={this.mqLoaded}>
-                    </Script>
-                    {this.state.mapquest ? (
-                        <PositionRenderer devices={pointList} toggleTracking={this.toggleTracking}
-                                          allowContextMenu={true} listPositions={this.props.tracking}/>
-                    ) : (
-                        <div className="row full-height relative">
-                            <div className="background-info valign-wrapper full-height">
-                                <i className="fa fa-circle-o-notch fa-spin fa-fw horizontal-center"/>
-                            </div>
-                        </div>
-                    )}
-                    <Sidebar devices={validDevices} hideAll={this.hideAll} showAll={this.showAll}
-                             selectedDevice={this.selectedDevice} toggleDisplay={this.toggleDisplay}/>
-                </div>
+              <div className="deviceMapCanvas deviceMapCanvas-map col m12 s12 relative">
+                <Script url="https://www.mapquestapi.com/sdk/leaflet/v2.s/mq-map.js?key=zvpeonXbjGkoRqVMtyQYCGVn4JQG8rd9" onLoad={this.mqLoaded} />
+                {this.state.mapquest ? <PositionRenderer devices={pointList} toggleTracking={this.toggleTracking} allowContextMenu={true} listPositions={this.props.tracking} showPolyline={true} /> : <div className="row full-height relative">
+                    <div className="background-info valign-wrapper full-height">
+                      <i className="fa fa-circle-o-notch fa-spin fa-fw horizontal-center" />
+                    </div>
+                  </div>}
+                    <Sidebar deviceInfo={displayDevicesCount} toggleVisibility={this.toggleVisibility} devices={this.validDevices} hideAll={this.hideAll} showAll={this.showAll} displayMap={this.state.displayMap} />
+              </div>
             </div>
         </div>;
     }
