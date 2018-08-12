@@ -103,7 +103,9 @@ module.exports = {
       },
       { from: "node_modules/i18next/i18next.min.js", to: "js/i18next.min.js" },
 
-      { from: "src/img", to: "images" }
+      { from: "src/img", to: "images" },
+      { from: "src/fonts", to: "fonts" }
+        
     ]),
 
     new webpack.DefinePlugin({
