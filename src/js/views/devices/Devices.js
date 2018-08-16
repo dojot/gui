@@ -7,7 +7,7 @@ import { NewPageHeader } from "../../containers/full/PageHeader";
 import AltContainer from 'alt-container';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { DojotBtnLink } from "../../components/DojotButton";
-import {DeviceMap} from './DeviceMap';
+import { DeviceMapSmall, DeviceMapBig} from "./DeviceMap";
 import {DeviceCardList} from './DeviceCard';
 import util from '../../comms/util';
 import { Filter, Pagination, FilterLabel, GenericOperations } from "../utils/Manipulation";
@@ -60,8 +60,14 @@ class MapWrapper extends Component {
   }
 
   render(){
+    console.log("this.props.deviceList", this.props.deviceList);
+    if (this.props.deviceList.length < 1000)
     return <AltContainer store={MeasureStore}>
-        <DeviceMap devices={this.props.devices} showFilter={this.props.showFilter} dev_opex={this.props.dev_opex} />
+        <DeviceMapSmall devices={this.props.devices} showFilter={this.props.showFilter} dev_opex={this.props.dev_opex} />
+      </AltContainer>;
+    else
+    return <AltContainer store={MeasureStore}>
+        <DeviceMapBig devices={this.props.devices} showFilter={this.props.showFilter} dev_opex={this.props.dev_opex} />
       </AltContainer>;
   }
 }

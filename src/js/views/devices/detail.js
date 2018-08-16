@@ -10,7 +10,7 @@ import DeviceStore from '../../stores/DeviceStore';
 import util from "../../comms/util/util";
 import { Loading } from "../../components/Loading";
 import { Attr, HandleGeoElements } from "../../components/HistoryElements";
-import { MapWrapper } from './Devices.js'
+import { MapWrapper } from './Devices.js';
 import Script from 'react-load-script';
 import toaster from "../../comms/util/materialize";
 import { DojotBtnRedCircle } from "../../components/DojotButton";
