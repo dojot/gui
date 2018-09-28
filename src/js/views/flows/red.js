@@ -10685,9 +10685,6 @@ RED.tray = (function() {
                     var absolutePosition = editorStack.position().left+ui.position.left
                     if (absolutePosition < 7) {
                         ui.position.left += 7-absolutePosition;
-                    } else if (ui.position.left > -tray.preferredWidth-1) {
-                        ui.position.left = -Math.min(editorStack.position().left-7,tray.preferredWidth-1);
-                    }
                     if (tray.options.resize) {
                         setTimeout(function() {
                             tray.options.resize({width: -ui.position.left});
@@ -10696,12 +10693,13 @@ RED.tray = (function() {
                     tray.width = -ui.position.left;
                 },
                 stop:function(event,ui) {
-                    el.width(-ui.position.left);
-                    el.css({left:''});
+                    let size = (ui.position.left <= 255) ? 255 : ui.position.left
+                    el.width(-size);
+                    el.css({left: size});
                     if (tray.options.resize) {
-                        tray.options.resize({width: -ui.position.left});
-                    }
-                    tray.width = -ui.position.left;
+                        tray.options.resize({width: -size});
+                    };
+                    tray.width = -size;
                 }
             });
 
@@ -10731,7 +10729,7 @@ RED.tray = (function() {
 
             el.css({
                 right: -(el.width()+10)+"px",
-                transition: "right 0.25s ease"
+                transition: "right 0.15s ease"
             });
             $("#workspace").scrollLeft(0);
             handleWindowResize();
