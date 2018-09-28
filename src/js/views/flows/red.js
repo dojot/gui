@@ -10685,9 +10685,6 @@ RED.tray = (function() {
                     var absolutePosition = editorStack.position().left+ui.position.left
                     if (absolutePosition < 7) {
                         ui.position.left += 7-absolutePosition;
-                    } else if (ui.position.left > -tray.preferredWidth-1) {
-                        ui.position.left;
-                    }
                     if (tray.options.resize) {
                         setTimeout(function() {
                             tray.options.resize({width: -ui.position.left});
