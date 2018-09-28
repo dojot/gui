@@ -514,7 +514,7 @@ class FirmwareUpdate extends Component {
                         {/* <div className="searchBtn" title="Show search bar" onClick={this.toggleSearchBar.bind(this)}>
               <i className="fa fa-search" />
             </div> */}
-                        {/* <DojotBtnLink linkto="/device/new" label="New Image" alt="Create a new image" icon="fa fa-plus" /> */}
+                        {/* <DojotBtnLink linkTo="/device/new" label="New Image" alt="Create a new image" icon="fa fa-plus" /> */}
                     </div>
                 </NewPageHeader>
                 <AltContainer store={TemplateStore}>

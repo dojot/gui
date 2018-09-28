@@ -15,7 +15,7 @@ function NewPageHeader(props) {
                 <div className="title">{props.title}</div>
             </div>
             <div className="row col m12 second-bar">
-                <div className="page-actions col s12 pull-right text-right">
+                <div className="page-actions col s12 pull-right text-right p0">
                     {childrenWithProps}
                 </div>
             </div>

@@ -91,7 +91,7 @@ class Pagination extends Component {
         return (
             <div className="col s7 p0"> 
                 <div className="pagination_div">
-                    <ReactPaginate previousLabel="previous" nextLabel="next" pageCount={pageCount} marginPagesDisplayed={1} pageRangeDisplayed={3} forcePage={currentPage} onPageChange={this.handlePageClick} containerClassName="pagination" subContainerClassName="pages pagination" activeClassName="active" />
+                    <ReactPaginate previousLabel="prev" nextLabel="next" pageCount={pageCount} marginPagesDisplayed={1} pageRangeDisplayed={3} forcePage={currentPage} onPageChange={this.handlePageClick} containerClassName="pagination" subContainerClassName="pages pagination" activeClassName="active" />
                 </div>
                 <div className="elements_page_div">
                     <MaterialSelect new_style label="# per page" value={this.state.elements_page} onChange={this.changeNelements}>

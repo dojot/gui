@@ -6,6 +6,7 @@ import util from '../comms/util/util';
 import { SmallPositionRenderer } from "../views/utils/Maps";
 
 
+
 class Graph extends Component {
     render() {
         const labels = [];
@@ -219,13 +220,16 @@ available
         if (geoconfs == undefined)
             geoconfs = {}
 
+            
+        let opened = util.checkWidthToStateOpen(this.state.opened);
+            
         if (validDevices.length == 0) {
             return <NoData />;
         }
         else
         {
             if (this.props.isStatic) {
-                return <div className={"attributeBox " + (this.state.opened ? "expanded" : "compressed")}>
+                return <div className={"attributeBox " + (opened ? "expanded" : "compressed")}>
                     <div className="header">
                         <label>{this.props.label}</label>
                         {!this.state.opened ? <i onClick={this.toogleExpand.bind(this, true)} className="fa fa-expand" /> : <i onClick={this.toogleExpand.bind(this, false)} className="fa fa-compress" />}

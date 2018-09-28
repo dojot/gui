@@ -15,6 +15,7 @@ import { DojotBtnRedCircle } from '../../components/DojotButton';
 import { RemoveModal } from '../../components/Modal';
 import ConfigStore from "../../stores/ConfigStore";
 
+
 const DeviceHeader = ({device}) => (
     <div className="row devicesSubHeader p0 device-details-header">
         <div className="col s8 m8">
@@ -47,12 +48,7 @@ class Attribute extends Component {
 
     render() {
     // check the current window, if less then 1024px, blocks compressed state
-        const width = window.innerWidth
-      || document.documentElement.clientWidth
-      || document.body.clientWidth;
-        let opened = this.state.opened;
-        if (width < 1168) opened = true;
-
+        let opened = util.checkWidthToStateOpen(this.state.opened);
         return (
             <div className={`attributeBox ${opened ? 'expanded' : 'compressed'}`}>
                 <div className="header">

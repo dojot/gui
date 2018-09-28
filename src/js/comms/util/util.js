@@ -5,7 +5,6 @@ import 'babel-polyfill';
 
 const sha1 = require('sha1');
 
-
 function FetchError(data, message) {
     this.name = 'FetchError';
     this.message = message || 'Call failed';
@@ -17,6 +16,18 @@ FetchError.prototype = Object.create(Error.prototype);
 FetchError.prototype.constructor = FetchError;
 
 class Util {
+
+    checkWidthToStateOpen(opened){
+        console.log("checkWidthToStateOpen");
+        const width =
+            window.innerWidth ||
+            document.documentElement.clientWidth ||
+            document.body.clientWidth;
+        if (width < 1168) return true;
+        return opened;
+    };
+
+
     getSHA1(data) {
         return sha1(data);
     }

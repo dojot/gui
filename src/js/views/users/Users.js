@@ -12,6 +12,8 @@ import UserActions from '../../actions/UserActions';
 import toaster from '../../comms/util/materialize';
 import { RemoveModal } from '../../components/Modal';
 import UserStore from '../../stores/UserStore';
+import { DojotBtnLink } from '../../components/DojotButton';
+
 
 class SideBar extends Component {
   constructor() {
@@ -769,11 +771,16 @@ class Users extends Component {
 function OperationsHeader(props) {
     return (
         <div className="col s12 pull-right pt10">
-            <div onClick={props.newUser} className="new-btn-flat red" title="Create a new user">
-          New User
-                <i className="fa fa-plus" />
-            </div>
+            <DojotBtnLink
+                responsive="true"
+                onClick={props.newUser}
+                label="New User"
+                alt="Create a new user"
+                icon="fa fa-plus"
+                className="w130px"
+            />
         </div>
+
     );
 }
 

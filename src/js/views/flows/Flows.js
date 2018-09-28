@@ -10,6 +10,8 @@ import FlowActions from '../../actions/FlowActions';
 
 import { NewPageHeader } from '../../containers/full/PageHeader';
 import util from '../../comms/util/util';
+import { DojotBtnLink } from "../../components/DojotButton";
+
 
 function SummaryItem(props) {
     return (
@@ -304,13 +306,7 @@ export class Flows extends Component {
 }
 
 function OperationsHeader() {
-    return (
-        <div className="col s12 pull-right pt10">
-            <Link to="/flows/new" className="new-btn-flat red waves-effect waves-light " title="Create a new data flow">
-        New Flow
-                {' '}
-                <i className="fa fa-plus" />
-            </Link>
-        </div>
-    );
+    return <div className="col s12 pull-right pt10">
+        <DojotBtnLink responsive="true" linkTo="/flows/new" label="New Flow" alt="Create a new data flow" icon="fa fa-plus" className="w130px" />
+      </div>;
 }
