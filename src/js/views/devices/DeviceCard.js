@@ -20,7 +20,7 @@ function SummaryItem(props) {
     return (
 
         <Link to={`/device/id/${props.device.id}/detail`}>
-            <div className="card-size card-hover lst-entry-wrapper z-depth-2 fullHeight">
+            <div className="card-size card-hover lst-entry-wrapper z-depth-2">
                 <div className="lst-entry-title col s12">
                     <img className="title-icon" src="images/icons/chip-wt.png" />
                     <div className="title-text truncate">
@@ -102,7 +102,7 @@ class DeviceCardList extends Component {
                         </span>
                     </div>
                 ) : (
-                    <div className="col s12  lst-wrapper extra-padding">
+                    <div className="col s12  lst-wrapper extra-padding flex-container">
                         {this.filteredList.map(device => (
                             <SummaryItem device={device} key={device.id} />
                         ))}

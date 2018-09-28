@@ -1232,7 +1232,7 @@ class TemplateList extends Component {
         }
 
         return (
-            <div className="full-height relative overflow-auto">
+            <div className="full-height flex-container">
                 {this.filteredList.length > 0 ? (
                     <div className="col s12 lst-wrapper w100">
                         {this.filteredList.map(template => (

@@ -300,7 +300,7 @@
     height: 100%;
     width: 100%;
     padding-top: 2px;
-
+    position: fixed;
     .flex-wrapper
     {
       height: 100%;
@@ -800,15 +800,13 @@
 
 .full-device-area{
     height: 100%;
-    width: calc(100% - 250px);
+    width: 100%;
     z-index: 9991;
-    display: inline-block;
-    overflow: auto;
-    position: fixed;
+    overflow: scroll;
     top: 117px;
     margin: 0;
     padding-bottom: 120px;
-
+    
     &>div
     {
       width: 100%;
@@ -821,10 +819,13 @@
   height: 90px !important;
 }
 
+.flex-container {
+  list-style: none;
+  display: flex !important;
+  flex-flow: row wrap !important;
+}
+
 .device-card-area {
-    height: 100%;
-    width: 100%;
-    position: relative;
-    float: left;
-    overflow: scroll;
+  height: 100%;
+  float: left;
 }
