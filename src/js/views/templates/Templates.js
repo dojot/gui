@@ -167,39 +167,64 @@ class AttributeList extends Component {
             isSuppressed: true,
             fieldSizeDyAttrStatus: false,
             fieldSizeStaticAttrStatus: false,
+            isActuator: false,
         };
-
+ 
         this.suppress = this.suppress.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleChangeAttribute = this.handleChangeAttribute.bind(this);
         this.removeAttribute = this.removeAttribute.bind(this);
         this.availableValueTypes = attrType.getValueTypes();
         this.availableTypes = attrType.getTypes();
     }
-
+ 
     componentWillMount() {
         if (this.props.attributes.label.length > 18) {
             this.setState({ fieldSizeDyAttrStatus: true });
         }
-
+ 
         if (this.props.attributes.hasOwnProperty('static_value')) {
             if (this.props.attributes.static_value.length > 18) {
                 this.setState({ fieldSizeStaticAttrStatus: true });
             }
         }
     }
-
+ 
+    componentDidMount(){
+        const state = {...this.state};
+        const value = this.props.attributes.type;
+        if (value === 'actuator' || value === 'dynamic' || value === '') {
+            state.isActuator = true;
+        } else {
+            state.isActuator = false;
+        }
+        this.setState({...state})
+    }
+ 
     suppress() {
         this.setState({ isSuppressed: !this.state.isSuppressed });
+       
     }
-
+ 
     handleChange(event) {
         this.props.onChangeValue(event, this.props.index);
     }
-
-    removeAttribute(attribute) {
+ 
+    handleChangeAttribute(event){
+       const state = this.state;
+       const value = event.target.value;
+        if (value == 'actuator' || value == 'dynamic' || value == '') {
+            state.isActuator = true;
+        } else {
+            state.isActuator = false;
+        }
+        this.props.onChangeValue(event, this.props.index);
+    }
+ 
+    removeAttribute(attribute) { 
         this.props.removeAttribute(attribute, false);
     }
-
+ 
     render() {
         const staticValue = this.props.attributes.static_value || '';
         return (
@@ -226,7 +251,7 @@ class AttributeList extends Component {
                     </div>
                 </div>
                 <div className="attr-row">
-                    <div className="icon" />
+                    <div className="icon"componentWillMount/>
                     <div className="attr-content">
                         <select
                             id="select_attribute_type"
@@ -239,7 +264,7 @@ class AttributeList extends Component {
                             <option value="">Select type</option>
                             {this.availableValueTypes.map(opt => <option value={opt.value} key={opt.label}>{opt.label}</option>)}
                         </select>
-
+ 
                         <span>Type</span>
                     </div>
                     <div
@@ -253,6 +278,8 @@ class AttributeList extends Component {
                 <div className="attr-row">
                     <div className="icon" />
                     <div className="attr-content">
+                    {this.state.isActuator ? null
+                    : (
                         <input
                             className={this.state.fieldSizeStaticAttrStatus ? 'truncate' : ''}
                             type="text"
@@ -263,13 +290,14 @@ class AttributeList extends Component {
                             maxLength="25"
                             title={staticValue}
                         />
+                    )}
                         <select
                             id="select_attribute_type"
                             className="card-select mini-card-select"
                             name="type"
                             value={this.props.attributes.type}
                             disabled={!this.props.editable}
-                            onChange={this.handleChange}
+                            onChange={this.handleChangeAttribute}
                         >
                             <option value="">Select type</option>
                             {this.availableTypes.map(opt => <option value={opt.value} key={opt.label}>{opt.label}</option>)}
@@ -279,8 +307,8 @@ class AttributeList extends Component {
             </div>
         );
     }
-}
-
+ }
+ 
 class ConfigList extends Component {
     constructor(props) {
         super(props);
@@ -401,13 +429,14 @@ class NewAttribute extends Component {
                 value: '',
                 label: '',
             },
-            isActuator: false,
+            isActuator: true,
         };
-
+ 
         this.suppress = this.suppress.bind(this);
         this.availableTypes = attrType.getTypes();
         this.handleChangeStatus = this.handleChangeStatus.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleChangeAttribute = this.handleChangeAttribute.bind(this);
         this.addAttribute = this.addAttribute.bind(this);
         this.discardAttribute = this.discardAttribute.bind(this);
         this.availableValueTypes = attrType.getValueTypes();
@@ -415,14 +444,15 @@ class NewAttribute extends Component {
         this.configValueTypes = attrType.getConfigValueTypes();
         this.configTypes = attrType.getConfigTypes();
     }
-
-
+ 
+ 
     handleChangeStatus(newStatus) {
         this.props.onChangeStatus(newStatus);
     }
-
+ 
     suppress(property) {
         const state = this.state;
+        property == true ? state.isActuator = false : state.isActuator = true
         state.isSuppressed = !state.isSuppressed;
         state.isConfiguration = property;
         state.newAttr = { value_type: '', value: '', label: '' };
@@ -430,42 +460,55 @@ class NewAttribute extends Component {
         this.setState(state);
         this.handleChangeStatus(property);
     }
-
+ 
     handleChange(event) {
         const target = event.target;
         const state = this.state;
         state.newAttr[target.name] = target.value;
-        if (target.value == 'actuator') {
-            state.isActuator = true;
-        } else if (target.value == 'dynamic' || target.value == 'static') {
-            state.isActuator = false;
-        }
         this.setState(state);
     }
-
+ 
+    handleChangeAttribute(event){
+        const target = event.target;
+        const state = this.state;
+        const value = event.target.value;
+        state.newAttr[target.name] = target.value;
+        console.log('state: ',state);
+        if(state.isConfiguration == false){
+            if (value == 'actuator' || value == 'dynamic' || value == '') {
+                state.isActuator = true;
+            } else {
+                state.isActuator = false;
+            }
+        }else{
+            state.isActuator = false
+        }
+        this.setState(state);
+     }
+ 
     addAttribute(attribute) {
         let ret = util.isNameValid(attribute.label);
         if (!ret.result && !this.state.isConfiguration) {
             toaster.error(ret.error);
             return;
         }
-
+ 
         ret = util.isTypeValid(attribute.value, attribute.value_type, attribute.type, this.state.isActuator);
         if (!ret.result) {
             toaster.error(ret.error);
             return;
         }
-
+ 
         // type of attribute can't be empty
         if (attribute.value_type == '') {
             toaster.error("You can't leave type empty");
             return;
         }
-
+ 
         this.props.addAttribute(attribute, this.state.isConfiguration, this.state.isActuator);
         this.suppress();
     }
-
+ 
     discardAttribute() {
         const state = this.state;
         state.newAttr = {
@@ -477,11 +520,11 @@ class NewAttribute extends Component {
         this.setState(state);
         this.suppress();
     }
-
+ 
     render() {
         return (
             <div className={`new-attr-area attr-area ${this.state.isSuppressed ? 'suppressed-shadow' : ''}`}>
-
+ 
                 <div className={`add-row ${this.state.isSuppressed ? '' : 'invisible zero-height'}`}>
                     <div
                         className="add-btn add-config"
@@ -509,13 +552,13 @@ class NewAttribute extends Component {
                     </div>
                     <div className="middle-line" />
                 </div>
-
+ 
                 <div className={(this.state.isSuppressed ? 'invisible' : 'padding5')}>
                     <div className={`attr-row ${this.state.isConfiguration ? 'none' : ''}`}>
                         <div className="icon">
                             <img src="images/add-tag.png" />
                         </div>
-
+ 
                         <div className="attr-content ">
                             <input
                                 type="text"
@@ -527,7 +570,7 @@ class NewAttribute extends Component {
                             <span>Name</span>
                         </div>
                     </div>
-
+ 
                     <div className="attr-row">
                         <div className="icon">
                             <img className={(this.state.isConfiguration ? '' : 'none')} src="images/add-gear.png" />
@@ -560,7 +603,7 @@ class NewAttribute extends Component {
                                         name="value"
                                     />
                                 )}
-
+ 
                             <select
                                 id="select_attribute_type"
                                 className={`${this.state.isConfiguration ? (this.state.newAttr.value_type === 'protocol' ? '' : 'none') : 'none'} card-select dark-background`}
@@ -571,15 +614,15 @@ class NewAttribute extends Component {
                                 <option value="">Select type</option>
                                 {this.configTypes.map(opt => <option value={opt.value} key={opt.label}>{opt.label}</option>)}
                             </select>
-
+ 
                             <span className={(this.state.isConfiguration ? '' : 'none')}>Value</span>
-
+ 
                             <select
                                 id="select_attribute_type"
                                 className={`${this.state.isConfiguration ? 'none' : ''} card-select mini-card-select dark-background`}
                                 name="type"
                                 value={this.state.newAttr.type}
-                                onChange={this.handleChange}
+                                onChange={this.handleChangeAttribute}
                             >
                                 <option value="">Select type</option>
                                 {this.availableTypes.map(opt => <option value={opt.value} key={opt.label}>{opt.label}</option>)}
@@ -602,10 +645,11 @@ class NewAttribute extends Component {
                     </div>
                 </div>
             </div>
-
+ 
         );
     }
-}
+ }
+ 
 
 class RemoveDialog extends Component {
     constructor(props) {
