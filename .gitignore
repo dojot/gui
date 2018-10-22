@@ -4,3 +4,5 @@ public/*
 dist/*
 src/components/*
 nohup.out
+.vscode/launch.json
+

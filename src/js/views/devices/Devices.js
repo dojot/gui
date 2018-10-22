@@ -49,7 +49,7 @@ class MapWrapper extends Component {
     }
 
     componentDidMount() {
-        const devices = this.props.devices;
+        const devices = this.props.deviceList;
         for (const deviceID in devices) {
             for (const templateID in devices[deviceID].attrs) {
                 for (const attrID in devices[deviceID].attrs[templateID]) {
@@ -66,7 +66,7 @@ class MapWrapper extends Component {
     render() {
         return (
             <AltContainer stores={{Measure: MeasureStore, Config: ConfigStore}}>
-                <DeviceMap devices={this.props.devices} showFilter={this.props.showFilter} dev_opex={this.props.dev_opex} />
+                <DeviceMap devices={this.props.deviceList} showFilter={this.props.showFilter} dev_opex={this.props.dev_opex} />
             </AltContainer>
         );
     }
