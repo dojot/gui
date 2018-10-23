@@ -1391,7 +1391,7 @@ function OperationsHeader(props) {
 function FilterFields(props) {
     return (
         <div className="col s12 m12">
-            <input id="fld_name" type="text" className="form-control form-control-lg" placeholder="Label" name="label" value={props.fields.label} onChange={props.onChange} />
+            <input onKeyUp={props.KeyUp} id="fld_name" type="text" className="form-control form-control-lg" placeholder="Label" name="label" value={props.fields.label} onChange={props.onChange} />
         </div>
     );
 }

@@ -183,6 +183,7 @@ class Filter extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.updateQuery = this.updateQuery.bind(this);
         this.doSearch = this.doSearch.bind(this);
+        this.handleKey = this.handleKey.bind(this);
     }
 
     updateQuery(element) {
@@ -213,6 +214,12 @@ class Filter extends Component {
         }
     }
 
+    handleKey(e){
+        if(e.key ==='Enter'){
+          this.doSearch()
+        }
+    }
+
     render() {
         console.log('Render Filter Component ', this.props, this.state);
 
@@ -232,7 +239,7 @@ class Filter extends Component {
                 </div>
                 {/* <div className="col s1 m1 header-info" /> */}
                 <div className="col s6 m6">
-                    <Fields fields={this.state.query} onChange={this.handleChange} />
+                    <Fields fields={this.state.query} onChange={this.handleChange} KeyUp={this.handleKey.bind(this)} />
                 </div>
                 <div className="col s1 m1 pt10">
                     <DojotBtnCircle click={this.doSearch} icon="fa fa-search" />

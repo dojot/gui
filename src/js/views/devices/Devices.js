@@ -202,7 +202,6 @@ class Devices extends Component {
         });
     }
 
-
     render() {
         // console.log('Loading Devices Component.');
 

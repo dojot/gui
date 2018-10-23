@@ -521,8 +521,8 @@ class DeviceDetail extends Component {
         }
 
         for (const index in config_list) {
-            if (config_list[index].label === 'protocol') {
-                config_list[index].static_value = config_list[index].static_value.toUpperCase();
+            if (config_list[index].label === 'protocol') {              
+                config_list[index].static_value = (config_list[index].static_value !== undefined ? config_list[index].static_value.toUpperCase() : config_list[index].static_value);
             }
         }
 

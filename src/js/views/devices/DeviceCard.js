@@ -93,7 +93,7 @@ class DeviceCardList extends Component {
 
         return (
             <div className="device-card-area">
-                <Filter showPainel={this.props.showFilter} metaData={this.metaData} ops={this.props.dev_opex} fields={DevFilterFields} />
+                <Filter showPainel={this.props.showFilter} metaData={this.metaData} ops={this.props.dev_opex} fields={DevFilterFields}/>
                 {this.filteredList.length === 0 ? (
                     <div className="background-info valign-wrapper full-height">
                         <span className="horizontal-center">
@@ -159,7 +159,8 @@ class DevFilterFields extends Component {
                 <div className="col s5 m5">
                     <div className="dev_field_filter">
                         <label htmlFor="fld_device_name">Device Name</label>
-                        <input id="fld_device_name" type="text" className="form-control form-control-lg margin-top-mi7px" placeholder="Device Name" value={this.props.fields.label} name="label" onChange={this.props.onChange} />
+                        <input id="fld_device_name" type="text" className="form-control form-control-lg margin-top-mi7px" placeholder="Device Name" 
+                        value={this.props.fields.label} name="label" onChange={this.props.onChange} onKeyUp={this.props.KeyUp} />
                     </div>
                 </div>
                 <div className="col s1 m1">&nbsp;</div>
