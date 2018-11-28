@@ -131,14 +131,10 @@ class CustomMap extends Component {
   componentDidUpdate() {
     console.log("5. componentDidUpdate ", this.props.markersData, this.subset);
     console.log("5. map ", this.map);
-
-    // reseting layer to the map
-    // this.map.removeLayer(OpenStreetMap_Mapnik);
-    if (!this.map.hasLayer(OpenStreetMap_Mapnik)) {
+   if (!this.map.hasLayer(OpenStreetMap_Mapnik)) {
       console.log("Readding the tile layer");
       this.map.addLayer(OpenStreetMap_Mapnik);
     }
-    // check if data has changed
     if (JSON.stringify(this.props.markersData) != JSON.stringify(this.subset)) {
       this.updateMarkers();
     }
@@ -186,8 +182,8 @@ class CustomMap extends Component {
   }
 
   handleDyData(socket_data) {
+    console.log("5. handleDyData", socket_data);
     this.creatingDynamicPoint(socket_data);
-    // MeasureActions.appendMeasures(data);
   }
 
   creatingDynamicPoint(measureData) {
@@ -195,29 +191,23 @@ class CustomMap extends Component {
     let dev = null;
     const now = measureData.metadata.timestamp;
     const deviceID = measureData.metadata.deviceid;
-
     for (const index in this.props.markersData) {
       if (this.props.markersData[index].id == deviceID) {
         dev = this.props.markersData[index];
       }
     }
     if (dev == null) return;
-
     let myPoint = dev;
-
     // 2. trying to find the dynamic geo-point
     let geoLabel = null;
     for (const label in measureData.attrs) {
       if (dev.attr_label == label)
         geoLabel = label;
     }
-
     if (geoLabel == null) return; //no attribute with position
-
     let position = util.parserPosition(measureData.attrs[geoLabel]);
     myPoint.pos = L.latLng(position[0], position[1]);
     myPoint.timestamp = util.iso_to_date(now);
-
     // 3. change Marker point
     let hcm = this.handleContextMenu;
     let mkr = this.mkrHelper[myPoint.id];
@@ -229,7 +219,7 @@ class CustomMap extends Component {
       a.originalEvent.preventDefault();
     });
   }
-
+  
   updateMarkers() {
     console.log("5. this.props.markersData");
     this.subset = JSON.parse(JSON.stringify(this.props.markersData));
@@ -254,8 +244,6 @@ class CustomMap extends Component {
       });
 
       this.markers.addLayer(mkr);
-
-      // creating a map to helps find the device
       this.mkrHelper[marker.id] = mkr;
     });
     this.markers.addTo(this.map);
@@ -374,7 +362,7 @@ class MapSocket extends Component {
           init(reply.token);
         })
         .catch(error => {
-          // console.log('Failed!', error);
+          console.log('Failed!', error);
         });
     }
 
