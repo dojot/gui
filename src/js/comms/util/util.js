@@ -18,9 +18,13 @@ FetchError.prototype.constructor = FetchError;
 class Util {
 
     parserPosition(position) {
-        const parsedPosition = position.split(',');
-        if (parsedPosition.length > 1) {
-            return [parseFloat(parsedPosition[0]), parseFloat(parsedPosition[1])];
+        if (position.toString().indexOf(',') > -1) {
+            const parsedPosition = position.split(',');
+            if (parsedPosition.length > 1) {
+                return [parseFloat(parsedPosition[0]), parseFloat(parsedPosition[1])];
+            }
+        } else {
+            return undefined;
         }
     }
 

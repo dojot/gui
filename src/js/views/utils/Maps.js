@@ -182,7 +182,6 @@ class CustomMap extends Component {
   }
 
   handleDyData(socket_data) {
-    console.log("5. handleDyData", socket_data);
     this.creatingDynamicPoint(socket_data);
   }
 
@@ -350,7 +349,8 @@ class MapSocket extends Component {
    
   componentDidMount() {
     console.log("MapSocket: componentDidMount:");
-    let rsi = this.props.receivedSocketInfo
+    const rsi = this.props.receivedSocketInfo
+    console.log("rsi",rsi);
     const socketio = require("socket.io-client");
     const target = `${window.location.protocol}//${window.location.host}`;
     const token_url = `${target}/stream/socketio`;
@@ -367,12 +367,13 @@ class MapSocket extends Component {
     }
 
     function init(token) {
+      console.log("web socket init");
       device_list_socket = socketio(target, {
         query: `token=${token}`,
         transports: ["polling"]
       });
       device_list_socket.on("all", data => {
-        console.log("received socket information:", data);
+        console.log("MapSocket: received socket information:", data);
         rsi(data);
       });
 
@@ -456,7 +457,6 @@ class SmallPositionRenderer extends Component {
             let attr_label = "";
             if (device.dp_metadata)
               attr_label = device.dp_metadata.attr_label;
-
               for (const y in device.dy_positions) {
               if (device.is_visible)
               {
