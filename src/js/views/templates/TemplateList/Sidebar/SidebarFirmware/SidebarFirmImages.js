@@ -58,8 +58,11 @@ class SidebarFirmImages extends Component {
                         sha1: null,
                     };
                     ImageActions.triggerInsert(jsonImg, (img) => {
-                        const idToBeUsed = img.id;
                         toaster.success('Image created.');
+                        // todo: get image_id correctly
+                        // const idToBeUsed = img.id;
+                        const { url } = img;
+                        const idToBeUsed = url.split('/')[2];
                         if (image.file) {
                             const imgBinary = {
                                 id: idToBeUsed,
@@ -69,26 +72,23 @@ class SidebarFirmImages extends Component {
                                 toaster.success('Image added.');
                             });
                         }
-                        ImageActions.updateImageData(idToBeUsed, 'saved', true);
                     });
-                } else {
-                    // Todo currently we don't update meta information for images;
-                    if (image.file) {
-                        const imgBinary = {
-                            id: image.id,
-                            binary: image.file[0],
-                        };
-                        ImageActions.triggerUpdate(imgBinary, () => {
-                            toaster.success('Image added.');
-                        });
-                    }
-                    ImageActions.updateImageData(image.id, 'saved', true);
-                }
-                if (image.new) {
-                    this.setState({ newImage: false });
+                } else
+                // Todo: currently we don't update meta information for images;
+                if (image.file) {
+                    const imgBinary = {
+                        id: image.id,
+                        binary: image.file[0],
+                    };
+                    ImageActions.triggerUpdate(imgBinary, () => {
+                        toaster.success('Image added.');
+                    });
                 }
             }
         });
+        // return the component to up-to-date state
+        this.setState({ newImage: false });
+        ImageActions.fetchImages.defer(templateId);
     }
 
     removeBinary(e, image) {
@@ -106,7 +106,7 @@ class SidebarFirmImages extends Component {
             this.setState({ newImage: false });
         } else {
             ImageActions.triggerRemoval(image, () => {
-                toaster.error('Image removed.');
+                toaster.success('Image removed.');
             });
         }
     }
@@ -155,7 +155,7 @@ class SidebarFirmImages extends Component {
                                 </div>
                                 <div className="footer">
                                     <Fragment>
-                                        <DojotBtnClassic label="discard" type="secondary" onClick={toogleSidebarFirmware} />
+                                        <DojotBtnClassic label="back" type="secondary" onClick={toogleSidebarFirmware} />
                                         <DojotBtnClassic color="red" label="save" type="primary" onClick={e => this.saveImages(e)} />
                                     </Fragment>
                                 </div>

@@ -22,7 +22,7 @@ function createAttribute(label, type, valueType, staticValue) {
 
 function createImageAttribute(data, type) {
     const aux = createAttribute(data.user_value, type, 'string', '');
-    aux.metadata = [createAttribute(data.dojot_value, 'meta', 'bool', true)];
+    aux.metadata = [createAttribute(data.dojot_value, 'meta', 'boolean', true)];
     return aux;
 }
 
@@ -62,7 +62,6 @@ class SidebarFirmConfig extends Component {
             if (template.img_attrs.length === 0) {
                 ImageActions.updateImageAllowed(false);
             } else {
-                console.log('componentDidMount: template.img_attrs', template.img_attrs);
                 ImageActions.updateImageAllowed(true);
                 this.updateFieldsWithTemplateData(template.img_attrs);
             }
@@ -96,7 +95,6 @@ class SidebarFirmConfig extends Component {
 
     saveImageConfig(e) {
         e.preventDefault();
-
         const { template } = this.props;
         const { attrs } = this.state;
         template.attrs.push(createImageAttribute(attrs.current_state, 'dynamic'));
@@ -105,7 +103,6 @@ class SidebarFirmConfig extends Component {
         template.attrs.push(createImageAttribute(attrs.upload_image, 'actuator'));
         template.attrs.push(createImageAttribute(attrs.apply_image, 'actuator'));
 
-        console.log('Final template', template);
         TemplateActions.triggerUpdate(template, () => {
             toaster.success('Template updated');
         });
@@ -120,7 +117,6 @@ class SidebarFirmConfig extends Component {
             attrs,
         });
     }
-
 
     render() {
         const {

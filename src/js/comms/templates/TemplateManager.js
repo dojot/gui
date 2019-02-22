@@ -111,8 +111,8 @@ class TemplateManager {
         return util.POST(`${this.baseUrl}/graphql/`, req);
     }
 
-    setTemplate(detail) {
-        return util.PUT(`${this.baseUrl}/template/${detail.id}`, detail);
+    setTemplate(template) {
+        return util.PUT(`${this.baseUrl}/template/${template.id}`, template);
     }
 
     addTemplate(d) {

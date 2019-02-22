@@ -76,7 +76,6 @@ class TemplateActions {
 
     triggerUpdate(template, cb) {
         return (dispatch) => {
-            console.log('triggerUpdate', template);
             templateManager.setTemplate(template)
                 .then((response) => {
                     this.updateSingle(template);
