@@ -9,7 +9,7 @@ import Dropzone from 'react-dropzone';
 const ImageList = ({
     list, changeAttrValue, removeBinary, removeImage, onDrop,
 }) => (
-    <div className="body-actions">
+    <Fragment>
         {Object.entries(list).map(([key, element]) => (
             <div key={key} className="image-block">
                 <div className="body-attribute-name">
@@ -85,7 +85,7 @@ const ImageList = ({
             </div>
         ))
         }
-    </div>
+    </Fragment>
 );
 
 ImageList.defaultProps = {

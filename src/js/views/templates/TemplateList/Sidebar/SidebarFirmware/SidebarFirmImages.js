@@ -45,7 +45,7 @@ class SidebarFirmImages extends Component {
     saveImages(e) {
         e.preventDefault();
         const { templateId, images } = this.props;
-        Object.entries(images).map((image) => {
+        Object.values(images).forEach((image) => {
             if (!image.saved) {
                 // for each non saved image,
                 // 1. update or create image
@@ -88,7 +88,6 @@ class SidebarFirmImages extends Component {
                     this.setState({ newImage: false });
                 }
             }
-            return null;
         });
     }
 

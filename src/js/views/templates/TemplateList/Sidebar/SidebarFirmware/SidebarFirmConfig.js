@@ -132,7 +132,7 @@ class SidebarFirmConfig extends Component {
                 <Slide right when={showFirmware} duration={300}>
                     { showFirmware
                         ? (
-                            <div className="-sidebar sidebar-attribute sidebar-firmware">
+                            <div className="generic-sidebar sidebar-firmware">
                                 <div className="header">
                                     <div className="title">Firmware</div>
                                     <div className="icon">
@@ -167,7 +167,7 @@ class SidebarFirmConfig extends Component {
                                     <div className="line-2" />
                                     { imageAllowed
                                         ? (
-                                            <div className="body-form image-related-attrs">
+                                            <div className="image-related-attrs">
                                                 <span>
                                                     To confirm the firmware configuration,
                                                     please update the following attributes:
@@ -231,7 +231,7 @@ class SidebarFirmConfig extends Component {
                                                 </div>
                                             </div>
                                         )
-                                        : null }
+                                        : <div className="image-related-attrs" /> }
                                     <div className="body-actions">
                                         <div className="body-actions--divider" />
                                         <SidebarButton

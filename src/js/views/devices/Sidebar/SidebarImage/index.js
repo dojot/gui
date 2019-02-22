@@ -117,7 +117,7 @@ class SidebarImage extends Component {
         const { images } = is;
         console.log('Images to create image options', images);
         if (images) {
-            Object.entries(images).forEach((el) => {
+            Object.values(images).forEach((key, el) => {
                 items.push(<option key={el.id} value={el.id}>{el.fw_version}</option>);
             });
         }
