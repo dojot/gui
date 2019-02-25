@@ -511,7 +511,6 @@
   font-size: 13px !important;
   padding-bottom: 17px;
   color: rgba(0, 0, 0, 0.54) !important;
-  background: white;
   padding-top: 8px;
 
   .icon{
@@ -523,7 +522,11 @@
     .description
     {
       display: inline-block;
-      width: calc(100% - 200px);
+      width: calc(100% - 120px);
+    
+      .tl{
+        text-transform: uppercase;
+      }
     }
 
     .symbol
@@ -559,4 +562,16 @@
   }
 
 
+}
+
+.fw_btn_pushed
+{
+    -webkit-box-shadow: inset 0 0 5px #c1c1c1;
+       -moz-box-shadow: inset 0 0 5px #c1c1c1;
+            box-shadow: inset 0 0 5px #c1c1c1;
+}
+
+.fw_btn_push
+{
+  background:white;
 }

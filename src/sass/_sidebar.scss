@@ -713,12 +713,7 @@
     .body-actions
     {
       display: block;
-      .body-actions--button:hover {
-        background-color: rgba(218, 218, 218, 0.4) !important;
-        transition: 300ms;
-      }
-
-      .body-actions--divider{
+       .body-actions--divider{
         display: flex;
         width: 310px;
         align-self: flex-end;
@@ -753,7 +748,8 @@
           padding-right: 25px;
         }
         &:hover{
-          background-color: rgba(153, 153, 153, 0.4);
+        background-color: rgba(218, 218, 218, 0.4) !important;
+          transition: 300ms;
         }
       }
     }
