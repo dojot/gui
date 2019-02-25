@@ -64,26 +64,30 @@ class ImageStore {
     {
         this.images[image.id] = JSON.parse(JSON.stringify(image));
     }
+    
+    enhanceImage(image)
+    {
+        let newImage = {};
+        newImage = JSON.parse(JSON.stringify(image));
+        newImage.has_image = newImage.confirmed;
+        if (!newImage.has_image)
+        newImage.image_hash = null;
+        newImage.image_version = newImage.fw_version;
+        newImage.saved = true;
+        return newImage;
+    }
 
     handleUpdateImageList(images) {
         this.images = {};
         for (let idx = 0; idx < images.length; idx++) {
-            let aux_id = images[idx].id;
-            this.images[aux_id] = JSON.parse(JSON.stringify(images[idx]));
-            this.images[aux_id].has_image = this.images[aux_id].confirmed;
-            if (!this.images[aux_id].has_image)
-            this.images[aux_id].image_hash = null;
-            this.images[aux_id].image_version = this.images[aux_id].fw_version;
-            this.images[aux_id].saved = true;
+            const img = this.enhanceImage(images[idx]);
+            this.images[img.id] = img;
         }
-        console.log('handleUpdateImageList', this.images);
-        // this.images = images;
         this.error = null;
         this.loading = false;
     }
 
     handleFetchImageList() {
-        console.log("handleFetchImageList");
         this.images = {};
         this.loading = true;
     }
@@ -97,14 +101,22 @@ class ImageStore {
     }
 
     handleInsertImage(imgs) {
-        console.log("handleInsertImage: image", imgs.image, imgs.oldimage);
+        // todo: get image_id correctly
+        // const idToBeUsed = imgs.image.id;
+        // adds new image
+        const idToBeUsed = imgs.image.url.split('/')[2];
+        this.images[idToBeUsed] = JSON.parse(JSON.stringify(imgs.oldimage)); 
+        this.images[idToBeUsed].id = idToBeUsed;
+        this.images[idToBeUsed].saved = true;
+        this.images[idToBeUsed].created = imgs.image.published_at;
+        this.images[idToBeUsed].image_version = this.images[idToBeUsed].fw_version;
+        
+        // removes old image 
         delete this.images[imgs.oldimage.id];
-        this.images[imgs.image.id] = imgs.image; 
+     
         this.error = null;
         this.loading = false;
     }
-
-
 
 
     handleUpdateSingle(image_id) {

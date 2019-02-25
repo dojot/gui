@@ -56,6 +56,7 @@ class SidebarFirmImages extends Component {
                         label: String(templateId),
                         fw_version: image.image_version,
                         sha1: null,
+                        id: image.id,
                     };
                     ImageActions.triggerInsert(jsonImg, (img) => {
                         toaster.success('Image created.');
@@ -69,7 +70,8 @@ class SidebarFirmImages extends Component {
                                 binary: image.file[0],
                             };
                             ImageActions.triggerUpdate(imgBinary, () => {
-                                toaster.success('Image added.');
+                                toaster.success('File added.');
+                                ImageActions.updateImageData(idToBeUsed, 'file', image.file);
                             });
                         }
                     });
@@ -81,12 +83,18 @@ class SidebarFirmImages extends Component {
                         binary: image.file[0],
                     };
                     ImageActions.triggerUpdate(imgBinary, () => {
-                        toaster.success('Image added.');
+                        toaster.success('File added.');
+                        ImageActions.updateImageData(image.id, 'saved', true);
                     });
                 }
             }
         });
+        this.setState({ newImage: false });
+    }
+
+    updateImageList() {
         // return the component to up-to-date state
+        const { templateId } = this.props;
         this.setState({ newImage: false });
         ImageActions.fetchImages.defer(templateId);
     }
@@ -120,7 +128,6 @@ class SidebarFirmImages extends Component {
     render() {
         const { newImage } = this.state;
         const { images, showFirmware, toogleSidebarFirmware } = this.props;
-
         return (
             <Fragment>
                 <Slide right when={showFirmware} duration={300}>
