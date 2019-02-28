@@ -103,6 +103,7 @@ class SidebarFirmConfig extends Component {
 
         TemplateActions.triggerUpdate(template, () => {
             toaster.success('Template updated');
+            TemplateActions.fetchSingle(template.id);
         });
     }
 

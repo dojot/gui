@@ -276,6 +276,7 @@ class Sidebar extends Component {
         template.attrs = [];
         template.attrs.push(...template.data_attrs);
         template.attrs.push(...template.config_attrs);
+        if (template.img_attrs) { template.attrs.push(...template.img_attrs); }
         template.attrs = this.removeIds(template.attrs);
         TemplateActions.triggerUpdate(template, () => {
             toaster.success(t('templates:alerts.update'));
