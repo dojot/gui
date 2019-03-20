@@ -130,7 +130,7 @@
 .main-painel
 {
   background: $porcelain;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
 .right-painel-info
@@ -151,7 +151,7 @@
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         width:46%;
         margin-left: 4%;
-        padding: 0px;
+        padding: 0;
         height: 770px;
         display: inline-block;
 
@@ -226,7 +226,7 @@
       //height: 50%;
 
       .stats{
-        padding: 0px 43px;
+        padding: 0 43px;
         position: relative;
         bottom: 20px;
 
@@ -234,14 +234,14 @@
         color: $dark-silver;
         font-family: 'Roboto', sans-serif;
         font-weight: bolder;
-        padding: 0px;
+        padding: 0;
         padding-bottom: 11px;
 
 
 
         p{
-          padding: 0px;
-          margin: 0px;
+          padding: 0;
+          margin: 0;
         }
 
         &:nth-child(2){
@@ -268,7 +268,7 @@
 
           .value{
             font-size: 1.5892em;
-            top: 0px;
+            top: 0;
             position: inherit;
             color: $pink-like;
             padding-bottom: 16px;
@@ -295,13 +295,13 @@
         display: inline-block;
         width: 100%;
         text-align: center;
-        padding: 0px 10px;
+        padding: 0 10px;
         padding-bottom: 20px;
 
         label{
           font-family: 'Cuprum', sans-serif;
           font-size: 12pt;
-          padding: 0px 20px;
+          padding: 0 20px;
           color: $silver;
           text-transform: uppercase;
           font-weight: bold;

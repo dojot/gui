@@ -28,7 +28,7 @@
 
 /* jQuery Theme overrides */
 .ui-tabs .ui-tabs-panel {
-    padding: 0px;
+    padding: 0;
 }
 
 .ui-autocomplete {
@@ -44,7 +44,7 @@
     @include component-shadow;
 }
 .ui-dialog .ui-dialog-content {
-    padding: 25px 25px 10px 25px;
+    padding: 25px 25px 10px;
 }
 .ui-dialog .ui-dialog-title {
     width: auto;
@@ -120,7 +120,7 @@
 }
 
 .ui-dialog .ui-dialog-buttonpane {
-    padding: .3em 1em .5em 1em;
+    padding: .3em 1em .5em;
 }
 
 .ui-spinner {
@@ -132,8 +132,8 @@
     margin: 0 17px 0 0;
     padding: 6px;
     border: none;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
        -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);

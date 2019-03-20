@@ -22,7 +22,7 @@ const MetadataCard = ({
                 className="attribute-type"
                 maxLength={40}
                 value={metadata.label}
-                onChange={(e) => handleChangeMetadata(e)}
+                onChange={e => handleChangeMetadata(e)}
             >
                 Attribute Name
             </MaterialInput>
@@ -33,7 +33,7 @@ const MetadataCard = ({
                 maxLength={40}
                 className="attribute-type"
                 value={metadata.type}
-                onChange={(e) => handleChangeMetadata(e)}
+                onChange={e => handleChangeMetadata(e)}
             >
                 Attribute Type
             </MaterialInput>
@@ -43,7 +43,7 @@ const MetadataCard = ({
                 name="value_type"
                 className="value-type"
                 value={metadata.value_type}
-                onChange={(e) => handleChangeMetadata(e)}
+                onChange={e => handleChangeMetadata(e)}
             >
                 <option value="" disabled>
                     Select type
@@ -69,7 +69,7 @@ const MetadataCard = ({
                 className="attribute-value"
                 maxLength={40}
                 value={metadata.static_value}
-                onChange={(e) => handleChangeMetadata(e)}
+                onChange={e => handleChangeMetadata(e)}
             >
                 Value
             </MaterialInput>

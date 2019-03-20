@@ -4,7 +4,7 @@
 
   select {
     z-index:20;
-    padding: 0px;
+    padding: 0;
     -webkit-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
     -moz-box-shadow: 0 3px 0 #ccc, 0 -1px #fff inset;
     background: none;
@@ -127,14 +127,14 @@
 
 .attr-box {
   border-bottom: 1px solid $gray;
-  padding: 8px 0 19px 0;
+  padding: 8px 0 19px;
   margin-left: 10%;
   display: inline-block;
   width: 80%;
 
   .bg-gray{
     background: #fcfcfc;
-    padding: 8px 0px 0px 17px;
+    padding: 8px 0 0 17px;
     border-radius: 9px;
     width: 100%;
   }
@@ -152,11 +152,11 @@
     }
 
   .fix-inputs {
-    margin: 0px !important;
+    margin: 0 !important;
     margin-top: -15px !important;
   }
   .fix-select {
-    margin: 3px 0px 8px !important;
+    margin: 3px 0 8px !important;
   }
   .fix-value {
     margin-top: -15px;
@@ -271,13 +271,13 @@
     display: inline-block;
     margin: 10px;
     overflow: auto;
-    padding: 0px 10px;
+    padding: 0 10px;
 
     .remove-layer {
       position: absolute;
       cursor: pointer;
-      right: 0px;
-      top: 0px;
+      right: 0;
+      top: 0;
       height: 100%;
       width: 40px;
       padding-top: 31px;
@@ -291,17 +291,17 @@
     .empty-layer {
       cursor: pointer;
       position: absolute;
-      left: 0px;
-      top: 0px;
+      left: 0;
+      top: 0;
       width: 100%;
       height: 100%;
     }
 
     .active-layer {
       position: absolute;
-      left: 0px;
+      left: 0;
       cursor: pointer;
-      top: 0px;
+      top: 0;
       opacity: 0.8;
       background-color: rgba(42, 42, 42, 0.49);
       text-align: center;
@@ -404,7 +404,7 @@
     width: 100%;
     height: 1px;
     background: #CCCCCC;
-    margin: 0 0 0 0;
+    margin: 0;
   }
 }
 /* animations */
@@ -569,7 +569,7 @@
   display: inline-block;
   top: 0;
   width: 440px;
-  box-shadow: 10px 0px 50px #000000;
+  box-shadow: 10px 0 50px #000000;
 }
 
 .device-painel-body {
@@ -597,12 +597,12 @@
     text-align: center;
     letter-spacing: 0.39px;
     text-transform: uppercase;
-    padding: 20px 10px 6px 10px;
+    padding: 20px 10px 6px;
     color: #b3b3b3;
   }
 
   .info-header {
-    padding: 10px 10px 0 10px;
+    padding: 10px 10px 0;
     border-bottom: 1px solid #d9d9d9;
     width: 100%;
     float: left;
@@ -759,7 +759,7 @@
 
 
 .box-sh {
-  padding: 0px;
+  padding: 0;
   padding-left: 20px;
   width: auto;
   position: relative;
@@ -779,7 +779,7 @@
 }
 
 .box-sh-item {
-  padding: 16px 10px 10px 10px;
+  padding: 16px 10px 10px;
   width: auto;
   border-bottom: 5px solid #bdbdbd;
   color: #969696;
@@ -816,7 +816,7 @@
 
   .devicesSubHeader {
     .main-title {
-      padding-left: 0em;
+      padding-left: 0;
     }
 
     .btn-flat {
@@ -830,7 +830,7 @@
       .metric {
         &.last {
           .metric-label {
-            left: 0px;
+            left: 0;
           }
         }
         .metric-label {
@@ -952,7 +952,7 @@
 
 .device-sidebar {
   @extend .generic-sidebar;
-  box-shadow: -3px 0px 8px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: -3px 0 8px 0 rgba(0, 0, 0, 0.2);
   .body {
     .device-name {
       display: flex;

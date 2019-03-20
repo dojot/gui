@@ -16,7 +16,7 @@
 
       a {
         color: $black;
-        padding: 0px 24px 13px 4px;
+        padding: 0 24px 13px 4px;
         border-radius: 2px;
 
         .title
@@ -26,7 +26,7 @@
           font-size: 11px;
           letter-spacing: 0.04em;
           text-transform: capitalize;
-          padding: 0px;
+          padding: 0;
           display: inline-block;
           font-weight: 600;
           color: $dark-gray;
@@ -191,7 +191,7 @@
       width: 100%;
 
       .nav-link{
-        padding: 0px 5px;
+        padding: 0 5px;
         padding-top: 10px;
       }
     }
@@ -205,9 +205,9 @@
   z-index: 9999;
   width: $sidebar-width-closed;
   height: calc(100%);
-  margin-top: 0px;
+  margin-top: 0;
   color: #fff;
-  border: 0px !important;
+  border: 0 !important;
   background: linear-gradient(0deg, #FFFFFF, #FFFFFF), linear-gradient(149.39deg, #FCFCFC 24.51%, #FCFCFC 24.51%, #FFFFFF 42.02%);
 
     // li:hover a{
@@ -274,7 +274,7 @@
 
       .nav-link {
         position: relative;
-        padding: 10px 0px;
+        padding: 10px 0;
         border-left: 3px solid $magenta;
         height: 52px;
         transition: all .2s;
@@ -297,7 +297,7 @@
       > .nav-link.active {
         background-color: $sidebar-bg-active;
         color: $black;
-        border-left: 0px;
+        border-left: 0;
 
         .nav-title {
           color: $dark-gray;
@@ -321,9 +321,9 @@
           content: " ";
           height: 52px;
           position: absolute;
-          box-shadow: 2px 0px 2px rgba(0, 0, 0, 0.25);
+          box-shadow: 2px 0 2px rgba(0, 0, 0, 0.25);
           right: -3px;
-          top:0px;
+          top:0;
           background: $magenta;
         }
       }
@@ -369,11 +369,11 @@
       /* font-weight: bold; */
       color: $dark-red;
       /* margin: 0 0; */
-      padding: 0 0;
+      padding: 0;
     }
 
     .nav-desc {
-      margin: 0 0;
+      margin: 0;
       padding: 0.2em 0;
       font-family: 'Open Sans';
       font-weight: normal;
@@ -567,10 +567,10 @@
   position: fixed;
   right: 0;
   z-index: 200;
-  padding: 50px 25px 15px 25px;
-  -webkit-box-shadow: -3px 0px 8px 0 rgba(0,0,0,0.2);
-  -moz-box-shadow: -3px 0px 8px 0 rgba(0,0,0,0.2);
-  box-shadow: -3px 0px 8px 0 rgba(0,0,0,0.2);
+  padding: 50px 25px 15px;
+  -webkit-box-shadow: -3px 0 8px 0 rgba(0,0,0,0.2);
+  -moz-box-shadow: -3px 0 8px 0 rgba(0,0,0,0.2);
+  box-shadow: -3px 0 8px 0 rgba(0,0,0,0.2);
   .title {
     position: absolute;
     right: 0;

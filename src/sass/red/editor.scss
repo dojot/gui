@@ -19,7 +19,7 @@
     position: absolute;
     margin: 0;
     top: 0;
-    bottom: 0px;
+    bottom: 0;
     width: 0;
     z-index: 5;
 }
@@ -145,8 +145,8 @@
 }
 .editor-tray-resize-handle {
     position: absolute;
-    top: 0px;
-    bottom: 0px;
+    top: 0;
+    bottom: 0;
     width: 7px;
     left: -9px;
     background: $background-color; // url(./images/grip.png) no-repeat 50% 50%;
@@ -255,7 +255,7 @@
     vertical-align: middle;
 }
 #node-config-dialog-scope {
-    margin: 1px 0 0 0;
+    margin: 1px 0 0;
     padding: 0;
     height: 22px;
     width: 200px;

@@ -18,7 +18,7 @@
     text-align: left;
     display: none;
     position: absolute;
-    top: 0px;
+    top: 0;
     right: 0;
     bottom: 25px;
     left:0;
@@ -29,13 +29,13 @@
     .red-ui-editableList-container {
         border: none;
         border-radius: 0;
-        padding: 0px;
+        padding: 0;
 
 
         li {
             // border: none;
             // border-top: 1px solid $primary-border-color;
-            padding: 0px;
+            padding: 0;
             .disabled {
                 background: #f3f3f3;
 

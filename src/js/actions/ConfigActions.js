@@ -1,10 +1,9 @@
 import configManager from '../comms/config/ConfigManager';
 import toaster from "../comms/util/materialize";
-import alt from "../alt"
+import alt from "../alt";
 
 
 class ConfigActions {
-
     fetchCurrentConfig(bool) {
         return (dispatch) => {
             dispatch();
@@ -15,7 +14,7 @@ class ConfigActions {
                 .catch((error) => {
                     this.alarmsFailed(error);
                 });
-        }
+        };
     }
 
     insertCurrentAlarms(configList) {
@@ -28,5 +27,5 @@ class ConfigActions {
     }
 }
 
-let _config = alt.createActions(ConfigActions, exports);
+const _config = alt.createActions(ConfigActions, exports);
 export default _config;

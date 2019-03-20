@@ -1,5 +1,6 @@
-var alt = require('../alt');
-var ConfigActions = require('../actions/ConfigActions');
+const alt = require('../alt');
+const ConfigActions = require('../actions/ConfigActions');
+
  class ConfigStore {
     constructor() {
         this.error = null;
@@ -15,12 +16,14 @@ var ConfigActions = require('../actions/ConfigActions');
         this.mapObj = [];
          this.bindListeners({
             handleFetchConfigList: ConfigActions.FETCH_CURRENT_CONFIG,
-            handleUpdateConfigList: ConfigActions.INSERT_CURRENT_ALARMS
+            handleUpdateConfigList: ConfigActions.INSERT_CURRENT_ALARMS,
         });
     }
+
      handleFetchConfigList() {
         this.error = '';
     }
+
      handleUpdateConfigList(configList) {
         // console.log(configList);
         this.mapImage = configList.mapImage;
@@ -31,19 +34,19 @@ var ConfigActions = require('../actions/ConfigActions');
         this.mapZoom = configList.mapZoom;
         this.mapCenter = configList.mapCenter;
         this.mapColorActive = configList.mapColorActive;
-        for (let index in this.mapImage) {
+        for (const index in this.mapImage) {
             this.mapObj.push({
-                'id':this.mapImage[index].id,
+                'id': this.mapImage[index].id,
                 'MAP_HAS_OVERLAY_ENV': "false",
                 'description': this.mapImage[index].description,
                 'overlay_data': {
-                    'path' : this.mapImage[index].image_path,
-                    'corner1' : this.mapImage[index].mapCoordinates.initial,
-                    'corner2':this.mapImage[index].mapCoordinates.final
-                }
-            })
+                    'path': this.mapImage[index].image_path,
+                    'corner1': this.mapImage[index].mapCoordinates.initial,
+                    'corner2': this.mapImage[index].mapCoordinates.final,
+                },
+            });
         }
     }
  }
- var _store = alt.createStore(ConfigStore, 'ConfigStore');
+ const _store = alt.createStore(ConfigStore, 'ConfigStore');
 export default _store;

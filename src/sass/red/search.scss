@@ -22,7 +22,7 @@
     background: white;
     left: 50%;
     margin-left: -250px;
-    top: 0px;
+    top: 0;
     border: 1px solid $primary-border-color;
     box-shadow: 0 0 10px rgba(0,0,0,0.4);
 
@@ -39,7 +39,7 @@
     box-shadow: 0 1px 6px -3px black;
     background: none;
     width: 300px;
-    margin-left: 0px;
+    margin-left: 0;
     //height: 75px;
     border: none;
     .red-ui-search-container {

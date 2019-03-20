@@ -21,8 +21,8 @@
    position: absolute;
    bottom:25px;
    top: 35px;
-   left:0px;
-   right:0px;
+   left:0;
+   right:0;
    box-sizing:border-box;
    transition: right 0.2s ease;
 }
@@ -34,9 +34,9 @@
 #workspace {
     position: absolute;
     margin: 0;
-    top:0px;
+    top:0;
     left:179px;
-    bottom: 0px;
+    bottom: 0;
     right: 322px;
     overflow: hidden;
     @include component-border;

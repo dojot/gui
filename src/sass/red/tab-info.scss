@@ -19,7 +19,7 @@
 }
 table.node-info {
     font-size: 14px;
-    margin: 0px;
+    margin: 0;
     width: 97%;
 }
 table.node-info tr {
@@ -32,7 +32,7 @@ table.node-info tr.blank td {
     padding-top: 8px;
     border: none;
     font-weight: bold;
-    padding-left: 0px;
+    padding-left: 0;
 }
 table.node-info td:first-child{
     color: #666;

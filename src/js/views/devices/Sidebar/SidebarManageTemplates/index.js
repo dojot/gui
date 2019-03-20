@@ -109,7 +109,7 @@ class SidebarManageTemplates extends Component {
             </Slide>
         );
     }
-};
+}
 
 SidebarManageTemplates.defaultProps = {
     showManageTemplates: false,

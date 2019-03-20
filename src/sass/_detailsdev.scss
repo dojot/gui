@@ -155,7 +155,7 @@
 {
     height: 219px;
     display: inline-block;
-    padding: 0px !important;
+    padding: 0 !important;
     background:#fcfcfc;
 
     .leaflet-container {
@@ -188,7 +188,7 @@
 }
 
 .graph-box {
-  box-shadow: 4px 0px 6px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 0 6px rgba(0, 0, 0, 0.25);
   background: #EDEDED;
   height: 100%;
 
@@ -527,7 +527,7 @@
   display: inline-block;
   top: 0;
   width: 400px;
-  box-shadow: 10px 0px 50px #000000;
+  box-shadow: 10px 0 50px #000000;
 }
 
 .device-painel-body
@@ -558,12 +558,12 @@
     text-align: center;
     letter-spacing: 0.39px;
     text-transform: uppercase;
-    padding: 20px 10px 6px 10px;
+    padding: 20px 10px 6px;
     color: #b3b3b3;
   }
 
   .info-header{
-    padding: 10px 10px 0 10px;
+    padding: 10px 10px 0;
     border-bottom: 1px solid #d9d9d9;
     width: 100%;
     float: left;
@@ -968,7 +968,7 @@
 }
 
 .layer-div {
-  transition: 300ms linear;  
+  transition: 300ms linear;
   display: inline-block;
   width: 39px;
   height: 39px;
@@ -1309,7 +1309,7 @@ h1, h2, p {
   // display:inline-block;
   height:100%;
   float: right;
-  box-shadow: 0px 2px 8px rgba(130, 130, 130, 0.5);
+  box-shadow: 0 2px 8px rgba(130, 130, 130, 0.5);
   // -webkit-animation-name: opa-width-250; /* Safari 4.0 - 8.0 */
   //-webkit-animation-duration: 1s; /* Safari 4.0 - 8.0 */
   //animation-name: opa-width-250;
@@ -1335,7 +1335,7 @@ h1, h2, p {
   width: 250px;
   background:#F6F6F6;
   float: left;
-  box-shadow: 0px -2px 8px rgba(189, 189, 189, 0.5);
+  box-shadow: 0 -2px 8px rgba(189, 189, 189, 0.5);
   -webkit-animation-name: opa-width-250; /* Safari 4.0 - 8.0 */
   -webkit-animation-duration: 1s; /* Safari 4.0 - 8.0 */
   animation-name: opa-width-250;
@@ -1430,7 +1430,7 @@ h1, h2, p {
 
 .stt-attributes
 {
-  margin: 0px;
+  margin: 0;
 
   .header{
     height: 41px;

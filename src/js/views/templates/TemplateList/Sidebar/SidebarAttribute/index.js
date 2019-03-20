@@ -46,7 +46,7 @@ const SidebarAttribute = ({
                                     />
                                 )
                             }
-                            <MetadataList values={selectAttr} selectMetadata={selectMetadata}/>
+                            <MetadataList values={selectAttr} selectMetadata={selectMetadata} />
                             <div className="body-actions">
                                 <div className="body-actions--divider" />
                                 <SidebarButton

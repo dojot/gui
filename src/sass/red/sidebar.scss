@@ -16,9 +16,9 @@
 
 #sidebar {
     position: absolute;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
+    top: 0;
+    right: 0;
+    bottom: 0;
     width: 315px;
     background: #fff;
     box-sizing: border-box;
@@ -37,7 +37,7 @@
     top: 35px;
     right: 0;
     bottom: 25px;
-    left: 0px;
+    left: 0;
     overflow-y: auto;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .sidebar-closed > #sidebar { display: none; }
-.sidebar-closed > #sidebar-separator { right: 0px !important; }
+.sidebar-closed > #sidebar-separator { right: 0 !important; }
 .sidebar-closed > #workspace { right: 7px !important; }
 .sidebar-closed > #editor-stack { right: 8px !important; }
 

@@ -78,7 +78,7 @@ i.spinner {
     height: 14px;
     line-height: 14px;
     vertical-align: text-top;
-    margin-top: 0px;
+    margin-top: 0;
     // background: url(images/spin.svg) no-repeat 50% 50%;
     background-size: contain
 }
@@ -92,7 +92,7 @@ code, pre {
 }
 
 code {
-  padding: 0px 3px 2px 3px;
+  padding: 0 3px 2px;
   margin: 1px;
   color: #AD1625;
   white-space: nowrap;

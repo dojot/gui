@@ -1,6 +1,6 @@
 
 
-.dropzone 
+.dropzone
 {
     width: 100%;
     cursor: pointer;
@@ -22,8 +22,8 @@
     left: 71px;
     font-size: 14px !important;
     ul{
-        padding: 0px;
-        margin:0px;
+        padding: 0;
+        margin:0;
         padding-top: 10px;
         color: black;
     }
@@ -59,7 +59,7 @@
     max-height: none;
     
     .attr-area {
-        padding: 32px 0px;
+        padding: 32px 0;
         padding-left: calc(100% - 300px*3 );
         height: 200px;
         max-height: none;
@@ -84,7 +84,7 @@
 
 .blockblock
 {
-    padding:40px 27px 0px 26px !important;
+    padding:40px 27px 0 26px !important;
 }
 
 .black-attr-row
@@ -92,7 +92,7 @@
     background: gray;
     color: white;
     position: relative;
-    padding: 11px 45px 11px 50px; 
+    padding: 11px 45px 11px 50px;
 
     .searchBtn
     {
@@ -124,9 +124,9 @@
         display: inline-block;
         width: 100vw;
         height: 100vh;
-        top: 0px;
+        top: 0;
         position: fixed;
-        left: 0px;
+        left: 0;
         background: rgba(70, 63, 63, 0.6);
         z-index: 9999 !important;
     }
@@ -169,7 +169,7 @@
         width: 250px !important;
         overflow-y: auto;
         display: block;
-        padding: 0px;
+        padding: 0;
         padding-top: 11px;
        
         .remove-image-icon
@@ -253,8 +253,8 @@
     transition: all 300ms ease;
 
     .im-header{
-        padding: 25px 53px 0px 55px;
-        margin-bottom: 0px;
+        padding: 25px 53px 0 55px;
+        margin-bottom: 0;
         
         .title{
             text-transform: capitalize;
@@ -286,7 +286,7 @@
     .image-modal-div{
         transition: all 300ms ease;
         width: calc(100vw - 250px);
-        bottom: 0px;
+        bottom: 0;
         // height: 315px;
         position: fixed;
         left: 250px;
@@ -302,7 +302,7 @@
     max-height: none !important;
     width: auto;
     float: left;
-    margin: 0px;
+    margin: 0;
     overflow: auto;
     transition: max-height 450ms ease;
     width: 90%;
@@ -350,7 +350,7 @@
 /* animations for ReactCSSTransitionGroup */
 /* begin */
 .imageModal-enter {
-  opacity: 0.2; height:0px;
+  opacity: 0.2; height:0;
 }
 
 .imageModal-enter.imageModal-enter-active {
@@ -362,8 +362,8 @@
 }
 
 .imageModal-leave.imageModal-leave-active {
-  padding-top: 0px;
-  opacity: 0.2; height:0px;
+  padding-top: 0;
+  opacity: 0.2; height:0;
 }
 /* end */
 /*

@@ -135,7 +135,7 @@ class Sidebar extends Component {
             }
         });
 
-        const hasError = Object.keys(errors).length > 0
+        const hasError = Object.keys(errors).length > 0;
         if (hasError) {
             this.setState({
                 errors,
@@ -261,7 +261,7 @@ class Sidebar extends Component {
             };
         }
 
-        const isValidName = util.isNameValid(device.label)
+        const isValidName = util.isNameValid(device.label);
         if (!isValidName.result) {
             return isValidName;
         }
@@ -282,7 +282,7 @@ class Sidebar extends Component {
             isNewDevice,
             errors,
             isShowSidebarDelete,
-            deviceAttrsTitle
+            deviceAttrsTitle,
         } = this.state;
         if (!Object.prototype.hasOwnProperty.call(device, 'attrs')) return <div />;
         const { metadata } = device;

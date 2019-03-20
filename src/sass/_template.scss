@@ -38,7 +38,7 @@
   color: #555555;
   font-size: 16px;
   width: 375px;
-  box-shadow: -3px 0px 8px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: -3px 0 8px 0 rgba(0, 0, 0, 0.2);
   .header{
     display: flex;
     align-items: center;
@@ -63,7 +63,7 @@
     padding: 10px 0;
     .body-template-name{
       display: flex;
-      height: 70px; 
+      height: 70px;
       padding-right: 25px;
       .template-name{
         margin-left: 20px;
@@ -218,7 +218,7 @@
     padding: 10px 0;
     .body-attribute-name{
       display: flex;
-      height: 70px; 
+      height: 70px;
       padding-right: 25px;
       .attribute-type{
         margin-left: 20px;
@@ -231,7 +231,7 @@
     }
     .body-config-name {
       display: flex;
-      height: 70px; 
+      height: 70px;
       padding-right: 25px;
       .body-config-icon{
         padding: 0 20px;
@@ -292,7 +292,7 @@
         &:hover{
           background-color: rgba(153, 153, 153, 0.4);
           cursor: pointer;
-        } 
+        }
       }
     }
     .metadata-list-nodata {
@@ -591,7 +591,7 @@
 @media screen and (max-width: 600px) {
   .templatesSubHeader {
     .main-title {
-      padding-left: 0em;
+      padding-left: 0;
     }
   }
 }

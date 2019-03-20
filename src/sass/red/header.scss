@@ -36,7 +36,7 @@ $headerMenuItemDivider: #464646;
     height: 40px;
     background: #000;
     box-sizing: border-box;
-    padding: 0px 0px 0px 20px;
+    padding: 0 0 0 20px;
     color: #C7C7C7;
     font-size: 14px;
 }
@@ -90,7 +90,7 @@ span.logo {
     line-height: 40px;
     display: inline-block;
     font-size: 20px;
-    padding: 0px 12px;
+    padding: 0 12px;
     text-decoration: none;
     color: #C7C7C7;
     margin: auto 5px;
@@ -225,18 +225,18 @@ span.logo {
     width: 180px;
     vertical-align: top;
     display: inline-block;
-    text-indent: 0px;
+    text-indent: 0;
 }
 #header ul.dropdown-menu li a span.menu-label {
     font-size: 14px;
     display: inline-block;
-    text-indent: 0px;
+    text-indent: 0;
 }
 #header ul.dropdown-menu li a span.menu-sublabel {
     color: #aeaeae;
     font-size: 13px;
     display: inline-block;
-    text-indent: 0px;
+    text-indent: 0;
 }
 
 #header ul.dropdown-menu > li:hover > a,
@@ -264,7 +264,7 @@ span.logo {
 #header ul#btn-deploy-options-submenu li a span.menu-label {
     font-size: 16px;
     display: inline-block;
-    text-indent: 0px;
+    text-indent: 0;
 }
 #header ul#btn-deploy-options-submenu li a {
     padding: 10px 30px;

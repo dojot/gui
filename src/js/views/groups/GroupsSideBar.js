@@ -11,27 +11,27 @@ import { InputCheckbox, InputText } from '../../components/DojotIn';
 function TableGroupsPermissions(params) {
     const { handleChangeCheckbox, permissionsForm } = params;
     if (!permissionsForm) {
-        return (<div/>);
+        return (<div />);
     }
 
     return (
         <div className="bodyForm">
             <table className="striped centered">
                 <thead>
-                <tr>
-                    <th><Trans i18nKey="groups.form.table_label.feature"/></th>
-                    <th><Trans i18nKey="groups.form.table_label.modifier"/></th>
-                    <th>
-                        <Trans i18nKey="groups.form.table_label.viewer"/>
-                    </th>
-                </tr>
+                    <tr>
+                        <th><Trans i18nKey="groups.form.table_label.feature" /></th>
+                        <th><Trans i18nKey="groups.form.table_label.modifier" /></th>
+                        <th>
+                            <Trans i18nKey="groups.form.table_label.viewer" />
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                {Object.keys(permissionsForm)
+                    {Object.keys(permissionsForm)
                     .map(item => (
                         <tr>
                             <td>
-                                <Trans i18nKey={`groups.form.feature.${item}`}/>
+                                <Trans i18nKey={`groups.form.feature.${item}`} />
                             </td>
                             <td>
                                 <InputCheckbox
@@ -69,21 +69,21 @@ function Form(params) {
     } = params;
 
     if (!dataGroup) {
-        return (<div/>);
+        return (<div />);
     }
 
     return (
         <form action="#">
             <InputText
-                label={<Trans i18nKey="groups.form.input.groupname.label"/>}
+                label={<Trans i18nKey="groups.form.input.groupname.label" />}
                 name="name"
                 maxLength={30}
                 onChange={handleCharge}
                 value={dataGroup.name ? dataGroup.name : ''}
-                errorMessage={<Trans i18nKey="groups.form.input.groupname.error"/>}
+                errorMessage={<Trans i18nKey="groups.form.input.groupname.error" />}
             />
             <InputText
-                label={<Trans i18nKey="groups.form.input.groupdescription.label"/>}
+                label={<Trans i18nKey="groups.form.input.groupdescription.label" />}
                 name="description"
                 maxLength={254}
                 onChange={handleCharge}
@@ -277,12 +277,12 @@ class GroupsSideBar extends Component {
         } = this.state;
         const buttonsFooter = [
             {
-                label: <Trans i18nKey="groups.form.btn.discard.label"/>,
+                label: <Trans i18nKey="groups.form.btn.discard.label" />,
                 click: this.discard,
                 type: 'default',
             },
             {
-                label: <Trans i18nKey="groups.form.btn.save.label"/>,
+                label: <Trans i18nKey="groups.form.btn.save.label" />,
                 click: this.save,
                 type: 'primary',
             },
@@ -290,7 +290,7 @@ class GroupsSideBar extends Component {
 
         if (edit) {
             buttonsFooter.push({
-                label: <Trans i18nKey="groups.form.btn.remove.label"/>,
+                label: <Trans i18nKey="groups.form.btn.remove.label" />,
                 click: this.handleModalDelete,
                 type: 'secondary',
             });
@@ -299,8 +299,8 @@ class GroupsSideBar extends Component {
         return (
             <div>
                 <SideBarRight
-                    title={edit ? <Trans i18nKey="groups.form.title.edit"/>
-                        : <Trans i18nKey="groups.form.title.new"/>}
+                    title={edit ? <Trans i18nKey="groups.form.title.edit" />
+                        : <Trans i18nKey="groups.form.title.new" />}
                     content={(
                         <Form
                             dataGroup={group}
@@ -317,7 +317,8 @@ class GroupsSideBar extends Component {
                         name="group"
                         remove={this.delete}
                         openModal={this.handleModalDelete}
-                    />) : <div/>}
+                    />
+) : <div />}
             </div>
         );
     }

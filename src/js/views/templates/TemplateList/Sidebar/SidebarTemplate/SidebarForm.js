@@ -71,14 +71,14 @@ const SidebarForm = ({ changeValue, toogleSidebarAttribute, template }) => {
                 <div className="body-actions--divider" />
                 <SidebarButton
                     onClick={() => toogleSidebarAttribute('data_attrs')}
-                    icon={'data_attrs'}
-                    text={'New Attribute'}
+                    icon="data_attrs"
+                    text="New Attribute"
                 />
 
                 <SidebarButton
                     onClick={() => toogleSidebarAttribute('config_attrs')}
-                    icon={'config_attrs'}
-                    text={'New Configuration'}
+                    icon="config_attrs"
+                    text="New Configuration"
                 />
 
             </div>

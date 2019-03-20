@@ -31,7 +31,7 @@
         right:10px;
         li {
             background: #f9f9f9;
-            padding: 0px;
+            padding: 0;
             border: none;
             min-height: 0;
         }
@@ -410,7 +410,7 @@
 
 }
 .node-diff-node-props .node-diff-node-entry-cell:first-child {
-    padding: 6px 0px;
+    padding: 6px 0;
     span:not(.node-diff-chevron) {
         margin-left: 5px;
     }

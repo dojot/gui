@@ -88,7 +88,7 @@
     width: 80%;
     justify-content: space-between;
     position: fixed;
-    right: 0px;
+    right: 0;
     top: 45px;
     padding-right: 70px;
     padding-left: 20px;
@@ -172,7 +172,7 @@ nav.outer-header {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 10px 0px;
+  padding: 10px 0;
   z-index: 9990;
   height: $header-double-height !important;
   font-family: Roboto, sans-serif;
@@ -239,7 +239,7 @@ $pic-border: #2969be;
 
   position: absolute;
   top: 0;
-  left: 0; 
+  left: 0;
 
   border-radius: $header-height;
   border: 2px solid #fff;
