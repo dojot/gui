@@ -25,7 +25,7 @@ const config = {
                 defaultViewport: {
                     width: 1700,
                     height: 1080,
-                }, 
+                },
             },
         },
         REST: {

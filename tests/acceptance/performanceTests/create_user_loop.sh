@@ -13,11 +13,10 @@ JWT=$(curl --silent -X POST ${HOST}/auth \
 -H "Content-Type:application/json" \
 -d "{\"username\": \"${DOJOT_USERNAME}\", \"passwd\" : \"${DOJOT_PASSWD}\"}" | jq '.jwt' | tr -d '"')
 
-echo "|     ---------       |       -----------     |";
-echo "|                     |                       |";
-echo "|      USERNAME       |         NEW PSWD      |";
-echo "|                     |                       |";
-echo "|     ---------       |       -----------     |";
+echo " _____________________________________________ ";
+echo "|                                             |";
+echo "|      USUÁRIO        |       NOVA SENHA      |";
+echo "|_____________________________________________|";
 
 for i in $(seq ${RANGE_USERS_INIT} ${RANGE_USERS_END});
 do
@@ -84,7 +83,10 @@ do
         echo "ERRO: ${CHANGE_USER_PSWD_RESPONSE}";
         exit 1
     else
-        echo "|     usuario"${i}"        |     dojotsenha"${i}"      |";
-        echo "|     ---------        |       -----------     |";
+        echo "";
+        echo "|     usuario"${i}"       |      dojotsenha"${i}"     |";
+        echo "";
     fi
 done
+
+echo "|_____________________________________________|";
