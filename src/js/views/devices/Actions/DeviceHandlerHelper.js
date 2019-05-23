@@ -58,6 +58,7 @@ class DeviceHandlerHelper {
         });
         specializedAttrs = this.removeRepeatElementsOnArray(specializedAttrs, 'id');
         modifiedDevice.attrs = specializedAttrs;
+        
         return modifiedDevice;
     }
 
