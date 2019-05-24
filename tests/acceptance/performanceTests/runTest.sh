@@ -6,13 +6,17 @@
 [[ ! -z "$2" ]] && RANGE_USERS_END=$2 || RANGE_USERS_END=2
 
 #param 3: dojot host. Eg:  http://localhost:8000
-[[ ! -z "$3" ]] && DOJOT_HOST=$3 || DOJOT_HOST='http://10.202.71.108:8000'
+[[ ! -z "$3" ]] && DOJOT_HOST=$3 || DOJOT_HOST='http://10.202.70.99:8000'
 
 #param 4: dojot mqtt host. Eg: http://localhost
-[[ ! -z "$4" ]] && MQTT_HOST=$4 || MQTT_HOST='http://10.202.71.108'
+[[ ! -z "$4" ]] && MQTT_HOST=$4 || MQTT_HOST='http://10.202.70.99'
 
 #param 5: profile/group of users Eg.: user
 [[ ! -z "$5" ]] && PROFILE=$5 || PROFILE='user'
+
+USERNAME_PREFIX='usuario'
+PASSWORD_PREFIX='dojotiot'
+TENANT_PREFIX='usuario'
 
 echo "Create users."
 sh $PWD/tests/acceptance/performanceTests/create_user_loop.sh ${RANGE_USERS_INIT} ${RANGE_USERS_END} ${DOJOT_HOST} ${PROFILE}
@@ -23,9 +27,9 @@ for i in $(seq ${RANGE_USERS_INIT} ${RANGE_USERS_END});
     do
         echo "Test ${i} iniciate"
         docker run   --rm  \
-        -e USERNAME=usertest${i} \
-        -e PASSWORD=newusrpswd${i} \
-        -e TENANT=usertest${i}  \
+        -e USERNAME=${USERNAME_PREFIX}${i} \
+        -e PASSWORD=${PASSWORD_PREFIX}${i} \
+        -e TENANT=${TENANT_PREFIX}${i}  \
         -e DOJOT_HOST=${DOJOT_HOST} \
         -e MQTT_HOST=${MQTT_HOST} \
         -v $PWD:/tests \

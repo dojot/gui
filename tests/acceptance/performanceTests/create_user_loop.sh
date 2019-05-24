@@ -1,6 +1,6 @@
 # variables assignment
-[ ! -z "$1" ] && RANGE_USERS_INIT=$1 || RANGE_USERS_INIT=40
-[ ! -z "$2" ] && RANGE_USERS_END=$2 || echo "NULL"
+[ ! -z "$1" ] && RANGE_USERS_INIT=$1 || RANGE_USERS_INIT=1
+[ ! -z "$2" ] && RANGE_USERS_END=$2 || RANGE_USERS_INIT=40
 [ ! -z "$3" ] && HOST=$3 || HOST="http://localhost:8000"
 [ ! -z "$4" ] && GROUP=$4 || GROUP="user"
 
@@ -62,7 +62,7 @@ do
     fi
 
     #json object to change password
-    JSON_CHANGE_PSWD_OBJ='{"oldpasswd":"temppwd","newpasswd":"dojotsenha'${i}'"}'
+    JSON_CHANGE_PSWD_OBJ='{"oldpasswd":"temppwd","newpasswd":"dojotiot'${i}'"}'
 
     #request to change password
     CHANGE_USER_PSWD_RESPONSE=$(curl \
@@ -84,7 +84,7 @@ do
         exit 1
     else
         echo "";
-        echo "|     usuario"${i}"       |      dojotsenha"${i}"     |";
+        echo "|     usuario"${i}"        |       dojotiot"${i}"     |";
         echo "";
     fi
 done
