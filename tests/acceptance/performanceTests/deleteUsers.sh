@@ -11,6 +11,8 @@
 DOJOT_USERNAME='admin'
 DOJOT_PASSWD='admin'
 
+USERNAME_PREFIX='usuario'
+
 echo 'Getting jwt token ...'
 JWT=$(curl --silent -X POST ${HOST}/auth \
 -H "Content-Type:application/json" \
@@ -19,8 +21,8 @@ echo "... Got jwt token ${JWT}."
 
 for i in $(seq ${RANGE_USERS_INIT} ${RANGE_USERS_END});
     do
-        echo "Trying delete usertest${i}";
-DELETE_USER_RESPONSE=$(curl -w "\n%{http_code}" --silent -X DELETE ${HOST}/auth/user/usertest${i} \
+        echo "Trying delete ${USERNAME_PREFIX}${i}";
+DELETE_USER_RESPONSE=$(curl -w "\n%{http_code}" --silent -X DELETE ${HOST}/auth/user/${USERNAME_PREFIX}${i} \
 -H "Authorization: Bearer ${JWT}")
         echo "RESPONSE: $DELETE_USER_RESPONSE";
     done

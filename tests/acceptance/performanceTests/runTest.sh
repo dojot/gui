@@ -15,7 +15,11 @@
 [[ ! -z "$5" ]] && PROFILE=$5 || PROFILE='user'
 
 USERNAME_PREFIX='usuario'
+<<<<<<< HEAD
 PASSWORD_PREFIX='dojotiot'
+=======
+PASSWORD_PREFIX='dojotsenha'
+>>>>>>> cecbb7fbf9c772e5720c3e9edda8f8d49c1b3658
 TENANT_PREFIX='usuario'
 
 echo "Create users."

@@ -327,9 +327,8 @@ function Attr(props) {
     const newValuesForFwStateAndResult = FirmwareHelper.transformStatusToFullTextStatus(props.metadata, props.MeasureStore.data[props.device.id][`_${props.attr}`]);
     if (newValuesForFwStateAndResult !== null) {
         props.MeasureStore.data[props.device.id][`_${props.attr}`] = newValuesForFwStateAndResult;
-        props.type = 'string';
         return (
-            <HistoryList {...props} />
+            <HistoryList {...props} type="string" />
         );
     }
 
