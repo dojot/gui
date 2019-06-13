@@ -31,7 +31,8 @@ createPropertiesTemplate() {
     -H "Authorization: Bearer $token" \
     -H "Content-Type:application/json" \
     --silent \
-    -d ' {
+    -d '
+    {
         "label": "'$TEMPLATE_NAME'_Properties",
         "attrs": [
             {
@@ -50,7 +51,6 @@ createPropertiesTemplate() {
     }'  \
     2>/dev/null)
     
-    
     # extract the template id
     TEMPLATE_ID=$(echo ${CREATE_TEMPLATE_RESPONSE} | jq '.template.id' )
 
@@ -61,7 +61,6 @@ createPropertiesTemplate() {
     if [ -z "${CREATE_TEMPLATE_RESULT}" ]; then
         echo "ERRO ON CREATE TEMPLATE: ${CREATE_TEMPLATE_RESPONSE}"
         exit
-
     else 
         echo $TEMPLATE_ID
     fi
@@ -79,8 +78,8 @@ createTelemetryTemplate() {
     -H "Authorization: Bearer $token" \
     -H "Content-Type:application/json" \
     --silent \
-    --write-out "HTTPSTATUS:%{http_code}" \
-    -d ' {
+    -d '
+    {
         "label": "'${TEMPLATE_NAME}'_Telemetry",
         "attrs": [
             {
@@ -98,44 +97,20 @@ createTelemetryTemplate() {
     2>/dev/null)
     
     
+    # extract the template id
+    TEMPLATE_ID=$(echo ${CREATE_TEMPLATE_RESPONSE} | jq '.template.id' )
+
     # extract the status
-    CREATE_TEMPLATE_STATUS=$(echo ${CREATE_TEMPLATE_RESPONSE} | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
+    CREATE_TEMPLATE_RESULT=$(echo ${CREATE_TEMPLATE_RESPONSE} | jq '.result' )
 
     # print message based on status
-    if [ ! "${CREATE_TEMPLATE_STATUS}" -eq 200 ]; then
+    if [ -z "${CREATE_TEMPLATE_RESULT}" ]; then
         echo "ERRO ON CREATE TEMPLATE: ${CREATE_TEMPLATE_RESPONSE}"
         exit
+    else 
+        echo $TEMPLATE_ID
     fi
 
-}
-
-
-#### create devices ####
-createDevice() {
-    # variables assignment
-    [ ! -z "$1" ] && HOST=$1 || HOST="http://localhost:8000"
-    [ ! -z "$2" ] && DEVICE_NAME=$2 || DEVICE_NAME="D"
-
-    # request to create device
-    CREATE_DEVICE_RESPONSE=$( curl \
-    -X POST ${HOST}/device \
-    -H "Authorization: Bearer $token" \
-    -H 'Content-Type:application/json' \
-    --silent \
-    --write-out "HTTPSTATUS:%{http_code}" \
-    -d ' {"templates" : [1, 2],
-        "label" : "'${DEVICE_NAME}'"
-    }' \
-    2>/dev/null)
-    
-    # extract the status
-    CREATE_DEVICE_STATUS=$(echo ${CREATE_DEVICE_RESPONSE} | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
-
-    # print message based on status
-    if [ ! "${CREATE_DEVICE_STATUS}" -eq 200 ]; then
-        echo "ERRO ON CREATE DEVICE: ${CREATE_DEVICE_RESPONSE}"
-        exit
-    fi
 }
 
 
@@ -149,8 +124,8 @@ createTemperatureTemplate() {
     -H "Authorization: Bearer $token" \
     -H "Content-Type:application/json" \
     --silent \
-    --write-out "HTTPSTATUS:%{http_code}" \
-    -d ' {
+    -d '
+    {
         "label": "Temperature_Telemetry",
         "attrs": [
             {
@@ -162,23 +137,29 @@ createTemperatureTemplate() {
     }'  \
     2>/dev/null)
     
+    # extract the template id
+    TEMPLATE_ID=$(echo ${CREATE_TEMPERATURE_RESPONSE} | jq '.template.id' )
+
     # extract the status
-    CREATE_TEMPLATE_STATUS=$(echo ${CREATE_TEMPERATURE_RESPONSE} | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
+    CREATE_TEMPLATE_RESULT=$(echo ${CREATE_TEMPERATURE_RESPONSE} | jq '.result' )
 
     # print message based on status
-    if [ ! "${CREATE_TEMPLATE_STATUS}" -eq 200 ]; then
+    if [ -z "${CREATE_TEMPLATE_RESULT}" ]; then
         echo "ERRO ON CREATE TEMPLATE: ${CREATE_TEMPERATURE_RESPONSE}"
         exit
+    else 
+        echo $TEMPLATE_ID
     fi
-
 }
 
 
 #### create devices ####
-createTermometerDevice() {
+createDevice() {
     # variables assignment
     [ ! -z "$1" ] && HOST=$1 || HOST="http://localhost:8000"
-    [ ! -z "$2" ] && DEVICE_NAME=$2 || DEVICE_NAME="Termometer"
+    [ ! -z "$2" ] && DEVICE_NAME=$2 || DEVICE_NAME="D"
+    [ ! -z "$3" ] && TEMPLATE1=$3 || TEMPLATE1=1
+    [ ! -z "$4" ] && TEMPLATE2=$4 || TEMPLATE2=2
 
     # request to create device
     CREATE_DEVICE_RESPONSE=$( curl \
@@ -186,65 +167,194 @@ createTermometerDevice() {
     -H "Authorization: Bearer $token" \
     -H 'Content-Type:application/json' \
     --silent \
-    --write-out "HTTPSTATUS:%{http_code}" \
-    -d ' {"templates" : [1, 3],
+    -d '
+    {
+        "templates" : ['${TEMPLATE1}', '${TEMPLATE2}'],
         "label" : "'${DEVICE_NAME}'"
     }' \
     2>/dev/null)
-    
+        
+    # extract the template id
+    DEVICE_ID=$(echo ${CREATE_DEVICE_RESPONSE} | jq '.devices | .[0] | .id' )
+
     # extract the status
-    CREATE_DEVICE_STATUS=$(echo ${CREATE_DEVICE_RESPONSE} | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
+    CREATE_DEVICE_MESSAGE=$(echo ${CREATE_DEVICE_RESPONSE} | jq '.message' )
 
     # print message based on status
-    if [ ! "${CREATE_DEVICE_STATUS}" -eq 200 ]; then
+    if [ -z "${CREATE_DEVICE_MESSAGE}" ]; then
         echo "ERRO ON CREATE DEVICE: ${CREATE_DEVICE_RESPONSE}"
         exit
+    else 
+        echo $DEVICE_ID
     fi
 }
 
 
-#### create Weather Station Device ####
-createWeatherStationDevice() {
+#### create flow ####
+createBasicFlow() {
     # variables assignment
     [ ! -z "$1" ] && HOST=$1 || HOST="http://localhost:8000"
-    [ ! -z "$2" ] && DEVICE_NAME=$2 || DEVICE_NAME="WeatherStation"
+    [ ! -z "$2" ] && FLOW_NAME=$2 || FLOW_NAME="Basic flow"
+    [ ! -z "$3" ] && DEVICE1=$3 || echo "Device identifier not found" | exit
+    [ ! -z "$4" ] && DEVICE2=$4 || echo "Device identifier not found" | exit
+    [ ! -z "$5" ] && DEVICE3=$5 || echo "Device identifier not found" | exit
 
-    # request to create device
-    CREATE_DEVICE_RESPONSE=$( curl \
-    -X POST ${HOST}/device \
+    # request to create a basic flow
+    CREATE_FLOW_RESPONSE=$( curl \
+    -X POST ${HOST}/flows/v1/flow \
     -H "Authorization: Bearer $token" \
     -H 'Content-Type:application/json' \
     --silent \
-    --write-out "HTTPSTATUS:%{http_code}" \
-    -d ' {"templates" : [2, 3],
-        "label" : "'${DEVICE_NAME}'"
+    -d '{
+        "name":"'${FLOW_NAME}'",
+        "flow":[
+            {
+                "id":"A38da0ec10754c2",
+                "type":"tab",
+                "label":"Fluxo 1"
+            },
+            {
+                "id":"A920a88fb88b6a8",
+                "type":"event device in",
+                "z":"A38da0ec10754c2",
+                "name":"D1",
+                "event_configure":false,
+                "event_publish":true,
+                "device_id":'${DEVICE1}',
+                "x":126.5,
+                "y":44,
+                "wires":[
+                    [
+                        "A2a3e9053e945f"
+                    ]
+                ]
+            },
+            {
+                "id":"Adb2e6d109c239",
+                "type":"event device in",
+                "z":"A38da0ec10754c2",
+                "name":"Termometer",
+                "event_configure":false,
+                "event_publish":true,
+                "device_id":'${DEVICE2}',
+                "x":129.5,
+                "y":109,
+                "wires":[
+                    [
+                        "A2a3e9053e945f"
+                    ]
+                ]
+            },
+            {
+                "id":"A2a3e9053e945f",
+                "type":"multi device out",
+                "z":"A38da0ec10754c2",
+                "name":"WeatherStation",
+                "device_source":"configured",
+                "devices_source_dynamic":"",
+                "devices_source_dynamicFieldType":"msg",
+                "devices_source_configured":[
+                    '${DEVICE3}'
+                ],
+                "attrs":"payload.data.attrs",
+                "_devices_loaded":true,
+                "x":422.5,
+                "y":40,
+                "wires":[
+                ]
+            }
+        ]
     }' \
     2>/dev/null)
     
+    #echo $CREATE_FLOW_RESPONSE
+
+    # extract the template id
+    FLOW_ID=$(echo ${CREATE_FLOW_RESPONSE} | jq '.flow | .[0] | .id' )
+
     # extract the status
-    CREATE_DEVICE_STATUS=$(echo ${CREATE_DEVICE_RESPONSE} | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
+    CREATE_FLOW_MESSAGE=$(echo ${CREATE_FLOW_RESPONSE} | jq '.message' )
 
     # print message based on status
-    if [ ! "${CREATE_DEVICE_STATUS}" -eq 200 ]; then
-        echo "ERRO ON CREATE DEVICE: ${CREATE_DEVICE_RESPONSE}"
+    if [ -z "${CREATE_FLOW_MESSAGE}" ]; then
+        echo "ERRO ON CREATE DEVICE: ${CREATE_FLOW_RESPONSE}"
         exit
+    else 
+        echo $FLOW_ID
     fi
 }
+
+
+#### Publish messages ####
+messagesPublisher() {
+    # variables assignment
+    [ ! -z "$1" ] && HOST=$1 || HOST="http://localhost:8000"
+    [ ! -z "$2" ] && TENANT=$2 || TENANT=$2
+    [ ! -z "$3" ] && DEVICE=$3 || echo "Device identifier not found" | exit
+    [ ! -z "$4" ] && MESSAGE=$4 || echo "Empty message recipe" | exit
+
+    #MESSAGE='{"rain":2.5,"humidity":73}'
+    
+    DEVICE_ID=$(echo $DEVICE | tr -d '"' )
+    
+    eval "mosquitto_pub -h ${HOST} -p 1883 -t /${TENANT}/${DEVICE_ID}/attrs -m '${MESSAGE}'"
+}
+
+
+#### Get History ####
+getHistory() {
+    # variables assignment
+    [ ! -z "$1" ] && HOST=$1 || HOST="http://localhost:8000"
+    [ ! -z "$2" ] && DEVICE_ID=$2 || echo "Device identifier not found" | exit
+
+    GET_HISTORY_RESPONSE=$(curl \
+    -X GET ${HOST}/history/device/${DEVICE_ID}/history?lastN=3 \
+    -H "Authorization: Bearer $token" \
+    -H "Content-Type:application/json" \
+    --silent \
+    2>/dev/null)
+
+    echo $GET_HISTORY_RESPONSE
+}
+
 
 
 #### Main code ####
 
-token=$(login $1 $2 $3)
+token=$(login $1:8000 $2 $3)
 
-templateId=$(createPropertiesTemplate http://localhost:8000 Device1)
-echo "template id: ${templateId}"
+# propertiesTemplateIdD1=$(createPropertiesTemplate $1:8000 Device1)
+# echo "Properties Template ID Device1: ${propertiesTemplateIdD1}"
 
-#createTelemetryTemplate http://localhost:8000 Device1
+# telemetryTemplateIdD1=$(createTelemetryTemplate $1:8000 Device1)
+# echo "Telemetry Template ID Device1: ${telemetryTemplateIdD1}"
 
-#createDevice http://localhost:8000 Device1
+# device1Id=$(createDevice $1:8000 Device1 $propertiesTemplateIdD1 $telemetryTemplateIdD1)
+# echo "Id Device1: ${device1Id}"
 
-#createTemperatureTemplate
+# temperatureTemplateId=$(createTemperatureTemplate $1:8000)
+# echo "Temperature Template ID: ${temperatureTemplateId}"
 
-#createTermometerDevice
+# termometerId=$(createDevice $1:8000 Termometer $propertiesTemplateIdD1 $temperatureTemplateId)
+# echo "Termometer Id: ${termometerId}"
 
-#createWeatherStationDevice
+# weatherStationId=$(createDevice $1:8000 WeatherStation $telemetryTemplateIdD1 $temperatureTemplateId)
+# echo "Weather Station Id: ${weatherStationId}"
+
+# basicFlowId=$(createBasicFlow $1:8000 WeatherStationFlow $device1Id $termometerId $weatherStationId )
+# echo "Flow Id: ${basicFlowId}"
+
+# messenger=$(messagesPublisher $1 $2 $device1Id '{"rain":2.5,"humidity":73}')
+# messenger=$(messagesPublisher $1 $2 $device1Id '{"rain":0.5,"humidity":67}')
+# messenger=$(messagesPublisher $1 $2 $device1Id '{"rain":0.3,"humidity":56}')
+# messenger=$(messagesPublisher $1 $2 $device1Id '{"rain":0,"humidity":40}')
+# messenger=$(messagesPublisher $1 $2 $device1Id '{"rain":1.35,"humidity":53}')
+
+# messenger=$(messagesPublisher $1 $2 $termometerId '{"temperature":21}')
+# messenger=$(messagesPublisher $1 $2 $termometerId '{"temperature":24}')
+# messenger=$(messagesPublisher $1 $2 $termometerId '{"temperature":25}')
+# messenger=$(messagesPublisher $1 $2 $termometerId '{"temperature":28}')
+
+history=$(getHistory $1:8000 82f0fe)
+echo $history
+#mosquitto_pub -h 10.202.70.99 -p 1883 -t /admin/bd8368/attrs -m '{"rain":2.5,"humidity":73}'
