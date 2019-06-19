@@ -56,7 +56,6 @@ function GroupCard(obj) {
 
 function GroupList(param) {
     const hasGroups = param.groups;
-    console.log('GROUP LIST', hasGroups);
 
     return (
         <div className="col s12 lst-wrapper w100 hei-100-over-scroll flex-container">
