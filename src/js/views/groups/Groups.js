@@ -73,18 +73,22 @@ function GroupList(param) {
 }
 
 function OperationsHeader(param) {
+    const hasGroups = param.groups;
+
     return (
         <div className="col s12 pull-right pt10">
-            <Can do="modifier" on="flows">
-                <DojotBtnLink
-                    responsive="true"
-                    onClick={param.newGroup}
-                    label={param.i18n('btn.new.text')}
-                    alt={param.i18n('btn.new.alt')}
-                    icon="fa fa-plus"
-                    className="w130px"
-                />
-            </Can>
+            {hasGroups ? (
+                <Can do="modifier" on="flows">
+                    <DojotBtnLink
+                        responsive="true"
+                        onClick={param.newGroup}
+                        label={param.i18n('btn.new.text')}
+                        alt={param.i18n('btn.new.alt')}
+                        icon="fa fa-plus"
+                        className="w130px"
+                    />
+                </Can>
+            ) : ''}
         </div>
     );
 }

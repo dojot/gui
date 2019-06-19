@@ -343,7 +343,7 @@ class Sidebar extends Component {
             return false;
         }
 
-        if (metadata.type.match(/^[_A-z0-9 ]*([_A-z0-9 ])*$/g) == null) {
+        if (metadata.type.match(/^[_A-Za-z0-9 ]*([_A-Za-z0-9 ])*$/g) == null) {
             toaster.error(t('templates:alerts.only_alpha_attr_type'));
             return false;
         }

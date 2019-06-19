@@ -208,7 +208,7 @@ class SideBar extends Component {
     }
 
     checkConfirmEmail(email, confirmEmail) {
-        return !(email === confirmEmail);
+        return (email !== confirmEmail);
     }
 
     fieldValidation(user, field) {
