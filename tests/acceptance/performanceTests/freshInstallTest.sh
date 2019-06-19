@@ -529,7 +529,6 @@ createNotificationFlow() {
 }
 
 
-
 #### Publish messages ####
 messagesPublisher() {
     # variables assignment
@@ -542,7 +541,7 @@ messagesPublisher() {
 
     # echo "mosquitto_pub -h ${HOST} -p 1883 -t /${TENANT}/${DEVICE_ID}/attrs -m '${MESSAGE}'"
 
-    eval "mosquitto_pub -h ${HOST} -p 1883 -t /${TENANT}/${DEVICE_ID}/attrs -m '${MESSAGE}' -d"
+    eval "mosquitto_pub -h ${HOST} -p 1883 -t /${TENANT}/${DEVICE_ID}/attrs -m '${MESSAGE}' -d -k 10"
 }
 
 
@@ -655,11 +654,11 @@ deleteAllDevices() {
 
 deleteAllTemplates() {
     deleteTemplate=$(deleteTemplate $1 $2)
-    echo "Delete what was created: ${deleteTemplate}"
+    echo ${deleteTemplate}
     deleteTemplate=$(deleteTemplate $1 $3)
-    echo "Delete what was created: ${deleteTemplate}"
+    echo ${deleteTemplate}
     deleteTemplate=$(deleteTemplate $1 $4)
-    echo "Delete what was created: ${deleteTemplate}"
+    echo ${deleteTemplate}
 }
 
 
@@ -712,7 +711,7 @@ else
     
     HOST=$1
     deleteTemplates=$(deleteAllTemplates ${HOST} $propertiesTemplateIdD1 $telemetryTemplateIdD1 $temperatureTemplateId)
-    deletedTemplate=$(echo ${deleteTemplates} | jq '.removed | .result')
+    deletedTemplate=$(echo ${deleteTemplates} | jq '.result')
 
     exit
 fi
@@ -729,7 +728,7 @@ else
     deletedDevice=$(echo ${deleteDevice} | jq '.result')
 
     deleteTemplates=$(deleteAllTemplates ${HOST} $propertiesTemplateIdD1 $telemetryTemplateIdD1 $temperatureTemplateId)
-    deletedTemplate=$(echo ${deleteTemplates} | jq '.removed | .result')
+    deletedTemplate=$(echo ${deleteTemplates} | jq '.result')
 
     exit
 fi
@@ -791,7 +790,7 @@ else
     deletedDevice=$(echo ${deleteDevices} | jq '.result')
 
     deleteTemplates=$(deleteAllTemplates ${HOST} $propertiesTemplateIdD1 $telemetryTemplateIdD1 $temperatureTemplateId)
-    deletedTemplate=$(echo ${deleteTemplates} | jq '.removed | .result')
+    deletedTemplate=$(echo ${deleteTemplates} | jq '.result')
 
     deleteFlow=$(deleteFlow ${HOST} $basicFlowId)
     
@@ -813,7 +812,7 @@ else
     deletedDevice=$(echo ${deleteDevices} | jq '.result')
 
     deleteTemplates=$(deleteAllTemplates ${HOST} $propertiesTemplateIdD1 $telemetryTemplateIdD1 $temperatureTemplateId)
-    deletedTemplate=$(echo ${deleteTemplates} | jq '.removed | .result')
+    deletedTemplate=$(echo ${deleteTemplates} | jq '.result')
 
     deleteFlow=$(deleteFlow ${HOST} $basicFlowId)
     echo "Restoring flow ${deleteFlow}"
@@ -848,13 +847,7 @@ echo $messenger
 sleep 1
 
 messenger=$(messagesPublisher ${HOST} $2 $termometerId '{"temperature":24}')
-
-sleep 1
-
 messenger=$(messagesPublisher ${HOST} $2 $termometerId '{"temperature":35}')
-
-sleep 1
-
 messenger=$(messagesPublisher ${HOST} $2 $termometerId '{"temperature":28}')
 
 sleep 1
@@ -875,7 +868,29 @@ historyResponse=$(echo ${history} | jq '.rain | .[0] | .attr')
 if [ ${#historyResponse} -eq 6 ]; then
     echo "History retrieved OK!\n"
 else
-    echo "Problem to retrieve History: ${history}\n"
+    historyError=$(echo ${history} | jq '.title')
+    echo "Problem to retrieve History: ${historyError}\n"
+
+    HOST=$1
+    deleteDevices=$(deleteAllDevices ${HOST} $device1Id $termometerId $weatherStationId)
+    deletedDevice=$(echo ${deleteDevices} | jq '.result')
+
+    deleteTemplates=$(deleteAllTemplates ${HOST} $propertiesTemplateIdD1 $telemetryTemplateIdD1 $temperatureTemplateId)
+    deletedTemplateResult=$(echo ${deleteTemplates} | jq '.result')
+    #echo ${deletedTemplateResult}
+
+    deleteFlow=$(deleteFlow ${HOST} $basicFlowId)
+    deleteFlowResult=$(echo ${deleteFlow} | jq '.result')
+    #echo ${deleteFlowResult}
+    deleteFlow=$(deleteFlow ${HOST} $actuatorFlowId)
+    deleteFlowResult=$(echo ${deleteFlow} | jq '.result')
+    #echo ${deleteFlowResult}
+    deleteFlow=$(deleteFlow ${HOST} $notificationFlowId)
+    deleteFlowResult=$(echo ${deleteFlow} | jq '.result')
+    #echo ${deleteFlowResult}
+    
+    echo "Error to test Dojot instalation"
+
     exit
 fi
 #echo "${historyResponse}\n"
