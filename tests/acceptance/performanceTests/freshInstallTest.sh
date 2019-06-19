@@ -59,7 +59,7 @@ createPropertiesTemplate() {
 
     # print message based on status
     if [ -z "${CREATE_TEMPLATE_RESULT}" ]; then
-        echo "ERRO ON CREATE TEMPLATE: ${CREATE_TEMPLATE_RESPONSE}"
+        echo "ERROR ON CREATE TEMPLATE: ${CREATE_TEMPLATE_RESPONSE}"
         exit
     else 
         echo $TEMPLATE_ID
@@ -111,7 +111,7 @@ createTelemetryTemplate() {
 
     # print message based on status
     if [ -z "${CREATE_TEMPLATE_RESULT}" ]; then
-        echo "ERRO ON CREATE TEMPLATE: ${CREATE_TEMPLATE_RESPONSE}"
+        echo "ERROR ON CREATE TEMPLATE: ${CREATE_TEMPLATE_RESPONSE}"
         exit
     else 
         echo $TEMPLATE_ID
@@ -151,7 +151,7 @@ createTemperatureTemplate() {
 
     # print message based on status
     if [ -z "${CREATE_TEMPLATE_RESULT}" ]; then
-        echo "ERRO ON CREATE TEMPLATE: ${CREATE_TEMPERATURE_RESPONSE}"
+        echo "ERROR ON CREATE TEMPLATE: ${CREATE_TEMPERATURE_RESPONSE}"
         exit
     else 
         echo $TEMPLATE_ID
@@ -188,7 +188,7 @@ createDevice() {
 
     # print message based on status
     if [ -z "${CREATE_DEVICE_MESSAGE}" ]; then
-        echo "ERRO ON CREATE DEVICE: ${CREATE_DEVICE_RESPONSE}"
+        echo "ERROR ON CREATE DEVICE: ${CREATE_DEVICE_RESPONSE}"
         exit
     else 
         echo $DEVICE_ID
@@ -283,7 +283,7 @@ createBasicFlow() {
 
     # print message based on status
     if [ -z "${CREATE_FLOW_MESSAGE}" ]; then
-        #echo "ERRO ON CREATE DEVICE: ${CREATE_FLOW_RESPONSE}"
+        #echo "ERROR ON CREATE DEVICE: ${CREATE_FLOW_RESPONSE}"
         exit
     else 
         echo $FLOW_ID
@@ -406,7 +406,7 @@ createActuatorFlow() {
 
     # print message based on status
     if [ -z "${CREATE_FLOW_MESSAGE}" ]; then
-        echo "ERRO ON CREATE DEVICE: ${CREATE_FLOW_RESPONSE}"
+        echo "ERROR ON CREATE DEVICE: ${CREATE_FLOW_RESPONSE}"
         exit
     else 
         echo $FLOW_ID
@@ -521,7 +521,7 @@ createNotificationFlow() {
 
     # print message based on status
     if [ -z "${CREATE_FLOW_MESSAGE}" ]; then
-        echo "ERRO ON CREATE DEVICE: ${CREATE_FLOW_RESPONSE}"
+        echo "ERROR ON CREATE DEVICE: ${CREATE_FLOW_RESPONSE}"
         exit
     else 
         echo $FLOW_ID
