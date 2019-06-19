@@ -55,10 +55,13 @@ function GroupCard(obj) {
 }
 
 function GroupList(param) {
-    if (param.groups) {
-        return (
-            <div className="col s12 lst-wrapper w100 hei-100-over-scroll flex-container">
-                {param.groups.map(obj => (
+    const hasGroups = param.groups;
+    console.log('GROUP LIST', hasGroups);
+
+    return (
+        <div className="col s12 lst-wrapper w100 hei-100-over-scroll flex-container">
+            {hasGroups ? (
+                hasGroups.map(obj => (
                     <div key={obj.name} className="mg20px fl flex-order-2">
                         <GroupCard
                             group={obj}
@@ -66,10 +69,10 @@ function GroupList(param) {
                             onclick={param.handleUpdate}
                         />
                     </div>
-                ))}
-            </div>
-        );
-    }
+                ))
+            ) : ''}
+        </div>
+    );
 }
 
 function OperationsHeader(param) {
