@@ -32,7 +32,7 @@
     },
     "labels": {
         "remove": "Remover Versão",
-        "rem": "Remover esta versão",
+        "rem": "Remover",
         "rem_bin": "Remover esta imagem associada a versão",
         "transfer": "Enviar imagem ao dispositivo",
         "transfer_alt": "Transferir imagem ao dispositivo para atualização de firmware",

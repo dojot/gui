@@ -290,6 +290,9 @@ class SidebarImage extends Component {
         const { templateIdAllowedImage: templateId } = this.state;
         const device = ds.devices[deviceId];
         let relatedLabel = '';
+        if (!device || !device.attrs || device.attrs.length < 1) {
+            return relatedLabel;
+        }
         device.attrs[templateId].forEach((attr) => {
             if (attr.metadata) {
                 const el = attr.metadata.filter(meta => meta.label === labelMeta);

@@ -16,7 +16,7 @@ import Can from '../../components/permissions/Can';
 
 function SummaryItem(props) {
     return (
-        <div className="card-size card-hover lst-entry-wrapper z-depth-2 fullHeight">
+        <div className="card-size card-hover lst-entry-wrapper z-depth-2 mg0px pointer">
             <div className="lst-entry-title col s12 bg-gradient-dark-blue">
                 <img className="title-icon" src="images/icons/graph-wt.png"/>
                 <div className="title-text truncate">
@@ -126,7 +126,7 @@ class ListRender extends Component {
 
         if (this.filteredList.length > 0) {
             return (
-                <div className="row">
+                <div className="full-height flex-container pos-relative overflow-x-hidden">
                     <ReactCSSTransitionGroup
                         transitionName="flowsSubHeader"
                         transitionAppear
@@ -136,20 +136,20 @@ class ListRender extends Component {
                     >
                         {header}
                     </ReactCSSTransitionGroup>
-                    <div className="col s12 lst-wrapper scroll-bar">
+                    <div className="col s12 lst-wrapper w100 hei-100-over-scroll flex-container">
                         {this.filteredList.map((flow, id) => (
-                            <Link to={`/flows/id/${flow.id}`} key={flow.id}>
-                                <div className="s12 m6 l4 mt20">
+                            <div className="mg20px fl flex-order-2">
+                                <Link to={`/flows/id/${flow.id}`} key={flow.id}>
                                     <SummaryItem flow={flow} key={flow.id}/>
-                                </div>
-                            </Link>
+                                </Link>
+                            </div>
                         ))}
                     </div>
                 </div>
             );
         }
         return (
-            <div className="full-height relative">
+            <div className="full-height flex-container pos-relative overflow-x-hidden">
                 <ReactCSSTransitionGroup
                     transitionName="flowsSubHeader"
                     transitionAppear
@@ -282,20 +282,16 @@ class FlowsComponent extends Component {
         const { t } = this.props;
 
         return (
-            <ReactCSSTransitionGroup
-                transitionName="first"
-                transitionAppear
-                transitionAppearTimeout={100}
-                transitionEnterTimeout={100}
-                transitionLeaveTimeout={100}
-            >
+            <div className="full-device-area">
+                <div>
                 <NewPageHeader title={t('flows:title')} subtitle={t('flows:title')} icon="flow">
                     <OperationsHeader {...this.props} />
                 </NewPageHeader>
-                <AltContainer store={FlowStore}>
-                    <ListRender showSearchBox={this.state.showFilter} i18n={t}/>
-                </AltContainer>
-            </ReactCSSTransitionGroup>
+                    <AltContainer store={FlowStore}>
+                        <ListRender showSearchBox={this.state.showFilter} i18n={t}/>
+                    </AltContainer>
+                </div>
+            </div>
         );
     }
 }

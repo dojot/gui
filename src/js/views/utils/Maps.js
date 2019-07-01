@@ -392,22 +392,29 @@ class SmallPositionRenderer extends Component {
                 if (device.is_visible) {
                     const tmp = device.dy_positions[y];
                     tmp.active_tracking = device.active_tracking;
-                    parsedEntries.push({
-                        id: tmp.id,
-                        pos: L.latLng(
-                            tmp.position[0],
-                            tmp.position[1],
-                        ),
-                        attr_label,
-                        name: tmp.label,
-                        pin: getPin(tmp, this.props.config),
-                        timestamp: tmp.timestamp,
-                        active_tracking: tmp.active_tracking,
-                        allow_tracking: device.allow_tracking,
-                        key: tmp.unique_key
-                            ? tmp.unique_key
-                            : tmp.id,
-                    });
+                    if (tmp.position &&
+                        tmp.position[0] &&
+                        tmp.position[1] &&
+                        typeof tmp.position[0] === "number" &&
+                        typeof tmp.position[1] === "number") {
+                        
+                        parsedEntries.push({
+                            id: tmp.id,
+                            pos: L.latLng(
+                                tmp.position[0],
+                                tmp.position[1],
+                            ),
+                            attr_label,
+                            name: tmp.label,
+                            pin: getPin(tmp, this.props.config),
+                            timestamp: tmp.timestamp,
+                            active_tracking: tmp.active_tracking,
+                            allow_tracking: device.allow_tracking,
+                            key: tmp.unique_key
+                                ? tmp.unique_key
+                                : tmp.id,
+                        });
+                    }
                 }
             }
         }
