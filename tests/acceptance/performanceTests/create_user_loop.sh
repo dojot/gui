@@ -9,8 +9,11 @@
 ADM_USERNAME='admin'
 ADM_PASSWD='admin'
 
-USR_PREFIX='usertest'
-PASS_PREFIX='dojotsenha'
+USR_PREFIX='usuariodojot'
+# PASS_PREFIX=`head -c10 | /dev/random tr -dc _a-z-0-9`
+
+# echo "PASS_PREFIX CONTENT ${PASS_PREFIX}"
+# exit
 
 JWT=$(curl --silent -X POST ${HOST}/auth \
 -H "Content-Type:application/json" \
@@ -23,6 +26,9 @@ echo "|_____________________________________________|";
 
 for i in $(seq ${RANGE_USERS_INIT} ${RANGE_USERS_END});
 do
+
+    PASS_PREFIX=$(tr -dc 'a-z0-9' < /dev/urandom | head -c8)
+    
     JSON_CREATE_USER='{"username":"'"${USR_PREFIX}"''"${i}"'","service":"'"${USR_PREFIX}"''"${i}"'","email":"'"${USR_PREFIX}"''"${i}"'@noemail.com","name":"'"${USR_PREFIX}"''"${i}"'","profile":"'"$GROUP"'"}'
 
     # request to create user
@@ -65,7 +71,7 @@ do
     fi
 
     #json object to change password
-    JSON_CHANGE_PSWD_OBJ='{"oldpasswd":"temppwd","newpasswd":"'${PASS_PREFIX}${i}'"}'
+    JSON_CHANGE_PSWD_OBJ='{"oldpasswd":"temppwd","newpasswd":"'${PASS_PREFIX}'"}'
 
     #request to change password
     CHANGE_USER_PSWD_RESPONSE=$(curl \
@@ -87,7 +93,7 @@ do
         exit 1
     else
         echo "";
-        echo "|     ${USR_PREFIX}${i}       |      ${PASS_PREFIX}${i}     |";
+        echo "|     ${USR_PREFIX}${i}       |      ${PASS_PREFIX}     |";
         echo "";
     fi
 done
