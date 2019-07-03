@@ -482,7 +482,7 @@ createNotificationFlow() {
                 "field":"notification",
                 "fieldType":"msg",
                 "syntax":"handlebars",
-                "template":"{\"metadata\":{\"priority\":\"low\"},\"message\":\"Beba muito líquido\"}",
+                "template":"{\"metadata\":{\"priority\":\"low\"},\"message\":\"Test completed with success\"}",
                 "output":"json",
                 "x":578.5,
                 "y":234,
@@ -564,6 +564,27 @@ getHistory() {
 
     echo $GET_HISTORY_RESPONSE
 }
+
+
+#### Export data ####
+exportData() {
+    # variables assignment
+    [ ! -z "$1" ] && HOST=$1 || HOST="http://localhost:8000"
+
+    #echo "URL: ${HOST}/history/device/${DEVICE}/history?lastN=3"
+
+    EXPORT_DATA_RESPONSE=$(curl \
+    -X GET ${HOST}/export \
+    -H "Authorization: Bearer $token" \
+    -H "Accept:*/*" \
+    -H "Connection:keep-alive" \
+    -H "Accept-Encoding:gzip,deflate,br" \
+    2>/dev/null)
+
+    echo $EXPORT_DATA_RESPONSE
+}
+
+
 
 
 #### Open SocketIO ####
@@ -824,6 +845,54 @@ else
 fi
 #echo ${notificationFlowId}
 
+echo "\nExporting data..."
+
+exportedData=$(exportData ${HOST})
+exportDataResponse=$(echo ${exportedData} | jq 'length')
+if [ $exportDataResponse -eq 4  ]; then
+    echo $exportedData > ../output/dojoDataExport.json
+    echo "Data Export OK!\n"
+else
+    HOST=$1
+
+    echo "Problem to export data. Reseting Dojot...\n"
+
+    deleteDevice=$(deleteDevice ${HOST} $device1Id)
+    # echo "Delete what was created: ${deleteDevice}"
+
+    deleteDevice=$(deleteDevice ${HOST} $termometerId)
+    # echo "Delete what was created: ${deleteDevice}"
+
+    deleteDevice=$(deleteDevice ${HOST} $weatherStationId)
+    # echo "Delete what was created: ${deleteDevice}"
+
+    deleteTemplate=$(deleteTemplate ${HOST} $propertiesTemplateIdD1)
+    # echo "Delete what was created: ${deleteTemplate}"
+
+    deleteTemplate=$(deleteTemplate ${HOST} $temperatureTemplateId)
+    # echo "Delete what was created: ${deleteTemplate}"
+
+    deleteTemplate=$(deleteTemplate ${HOST} $telemetryTemplateIdD1)
+    # echo "Delete what was created: ${deleteTemplate}"
+
+    deleteFlow=$(deleteFlow ${HOST} $basicFlowId)
+    # echo "Delete what was created: ${deleteFlow}"
+
+    deleteFlow=$(deleteFlow ${HOST} $actuatorFlowId)
+    # echo "Delete what was created: ${deleteFlow}"
+
+    deleteFlow=$(deleteFlow ${HOST} $notificationFlowId)
+    # echo "Delete what was created: ${deleteTest}"
+
+    
+    echo "Error to test Dojot instalation"
+
+    exit
+fi
+# echo "EXPORT: ${exportDataResponse}"
+
+sleep 1
+
 echo "\nOpening a SocketIO connection..."
 
 socketioConnection=$(openSocketioConnection ${HOST})
@@ -835,6 +904,7 @@ else
     exit
 fi
 #echo ${socketioToken}
+
 sleep 1
 
 HOST=$1
