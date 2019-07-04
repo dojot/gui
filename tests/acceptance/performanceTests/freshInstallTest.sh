@@ -9,9 +9,14 @@ login() {
 
     # Login to get JWT Token
 
-    local JWT=$(curl --silent -X POST ${HOST}/auth \
+    local JWT=$(curl \
+    -X POST ${HOST}/auth \
+    --max-time 2 \
     -H "Content-Type:application/json" \
+    --silent \
     -d "{\"username\": \"${USERNAME}\", \"passwd\" : \"${PASSWD}\"}" | jq '.jwt' | tr -d '"')
+    
+    sleep 1
     
     echo $JWT
     # End of login
@@ -28,6 +33,7 @@ createPropertiesTemplate() {
     # request to create template
     CREATE_TEMPLATE_RESPONSE=$( curl \
     -X POST ${HOST}/template \
+    --max-time 2 \
     -H "Authorization: Bearer $token" \
     -H "Content-Type:application/json" \
     --silent \
@@ -75,6 +81,7 @@ createTelemetryTemplate() {
     # request to create template
     CREATE_TEMPLATE_RESPONSE=$( curl \
     -X POST ${HOST}/template \
+    --max-time 2 \
     -H "Authorization: Bearer $token" \
     -H "Content-Type:application/json" \
     --silent \
@@ -127,6 +134,7 @@ createTemperatureTemplate() {
     # request to create template
     CREATE_TEMPERATURE_RESPONSE=$( curl \
     -X POST ${HOST}/template \
+    --max-time 2 \
     -H "Authorization: Bearer $token" \
     -H "Content-Type:application/json" \
     --silent \
@@ -170,6 +178,7 @@ createDevice() {
     # request to create device
     CREATE_DEVICE_RESPONSE=$( curl \
     -X POST ${HOST}/device \
+    --max-time 2 \
     -H "Authorization: Bearer $token" \
     -H 'Content-Type:application/json' \
     --silent \
@@ -208,6 +217,7 @@ createBasicFlow() {
     # request to create a basic flow
     CREATE_FLOW_RESPONSE=$( curl \
     -X POST ${HOST}/flows/v1/flow \
+    --max-time 3 \
     -H "Authorization: Bearer $token" \
     -H 'Content-Type:application/json' \
     --silent \
@@ -557,6 +567,7 @@ getHistory() {
 
     GET_HISTORY_RESPONSE=$(curl \
     -X GET ${HOST}:8000/history/device/${DEVICE_ID}/history \
+    --max-time 3 \
     -H "Authorization: Bearer $token" \
     -H "Content-Type:application/json" \
     --silent \
@@ -575,6 +586,7 @@ exportData() {
 
     EXPORT_DATA_RESPONSE=$(curl \
     -X GET ${HOST}/export \
+    --connect-timeout 3 \
     -H "Authorization: Bearer $token" \
     -H "Accept:*/*" \
     -H "Connection:keep-alive" \
@@ -583,8 +595,6 @@ exportData() {
 
     echo $EXPORT_DATA_RESPONSE
 }
-
-
 
 
 #### Open SocketIO ####
@@ -693,7 +703,7 @@ token=$(login ${HOST} $2 $3)
 echo "\nCreating templates.."
 
 propertiesTemplateIdD1=$(createPropertiesTemplate ${HOST} Device1)
-if [ "$propertiesTemplateIdD1" -gt 0 ]; then
+if [ ${#propertiesTemplateIdD1} -gt 0 ]; then
     echo "Properties Template OK!"
 else
     echo "Problem to create template: ${propertiesTemplateIdD1}\n"
@@ -703,7 +713,7 @@ fi
 #echo "Properties Template ID Device1: ${propertiesTemplateIdD1}"
 
 telemetryTemplateIdD1=$(createTelemetryTemplate ${HOST} Device1)
-if [ "$telemetryTemplateIdD1" -gt 0 ]; then
+if [ ${#telemetryTemplateIdD1} -gt 0 ]; then
     echo "Telemetry Template OK!"
 else
     echo "Problem to create template: ${telemetryTemplateIdD1}\n"
@@ -713,7 +723,7 @@ fi
 #echo "Telemetry Template ID Device1: ${telemetryTemplateIdD1}"
 
 temperatureTemplateId=$(createTemperatureTemplate ${HOST})
-if [ "$temperatureTemplateId" -gt 0 ]; then
+if [ ${#temperatureTemplateId} -gt 0 ]; then
     echo "Temperature Template OK!\n"
 else
     echo "Problem to create template: ${temperatureTemplateId}\n"
@@ -731,8 +741,27 @@ else
     echo "Problem to create device. Reseting Dojot...\n"
     
     HOST=$1
-    deleteTemplates=$(deleteAllTemplates ${HOST} $propertiesTemplateIdD1 $telemetryTemplateIdD1 $temperatureTemplateId)
-    deletedTemplate=$(echo ${deleteTemplates} | jq '.result')
+    # echo "Device1 ID: ${device1Id}"
+    deleteDevice1=$(deleteDevice ${HOST} $device1Id)
+    # echo "Deleting Device1 RESULT: ${deleteDevice1}"
+    deletedDevice1=$(echo ${deleteDevice} | jq '.result')
+    echo "Deleting Device1: ${deletedDevice1}"
+
+    deleteTemplateD1=$(deleteTemplate ${HOST} $propertiesTemplateIdD1)
+    deletedTemplateD1=$(echo ${deleteTemplateD1} | jq '.result')
+    echo "Deleting Template D1: ${deletedTemplateD1}"
+
+    deleteTemplateTelemetry=$(deleteTemplate ${HOST} $telemetryTemplateIdD1)
+    deletedTemplateTelemetry=$(echo ${deleteTemplateTelemetry} | jq '.result')
+    echo "Deleting Template Telemetry: ${deletedTemplateTelemetry}"
+
+    deleteTemplateTemperature=$(deleteTemplate ${HOST} $temperatureTemplateId)
+    deletedTemplateTemperature=$(echo ${deleteTemplateTemperature} | jq '.result')
+    echo "Deleting Template Temperature: ${deletedTemplateTemperature}"
+
+    deleteTemplateTemperature=$(deleteTemplate ${HOST} $temperatureTemplateId)
+    deletedTemplateTemperature=$(echo ${deleteTemplateTemperature} | jq '.result')
+    echo "Deleting Template Temperature: ${deletedTemplateTemperature}"
 
     exit
 fi
@@ -745,11 +774,38 @@ else
     echo "Problem to create device. Reseting Dojot...\n"
     
     HOST=$1
-    deleteDevice=$(deleteDevice ${HOST} $device1Id)
-    deletedDevice=$(echo ${deleteDevice} | jq '.result')
+    deleteDevice1=$(deleteDevice ${HOST} $device1Id)
+    deletedDevice1=$(echo ${deleteDevice} | jq '.result')
+    echo "Deleting Device1: ${deletedDevice1}"
+    
+    deleteTermometer=$(deleteDevice ${HOST} $termometerId)
+    deletedTermometer=$(echo ${deleteTermometer} | jq '.result')
+    echo "Deleting Termometer: ${deletedTermometer}"
 
-    deleteTemplates=$(deleteAllTemplates ${HOST} $propertiesTemplateIdD1 $telemetryTemplateIdD1 $temperatureTemplateId)
-    deletedTemplate=$(echo ${deleteTemplates} | jq '.result')
+    deleteTemplateD1=$(deleteTemplate ${HOST} $propertiesTemplateIdD1)
+    deletedTemplateD1=$(echo ${deleteTemplateD1} | jq '.result')
+    echo "Deleting D1 Template: ${deletedTemplateD1}"
+
+    deleteTemplateTelemetry=$(deleteTemplate ${HOST} $telemetryTemplateIdD1)
+    deletedTemplateTelemetry=$(echo ${deleteTemplateTelemetry} | jq '.result')
+    echo "Deleting Telemetry Template: ${deletedTemplateTelemetry}"
+
+    deleteTemplateTemperature=$(deleteTemplate ${HOST} $temperatureTemplateId)
+    deletedTemplateTemperature=$(echo ${deleteTemplateTemperature} | jq '.result')
+    echo "Deleting Temperature Template: ${deletedTemplateTemperature}"
+
+
+    deleteFlowBasic=$(deleteFlow ${HOST} $basicFlowId)
+    deletedFlowBasic=$(echo ${deleteFlowBasic} | jq '.result')
+    echo "Deleting Basic Flow: ${deletedFlowBasic}"
+
+    deleteFlowActuator=$(deleteFlow ${HOST} $actuatorFlowId)
+    deletedFlowActuator=$(echo ${deleteFlowActuator} | jq '.result')
+    echo "Deleting Actuator Flow: ${deletedFlowActuator}"
+
+    deleteFlowNotification=$(deleteFlow ${HOST} $notificationFlowId)
+    deletedFlowNotification=$(echo ${deleteFlowNotification} | jq '.result')
+    echo "Deleting Notification Flow: ${deletedFlowNotification}"
 
     exit
 fi
@@ -762,14 +818,26 @@ else
     echo "Problem to create device. Reseting Dojot...\n"
 
     HOST=$1
-    deleteDevice=$(deleteDevice ${HOST} $device1Id)
-    deletedDevice=$(echo ${deleteDevice} | jq '.result')
+    deleteDevice1=$(deleteDevice ${HOST} $device1Id)
+    deletedDevice1=$(echo ${deleteDevice} | jq '.result')
+    echo "Deleting Device1: ${deletedDevice1}"
+    
+    deleteTermometer=$(deleteDevice ${HOST} $termometerId)
+    deletedTermometer=$(echo ${deleteTermometer} | jq '.result')
+    echo "Deleting Termometer: ${deletedTermometer}"
 
-    deleteDevice=$(deleteDevice ${HOST} $termometerId)
-    deletedDevice=$(echo ${deleteDevice} | jq '.result')
+    deleteTemplateD1=$(deleteTemplate ${HOST} $propertiesTemplateIdD1)
+    deletedTemplateD1=$(echo ${deleteTemplateD1} | jq '.result')
+    echo "Deleting Template D1: ${deletedTemplateD1}"
 
-    deleteTemplates=$(deleteAllTemplates ${HOST} $propertiesTemplateIdD1 $telemetryTemplateIdD1 $temperatureTemplateId)
-    deletedTemplate=$(echo ${deleteTemplates} | jq '.result')
+    deleteTemplateTelemetry=$(deleteTemplate ${HOST} $telemetryTemplateIdD1)
+    deletedTemplateTelemetry=$(echo ${deleteTemplateTelemetry} | jq '.result')
+    echo "Deleting Template Telemetry: ${deletedTemplateTelemetry}"
+
+    deleteTemplateTemperature=$(deleteTemplate ${HOST} $temperatureTemplateId)
+    deletedTemplateTemperature=$(echo ${deleteTemplateTemperature} | jq '.result')
+    echo "Deleting Template Temperature: ${deletedTemplateTemperature}"
+
 
     exit
 fi
@@ -857,32 +925,32 @@ else
 
     echo "Problem to export data. Reseting Dojot...\n"
 
-    deleteDevice=$(deleteDevice ${HOST} $device1Id)
-    # echo "Delete what was created: ${deleteDevice}"
+    deleteDevice1=$(deleteDevice ${HOST} $device1Id)
+    echo "Delete what was created: ${deleteDevice1}"
 
-    deleteDevice=$(deleteDevice ${HOST} $termometerId)
-    # echo "Delete what was created: ${deleteDevice}"
+    deleteTermometer=$(deleteDevice ${HOST} $termometerId)
+    echo "Delete what was created: ${deleteTermometer}"
 
-    deleteDevice=$(deleteDevice ${HOST} $weatherStationId)
-    # echo "Delete what was created: ${deleteDevice}"
+    deleteWeatherStation=$(deleteDevice ${HOST} $weatherStationId)
+    echo "Delete what was created: ${deleteWeatherStation}"
 
-    deleteTemplate=$(deleteTemplate ${HOST} $propertiesTemplateIdD1)
-    # echo "Delete what was created: ${deleteTemplate}"
+    deleteTemplateD1=$(deleteTemplate ${HOST} $propertiesTemplateIdD1)
+    echo "Delete what was created: ${deleteTemplateD1}"
 
-    deleteTemplate=$(deleteTemplate ${HOST} $temperatureTemplateId)
-    # echo "Delete what was created: ${deleteTemplate}"
+    deleteTemplateTemperature=$(deleteTemplate ${HOST} $temperatureTemplateId)
+    echo "Delete what was created: ${deleteTemplateTemperature}"
 
-    deleteTemplate=$(deleteTemplate ${HOST} $telemetryTemplateIdD1)
-    # echo "Delete what was created: ${deleteTemplate}"
+    deleteTemplateTelemetry=$(deleteTemplate ${HOST} $telemetryTemplateIdD1)
+    echo "Delete what was created: ${deleteTemplateTelemetry}"
 
-    deleteFlow=$(deleteFlow ${HOST} $basicFlowId)
-    # echo "Delete what was created: ${deleteFlow}"
+    deleteFlowBasic=$(deleteFlow ${HOST} $basicFlowId)
+    echo "Delete what was created: ${deleteFlowBasic}"
 
-    deleteFlow=$(deleteFlow ${HOST} $actuatorFlowId)
-    # echo "Delete what was created: ${deleteFlow}"
+    deleteFlowActuator=$(deleteFlow ${HOST} $actuatorFlowId)
+    echo "Delete what was created: ${deleteFlowActuator}"
 
-    deleteFlow=$(deleteFlow ${HOST} $notificationFlowId)
-    # echo "Delete what was created: ${deleteTest}"
+    deleteFlowNotification=$(deleteFlow ${HOST} $notificationFlowId)
+    echo "Delete what was created: ${deleteFlowNotification}"
 
     
     echo "Error to test Dojot instalation"
