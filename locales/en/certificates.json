@@ -1,0 +1,10 @@
+{
+    "title_cert": "Device Certificates",
+    "btn_generate": "Generate certificates",
+    "btn_load": "Load CA Certificate",
+    "down_private_key": "Download Private Key",
+    "down_crt": "Download Device Certificate",
+    "down_ca_crt": "Download CA Certificate",
+    "down_ca_crt_alt": "(unique to all devices)",
+    "title_ca": "CA Certificate"
+}

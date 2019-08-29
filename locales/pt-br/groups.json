@@ -45,7 +45,8 @@
       "ca-sign": "Certificado Acesso",
       "ca": "Certificado",
       "import": "Importar",
-      "fw-image": "Firmware Imagem"
+      "fw-image": "Firmware Imagem",
+      "mqtt_metrics": "Metricas MQTT"
     },
     "table_label": {
       "feature": "Funcionabilidade",
