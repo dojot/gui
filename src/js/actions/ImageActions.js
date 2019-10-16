@@ -153,7 +153,7 @@ class ImageActions {
             dispatch();
             imageManager.deleteImage(image.id)
                 .then((response) => {
-                    const respJson = JSON.parse(response);
+                    const respJson = (typeof response === 'string') ? JSON.parse(response) : response;
                     if (respJson.result === 'ok') {
                         this.removeSingle(respJson.removed_image.id);
                         if (cb) {
@@ -174,7 +174,7 @@ class ImageActions {
     }
 
     imagesFailed(error) {
-        toaster.error(error.message);
+        toaster.error((error.message) ? error.message : error);
         return error;
     }
 }
