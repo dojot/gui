@@ -372,11 +372,14 @@ class Sidebar extends Component {
 
     deleteTemplate() {
         const { template } = this.state;
-        const { temp_opex, toogleSidebar, t } = this.props;
+        const { temp_opex, toogleSidebar, t, numOfTempPage } = this.props;
         TemplateActions.triggerRemoval(template.id, () => {
             toaster.success(t('templates:alerts.remove'));
             this.toogleSidebarDelete();
             toogleSidebar();
+            if (numOfTempPage === 1) {
+                temp_opex.whenRemoveItemFromLastPage();
+            }
             temp_opex._fetch();
         });
     }
@@ -512,6 +515,7 @@ Sidebar.propTypes = {
     showSidebar: PropTypes.bool,
     isNewTemplate: PropTypes.bool,
     t: PropTypes.func.isRequired,
+    numOfTempPage: PropTypes.number
 };
 
 export default withNamespaces()(Sidebar);

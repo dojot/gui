@@ -79,6 +79,7 @@ const TemplateList = ({
                 showSidebar={showSidebar}
                 toogleSidebar={TemplateActions.toogleSidebar} // I really appreciate it <3
                 temp_opex={temp_opex}
+                numOfTempPage={templates.length}
             />
         </div>
     );
