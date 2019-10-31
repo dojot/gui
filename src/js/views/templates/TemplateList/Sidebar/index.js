@@ -506,6 +506,7 @@ class Sidebar extends Component {
 Sidebar.defaultProps = {
     showSidebar: false,
     isNewTemplate: false,
+    numOfTempPage: null,
 };
 
 Sidebar.propTypes = {
@@ -515,7 +516,7 @@ Sidebar.propTypes = {
     showSidebar: PropTypes.bool,
     isNewTemplate: PropTypes.bool,
     t: PropTypes.func.isRequired,
-    numOfTempPage: PropTypes.number
+    numOfTempPage: PropTypes.number,
 };
 
 export default withNamespaces()(Sidebar);
