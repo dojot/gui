@@ -24,7 +24,7 @@ const TemplateList = ({
         );
     }
 
-    let filteredList = templates.map(item => item);
+    let filteredList = templates.map((item) => item);
     if (filteredList.length > 0) {
         let existsNewDevice = false;
         let newTemplate;
@@ -53,7 +53,7 @@ const TemplateList = ({
         <div className="full-height flex-container pos-relative overflow-x-hidden">
             {filteredList.length > 0 ? (
                 <div className="col s12 lst-wrapper w100 hei-100-over-scroll flex-container">
-                    {filteredList.map(item => (
+                    {filteredList.map((item) => (
                         <ListItem
                             template={item}
                             key={item.id}
@@ -68,8 +68,7 @@ const TemplateList = ({
                     <span className="horizontal-center">
                         {temp_opex.hasFilter()
                             ? <b className="noBold">{t('templates:alerts.no_templates_show')}</b>
-                            : <b className="noBold">{t('templates:alerts.no_conf_templates')}</b>
-                        }
+                            : <b className="noBold">{t('templates:alerts.no_conf_templates')}</b>}
                     </span>
                 </div>
             )}
