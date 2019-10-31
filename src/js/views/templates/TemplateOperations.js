@@ -23,7 +23,7 @@ class TemplateOperations extends GenericOperations {
     }
 
     whenRemoveItemFromLastPage() {
-        if (this.paginationParams.page_num > 0) {
+        if (this.paginationParams.page_num > 1) {
             this.paginationParams.page_num = this.paginationParams.page_num - 1;
         }
     }
