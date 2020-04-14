@@ -15,7 +15,7 @@ i18n.use(LanguageDetector)
         lowerCaseLng: true,
         debug: false,
         nsSeparator: ':',
-        ns: ['common', 'menu', 'groups', 'importExport', 'users', 'flows', 'templates', 'devices', 'login', 'notifications', 'firmware', 'certificates'],
+        ns: ['common', 'menu', 'groups', 'importExport', 'users', 'flows', 'templates', 'devices', 'login', 'notifications', 'firmware', 'certificates', 'report'],
         fallbackNS: 'common',
         interpolation: {
             escapeValue: false, // not needed for react

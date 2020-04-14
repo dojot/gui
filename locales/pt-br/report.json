@@ -1,0 +1,13 @@
+{
+    "title": "Relatório",
+    "to": "a",
+    "generate": "Gerar",
+    "alerts": {
+        "select_dy": "Selecione pelo menos um Atributo Dinâmico.",
+        "datefrom_miss": "Preencha a data de início corretamente.",
+        "dateto_miss": "Preencha a data de fim  corretamente.",
+        "datefrom_invalid": "Data de início inválida.",
+        "dateto_invalid": "Data de fim inválida.",
+        "datafrom_greanter_dateto": "A data de início não pode ser maior ou igual que a data de fim."
+    }
+}

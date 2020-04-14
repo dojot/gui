@@ -16,25 +16,36 @@ import ConfigStore from 'Stores/ConfigStore';
 import LoginStore from 'Stores/LoginStore';
 import CertificateStore from 'Stores/CertificateStore';
 import Metadata from './Details/Metadata';
+import Report from './Report';
 import {NewPageHeader} from 'Containers/full/PageHeader';
 import util from 'Comms/util/util';
 import socketio from 'socket.io-client';
 import Can from "Components/permissions/Can";
 
+<<<<<<< HEAD
 const DeviceHeader = ({device, t}) => (
+=======
+const DeviceHeader = ({ device, t, listAttrDySelected}) => (
+>>>>>>> 24bb10b... add generate report option in details (just call a mok)
     <div className="row devicesSubHeader p0 device-details-header">
-        <div className="col s8 m8">
+        <div className="col s3 m3">
             <span className="col s12 device-label truncate" title={device.label}>
                 {device.label}
             </span>
             <div className="col s12 device-label-name">{t('text.name')}</div>
         </div>
+        <Report
+        deviceId={device.id}
+        listAttrDySelected={listAttrDySelected}
+        t={t}
+        />
     </div>
 );
 
 DeviceHeader.propTypes = {
     device: PropTypes.shape({}).isRequired,
     t: PropTypes.func.isRequired,
+    listAttrDySelected: PropTypes.shape({}).isRequired,
 };
 
 
@@ -370,6 +381,10 @@ class DyAttributeArea extends Component {
             sa.push(attr);
             isAttrsVisible[attr.id] = true;
         }
+
+        const {updateListAttrDySelected} = this.props;
+
+        updateListAttrDySelected(sa);
 
         // update attributes
         this.setState({
@@ -737,7 +752,8 @@ class DeviceDetail extends Component {
 
     render() {
         const {listStaticMapOpenned} = this.state;
-        const {device, t} = this.props;
+        const {device, t, updateListAttrDySelected} = this.props;
+
         let attr_list = [];
         let dal = [];
         let actuators = [];
@@ -780,6 +796,7 @@ class DeviceDetail extends Component {
                     actuators={actuators}
                     dynamicAttrs={dal}
                     openStaticMap={listStaticMapOpenned}
+                    updateListAttrDySelected={updateListAttrDySelected}
                     t={t}
                 />
             </div>
@@ -789,6 +806,18 @@ class DeviceDetail extends Component {
 
 
 class ViewDeviceImpl extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            listAttrDySelected: [],
+        };
+        this.updateListAttrDySelected = this.updateListAttrDySelected.bind(this);
+    }
+
+    updateListAttrDySelected(attrs){
+        this.setState({listAttrDySelected: attrs});
+    }
+
     componentWillMount() {
         const {devices, device_id} = this.props;
         const device = devices[device_id];
@@ -805,7 +834,8 @@ class ViewDeviceImpl extends Component {
 
     render() {
         let device;
-        const {t, devices} = this.props;
+        const { t, devices } = this.props;
+        const { listAttrDySelected } = this.state;
 
         if (devices !== undefined) {
             if (devices.hasOwnProperty(this.props.device_id)) {
@@ -829,8 +859,17 @@ class ViewDeviceImpl extends Component {
                         />
                     </div>
                 </NewPageHeader>
-                <DeviceHeader device={device} t={t}/>
-                <DeviceDetail deviceid={device.id} device={device} t={t}/>
+                <DeviceHeader
+                    device={device}
+                    t={t}
+                    listAttrDySelected={listAttrDySelected}
+                />
+                <DeviceDetail
+                    deviceid={device.id}
+                    device={device}
+                    t={t}
+                    updateListAttrDySelected={this.updateListAttrDySelected}
+                />
             </div>
         );
     }

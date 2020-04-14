@@ -1,0 +1,13 @@
+{
+    "title": "Report",
+    "to": "to",
+    "generate": "generate",
+    "alerts": {
+        "select_dy": "Select at least one Dynamic Attribute.",
+        "datefrom_miss": "Fill in the start date correctly.",
+        "dateto_miss": "Fill in the end date correctly.",
+        "datefrom_invalid": "Invalid start date.",
+        "dateto_invalid": "Invalid end date.",
+        "datafrom_greanter_dateto": "The start date cannot be greater than or equal to the end date."
+    }
+}
