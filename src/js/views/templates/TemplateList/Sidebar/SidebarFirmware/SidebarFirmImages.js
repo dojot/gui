@@ -37,7 +37,14 @@ class SidebarFirmImages extends Component {
     }
 
     onDrop(files, image) {
-        ImageActions.updateImageData(image.id, 'file', files);
+        var fileName = files[0].name.substring(files[0].name.length-4,files[0].name.length);
+        if(fileName.toUpperCase() !== ".HEX" ){
+            toaster.warning('Tipo de arquivo inv&aacute;lido! Arquivo permitido: .HEX ');
+        }else{           
+            ImageActions.updateImageData(image.id, 'file', files);
+        }
+       
+        
     }
 
     toggleDeleteSidebar(e, image) {
@@ -77,6 +84,7 @@ class SidebarFirmImages extends Component {
         e.preventDefault();
         const { t, templateId, images } = this.props;
         let hasChange = false;
+   
         Object.values(images)
             .forEach((image) => {
                 if (!image.saved) {
@@ -86,7 +94,11 @@ class SidebarFirmImages extends Component {
                     // 2. upload binary
                     // 3. set as saved image
 
+                    console.log("   Aqui   " + image.file);
+          
+
                     if (image.image_version === '') {
+                     
                         toaster.warning(t('firmware:alerts.version_required'));
                         return false;
                     }

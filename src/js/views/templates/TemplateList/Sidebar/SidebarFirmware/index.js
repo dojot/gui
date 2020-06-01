@@ -47,6 +47,7 @@ class SidebarFirmware extends Component {
 
         Object.entries(this.props.images).map(([key, image]) => {
             if (!image.saved) {
+                
                 // for each non saved image,
                 // 1. update or create image
                 // 2. upload binary
@@ -64,6 +65,7 @@ class SidebarFirmware extends Component {
                     } else {
                         toaster.success('Image updated.');
                     }
+                
 
                     if (image.file) {
                         const img_binary = {

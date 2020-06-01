@@ -41,7 +41,7 @@ const ImageList = ({
                                         {(element.file !== undefined)
                                             ? (
                                                 <span className="value">
-                                                    {element.file[0].name}
+                                                    {element.file[0].name} 
                                                 </span>
                                             ) : (
                                                 <div>
@@ -83,9 +83,7 @@ const ImageList = ({
                         ? (
                             <div className="body-attribute-name pl50px">
                                 <div className="input-field attribute-type  attr-content">
-                                    <span
-                                        className="label"
-                                    >
+                                    <span className="label">
                                         {t('firmware:image_list.created_at')}
                                     </span>
                                     <span className="value">
