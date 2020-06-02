@@ -38,8 +38,7 @@ class SidebarFirmImages extends Component {
 
     onDrop(files, image) {
         var fileName = files[0].name.substring(files[0].name.length-4,files[0].name.length);
-        if(fileName.toUpperCase() !== ".HEX" ){
-           //toaster.warning('Tipo de arquivo inv&aacute;lido! Arquivo permitido: .HEX ');
+        if(fileName.toUpperCase() !== ".HEX" ){           
            const { t } = this.props;
            toaster.warning(t('firmware:alerts.file_error'));
         }else{           
