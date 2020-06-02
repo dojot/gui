@@ -27,6 +27,7 @@
         "image_reset_header": "Enable transfer another image:",
         "image_reset": "Request to enable the sending of a new image.",
         "image_applied": "Request to apply firmware image was sent.",
+        "file_error":"Invalid file type! Allowed file: .HEX",
         "qst_remove": "You are about to remove a version. Are you sure?",
         "qst_remove_binary": "You are about to remove an image. Are you sure?"
     },
