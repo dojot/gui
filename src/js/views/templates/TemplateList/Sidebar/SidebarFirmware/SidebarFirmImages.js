@@ -93,9 +93,6 @@ class SidebarFirmImages extends Component {
                     // 2. upload binary
                     // 3. set as saved image
 
-                    console.log(`   Aqui   ${image.file}`);
-
-
                     if (image.image_version === '') {
                         toaster.warning(t('firmware:alerts.version_required'));
                         return false;
