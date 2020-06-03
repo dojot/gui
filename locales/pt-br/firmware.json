@@ -29,7 +29,7 @@
         "image_applied": "Requisição para aplicar a imagem foi enviada.",
         "qst_remove": "Você está prestes a remover uma versão. Você tem certeza?",
         "qst_remove_binary": "Você está prestes a remover uma imagem. Você tem certeza?",
-        "file_error": "Tipo de arquivo inv&aacute;lido! Arquivo permitido: .HEX"
+        "file_error": "Tipo de arquivo inválido! Arquivo permitido: .HEX"
     },
     "labels": {
         "remove": "Remover Versão",
