@@ -26,7 +26,7 @@ const ImageList = ({
                             className="attribute-type"
                             maxLength={40}
                             value={element.image_version}
-                            onChange={e => changeAttrValue(e, element)}
+                            onChange={(e) => changeAttrValue(e, element)}
                             disabled={!element.new}
                         >
                             {t('firmware:image_list.version')}
@@ -41,7 +41,7 @@ const ImageList = ({
                                         {(element.file !== undefined)
                                             ? (
                                                 <span className="value">
-                                                    {element.file[0].name} 
+                                                    {element.file[0].name}
                                                 </span>
                                             ) : (
                                                 <div>
@@ -51,14 +51,13 @@ const ImageList = ({
                                                     <div className="dropzone">
                                                         <Dropzone
                                                             multiple={false}
-                                                            onDrop={file => onDrop(file, element)}
+                                                            onDrop={(file) => onDrop(file, element)}
                                                         >
                                                             <p>{t('firmware:image_list.dropzone_desc')}</p>
                                                         </Dropzone>
                                                     </div>
                                                 </div>
-                                            )
-                                        }
+                                            )}
                                     </Fragment>
                                 )
                                 : (
@@ -68,15 +67,14 @@ const ImageList = ({
                                         </span>
                                         <i
                                             className="fa fa-trash img-hash-icon"
-                                            onClick={e => toggleDeleteBinarySidebar(e, element)}
-                                            onKeyPress={e => toggleDeleteBinarySidebar(e, element)}
+                                            onClick={(e) => toggleDeleteBinarySidebar(e, element)}
+                                            onKeyPress={(e) => toggleDeleteBinarySidebar(e, element)}
                                             role="button"
                                             tabIndex={0}
                                             title={t('firmware:labels.rem_bin')}
                                         />
                                     </Fragment>
-                                )
-                            }
+                                )}
                         </div>
                     </div>
                     {(element.created != null)
@@ -96,14 +94,13 @@ const ImageList = ({
                         <DojotBtnClassicWithIcon
                             label={t('firmware:labels.rem')}
                             title={t('firmware:labels.remove')}
-                            onClick={e => toggleDeleteSidebar(e, element)}
+                            onClick={(e) => toggleDeleteSidebar(e, element)}
                             icon="fa-times"
                         />
                     </div>
                     <div className="line-2" />
                 </div>
-            ))
-        }
+            ))}
     </Fragment>
 );
 

@@ -47,7 +47,6 @@ class SidebarFirmware extends Component {
 
         Object.entries(this.props.images).map(([key, image]) => {
             if (!image.saved) {
-                
                 // for each non saved image,
                 // 1. update or create image
                 // 2. upload binary
@@ -65,7 +64,7 @@ class SidebarFirmware extends Component {
                     } else {
                         toaster.success('Image updated.');
                     }
-                
+
 
                     if (image.file) {
                         const img_binary = {
@@ -145,7 +144,7 @@ class SidebarFirmware extends Component {
                                     {(!this.state.new_image)
                                         ? (
                                             <div className="body-form-nodata clickable" onClick={this.createNewImage}>
-                                        Click here to add a new image
+                                                Click here to add a new image
                                             </div>
                                         )
                                         : null }
@@ -153,13 +152,12 @@ class SidebarFirmware extends Component {
                                 <div className="footer">
                                     <Fragment>
                                         <DojotBtnClassic label="discard" type="secondary" onClick={toogleSidebarFirmware} />
-                                        <DojotBtnClassic color="red" label="save" type="primary" onClick={e => this.saveImages(e)} />
+                                        <DojotBtnClassic color="red" label="save" type="primary" onClick={(e) => this.saveImages(e)} />
                                     </Fragment>
                                 </div>
                             </div>
                         )
-                        : <div />
-                    }
+                        : <div />}
                 </Slide>
             </Fragment>
         );
