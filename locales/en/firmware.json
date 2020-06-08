@@ -21,6 +21,7 @@
         "version_required": "Image version required.",
         "not_to_be_save": "There is no change to be saved",
         "file_added": "Image file associated with version {{version}}.",
+        "file_error":"Invalid file type! Allowed file: .HEX",
         "image_to_transfer": "Transfer image to device:",
         "apply_the_image": "Apply image {{image}} to device:",
         "image_transferred": "Request to transfer firmware image was sent.",

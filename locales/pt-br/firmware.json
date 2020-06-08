@@ -21,6 +21,7 @@
         "version_required": "Versão da imagem requerida.",
         "not_to_be_save": "Não há nenhuma mudança a ser salva",
         "file_added": "Arquivo de imagem associado a versão {{version}}.",
+        "file_error": "Tipo de arquivo inválido! Arquivo permitido: .HEX",
         "image_to_transfer": "Transferir imagem para o dispositivo:",
         "apply_the_image": "Aplicar imagem {{image}} ao dispositivo:",
         "image_transferred": "Requisição para transferir a imagem foi enviada.",
