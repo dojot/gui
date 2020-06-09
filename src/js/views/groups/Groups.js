@@ -58,7 +58,7 @@ function GroupList(param) {
     if (param.groups) {
         return (
             <div className="col s12 lst-wrapper w100 hei-100-over-scroll flex-container">
-                {param.groups.map(obj => (
+                {param.groups.map((obj) => (
                     <div key={obj.name} className="mg20px fl flex-order-2">
                         <GroupCard
                             group={obj}
@@ -112,7 +112,7 @@ class Groups extends Component {
     }
 
     toggleSideBar() {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             showSideBar: !prevState.showSideBar,
         }));
     }
@@ -191,7 +191,7 @@ function GroupBox(props) {
         handleUpdate, showSideBar, handleHideSideBar, handleShowSideBar, edit,
     } = props;
     return (
-        <div className="full-height flex-container pos-relative overflow-x-hidden">            
+        <div className="full-height flex-container pos-relative overflow-x-hidden">
             <GroupList handleUpdate={handleUpdate} {...props} />
             {showSideBar ? (
                 <GroupsSideBar

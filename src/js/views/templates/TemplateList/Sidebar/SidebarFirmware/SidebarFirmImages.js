@@ -37,10 +37,11 @@ class SidebarFirmImages extends Component {
     }
 
     onDrop(files, image) {
-        if(files && Array.isArray(files)&& files.length>0){            
-            if (files[0].name && files[0].name.length > 4 ) {
+        if (files && Array.isArray(files) && files.length > 0) {
+            if (files[0].name && files[0].name.length > 4) {
                 const fileName = files[0].name.substring(
-                    files[0].name.length - 4, files[0].name.length);
+                    files[0].name.length - 4, files[0].name.length,
+);
                 if (fileName.toUpperCase() !== '.HEX') {
                     const { t } = this.props;
                     toaster.warning(t('firmware:alerts.file_error'));
@@ -48,11 +49,9 @@ class SidebarFirmImages extends Component {
                     ImageActions.updateImageData(image.id, 'file', files);
                 }
             }
-        }else{
+        } else {
             toaster.warning(t('firmware:alerts.file_error'));
         }
-
-      
     }
 
 
@@ -243,14 +242,13 @@ class SidebarFirmImages extends Component {
                                             color="red"
                                             label={t('save.label')}
                                             type="primary"
-                                            onClick={e => this.saveImages(e)}
+                                            onClick={(e) => this.saveImages(e)}
                                         />
                                     </Fragment>
                                 </div>
                             </div>
                         )
-                        : <div />
-                    }
+                        : <div />}
                 </Slide>
                 <SidebarDeleteImage
                     toggleSidebar={this.toggleDeleteSidebar}

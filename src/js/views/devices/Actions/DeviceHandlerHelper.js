@@ -43,12 +43,11 @@ class DeviceHandlerHelper {
                     });
 
                     if (filteredAttr[0]) {
-                        const attrElement = filteredAttr[0];                      
+                        const attrElement = filteredAttr[0];
                         attrElement.metadata = specializedMetas;
                         if (!specializedStaticAttr) {
                             delete attrElement.static_value;
                         }
-                        
                     }
 
                     specializedAttrs = specializedAttrs.concat(filteredAttr);
@@ -62,19 +61,19 @@ class DeviceHandlerHelper {
 
     removeRepeatElementsOnArray(arr, comp) {
         return arr
-            .map(e => e[comp])
+            .map((e) => e[comp])
 
             // store the keys of the unique objects
             .map((e, i, final) => final.indexOf(e) === i && i)
 
             // eliminate the dead keys & store unique objects
-            .filter(e => arr[e]).map(e => arr[e]);
+            .filter((e) => arr[e]).map((e) => arr[e]);
     }
 
     _filterAttrFromOldDevice(oldDev, template, attrDev) {
         let oldAttr = null;
         if (oldDev && oldDev.attrs && oldDev.attrs[template.id]) {
-            oldAttr = oldDev.attrs[template.id].filter(oldAttrDev => attrDev.id === oldAttrDev.id);
+            oldAttr = oldDev.attrs[template.id].filter((oldAttrDev) => attrDev.id === oldAttrDev.id);
         }
         return oldAttr && oldAttr[0] ? oldAttr[0] : null;
     }
