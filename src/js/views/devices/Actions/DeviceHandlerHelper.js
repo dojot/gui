@@ -47,13 +47,8 @@ class DeviceHandlerHelper {
                         attrElement.metadata = specializedMetas;
                         if (!specializedStaticAttr) {
                             delete attrElement.static_value;
-<<<<<<< HEAD
-                        }                        
-=======
-                        }
->>>>>>> 6d4691a56452f2cf124dba308666f2ddb672db47
+                        }     
                     }
-
                     specializedAttrs = specializedAttrs.concat(filteredAttr);
                 });
             }
@@ -77,7 +72,9 @@ class DeviceHandlerHelper {
     _filterAttrFromOldDevice(oldDev, template, attrDev) {
         let oldAttr = null;
         if (oldDev && oldDev.attrs && oldDev.attrs[template.id]) {
-            oldAttr = oldDev.attrs[template.id].filter((oldAttrDev) => attrDev.id === oldAttrDev.id);
+            oldAttr = oldDev.attrs[template.id].filter(
+                (oldAttrDev) => attrDev.id === oldAttrDev.id
+            );
         }
         return oldAttr && oldAttr[0] ? oldAttr[0] : null;
     }
