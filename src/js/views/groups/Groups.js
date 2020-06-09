@@ -191,7 +191,7 @@ function GroupBox(props) {
         handleUpdate, showSideBar, handleHideSideBar, handleShowSideBar, edit,
     } = props;
     return (
-        <div className="full-height flex-container pos-relative overflow-x-hidden">            
+        <div className="full-height flex-container pos-relative overflow-x-hidden">
             <GroupList handleUpdate={handleUpdate} {...props} />
             {showSideBar ? (
                 <GroupsSideBar
