@@ -45,7 +45,7 @@ class SidebarFirmImages extends Component {
                 if (fileName.toUpperCase() !== '.HEX') {
                     const { t } = this.props;
                     toaster.warning(t('firmware:alerts.file_error'));
-                }else{
+                } else {
                     ImageActions.updateImageData(image.id, 'file', files);
                 }
             }
