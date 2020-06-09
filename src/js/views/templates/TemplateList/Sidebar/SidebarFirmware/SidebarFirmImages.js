@@ -37,23 +37,13 @@ class SidebarFirmImages extends Component {
     }
 
     onDrop(files, image) {
-<<<<<<< HEAD
-        const { t } = this.props;
-        if(files && Array.isArray(files) && files.length>0){            
-            if(files[0].name && files[0].name.length>4 ) {
-                const fileName = files[0].name.substring(
-                    files[0].name.length - 4, files[0].name.length
-                    );
-                if(fileName.toUpperCase() !== '.HEX') {                   
-=======
         if (files && Array.isArray(files) && files.length > 0) {
             if (files[0].name && files[0].name.length > 4) {
                 const fileName = files[0].name.substring(
                     files[0].name.length - 4, files[0].name.length,
-);
+                );
                 if (fileName.toUpperCase() !== '.HEX') {
                     const { t } = this.props;
->>>>>>> 6d4691a56452f2cf124dba308666f2ddb672db47
                     toaster.warning(t('firmware:alerts.file_error'));
                 }else{
                     ImageActions.updateImageData(image.id, 'file', files);
