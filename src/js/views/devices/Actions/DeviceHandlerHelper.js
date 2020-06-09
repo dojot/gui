@@ -47,7 +47,7 @@ class DeviceHandlerHelper {
                         attrElement.metadata = specializedMetas;
                         if (!specializedStaticAttr) {
                             delete attrElement.static_value;
-                        }     
+                        }
                     }
                     specializedAttrs = specializedAttrs.concat(filteredAttr);
                 });
@@ -73,7 +73,7 @@ class DeviceHandlerHelper {
         let oldAttr = null;
         if (oldDev && oldDev.attrs && oldDev.attrs[template.id]) {
             oldAttr = oldDev.attrs[template.id].filter(
-                (oldAttrDev) => attrDev.id === oldAttrDev.id
+                (oldAttrDev) => attrDev.id === oldAttrDev.id,
             );
         }
         return oldAttr && oldAttr[0] ? oldAttr[0] : null;
