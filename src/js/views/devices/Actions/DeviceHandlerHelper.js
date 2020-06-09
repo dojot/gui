@@ -43,13 +43,12 @@ class DeviceHandlerHelper {
                     });
 
                     if (filteredAttr[0]) {
-                        const attrElement = filteredAttr[0];
-                        if (attrElement) {
-                            attrElement.metadata = specializedMetas;
-                            if (!specializedStaticAttr) {
-                                delete attrElement.static_value;
-                            }
+                        const attrElement = filteredAttr[0];                      
+                        attrElement.metadata = specializedMetas;
+                        if (!specializedStaticAttr) {
+                            delete attrElement.static_value;
                         }
+                        
                     }
 
                     specializedAttrs = specializedAttrs.concat(filteredAttr);
