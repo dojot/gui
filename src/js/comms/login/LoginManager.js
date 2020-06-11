@@ -18,28 +18,28 @@ const GQL_LOGIN = (username, passwd) => `
 `;
 
 class LoginManager {
-    constructor() {
-        this.baseUrl = '';
-    }
+  constructor() {
+    this.baseUrl = '';
+  }
 
-    authenticate(login) {
-        const req = {
-            query: GQL_LOGIN(login.username, login.password),
-        };
-        return util.POST(this.baseUrl+'graphql/auth/', req);
-    }
+  authenticate(login) {
+    const req = {
+      query: GQL_LOGIN(login.username, login.password),
+    };
+    return util.POST(this.baseUrl + 'graphql-auth/', req);
+  }
 
-    setNewPassword(token) {
-        return util.POST(`${this.baseUrl}/auth/password/resetlink?link=${token.token}`, token);
-    }
+  setNewPassword(token) {
+    return util.POST(`${this.baseUrl}/auth/password/resetlink?link=${token.token}`, token);
+  }
 
-    resetPassword(username) {
-        return util.POST(`${this.baseUrl}/auth/password/reset/${username}`);
-    }
+  resetPassword(username) {
+    return util.POST(`${this.baseUrl}/auth/password/reset/${username}`);
+  }
 
-    updatePassword(data) {
-        return util.POST(`${this.baseUrl}/auth/password/update/`, data);
-    }
+  updatePassword(data) {
+    return util.POST(`${this.baseUrl}/auth/password/update/`, data);
+  }
 }
 
 const loginManager = new LoginManager();
