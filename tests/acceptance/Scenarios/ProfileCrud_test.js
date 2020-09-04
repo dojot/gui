@@ -1,165 +1,180 @@
 Feature('Profiles CRUD');
 
 Before((login) => {
-   login('admin');
+    login('admin');
 });
 
 function openPage(I) {
-   I.click(locate('a').withAttr({ href: '#/groups' }));
+    I.click(locate('a').withAttr({ href: '#/groups' }));
 }
 
-Scenario('@basic: Creating a profile', async (I) => {
-   openPage(I)
+Scenario('@basic: Creating a profile', (I) => {
+    openPage(I);
 
-   I.click(locate('div').withAttr({ title: 'Create a new profile' }))
-   I.fillField('name', 'TesteProfile')
-   I.fillField('description', 'Teste Profile, contendo teste automatizado usando codecept - JavaScript')
-   I.checkOption('template.viewer')
-   I.checkOption('device.viewer')
-   I.checkOption('flows.viewer')
-   I.checkOption('history.viewer')
-   I.checkOption('user.viewer')
-   I.checkOption('ca.viewer')
-   I.checkOption('user.modifier')
-   I.checkOption('permission.modifier')
-   I.click('Save')
+    I.click(locate('div').withAttr({ title: 'Create a new profile' }));
+    I.fillField('name', 'TesteProfile');
+    I.wait(1);
+    I.fillField('description', 'Teste Profile, contendo teste automatizado usando codecept - JavaScript');
+    I.wait(1);
+    I.checkOption('template.viewer');
+    I.wait(1);
+    I.checkOption('device.viewer');
+    I.wait(1);
+    I.checkOption('flows.viewer');
+    I.wait(1);
+    I.checkOption('history.viewer');
+    I.wait(1);
+    I.checkOption('user.viewer');
+    I.wait(1);
+    I.checkOption('ca.viewer');
+    I.wait(1);
+    I.checkOption('user.modifier');
+    I.wait(1);
+    I.checkOption('permission.modifier');
+    I.wait(1);
+    I.click('Save');
 
-   // Checking message the reply
-   I.wait(3)
-   I.see('Profile created.')
+    // Checking message the reply
+    I.wait(2);
+    I.see('Profile created.');
 });
 
-Scenario('@basic: Checking create profile', async (I) => {
-   openPage(I)
-   //I.click(locate('a').withAttr({ href: '#/groups' }));
-   I.click('TesteProfile')
-
-   I.seeCheckboxIsChecked('template.viewer')
-   I.seeCheckboxIsChecked('device.viewer')
-   I.seeCheckboxIsChecked('flows.viewer')
-   I.seeCheckboxIsChecked('history.viewer')
-   I.seeCheckboxIsChecked('user.viewer')
-   I.seeCheckboxIsChecked('ca.viewer')
-   I.seeCheckboxIsChecked('user.modifier')
-   I.seeCheckboxIsChecked('permission.modifier')
+Scenario('@basic: Checking create profile', (I) => {
+    openPage(I);
+    I.click('TesteProfile');
+    I.wait(5);
+    I.seeCheckboxIsChecked('template.viewer');
+    I.wait(1);
+    I.seeCheckboxIsChecked('device.viewer');
+    I.wait(1);
+    I.seeCheckboxIsChecked('flows.viewer');
+    I.wait(1);
+    I.seeCheckboxIsChecked('history.viewer');
+    I.wait(1);
+    I.seeCheckboxIsChecked('user.viewer');
+    I.wait(1);
+    I.seeCheckboxIsChecked('ca.viewer');
+    I.wait(1);
+    I.seeCheckboxIsChecked('user.modifier');
+    I.wait(1);
+    I.seeCheckboxIsChecked('permission.modifier');
 });
 
-Scenario('@basic: Updating a profile', async (I) => {
-   // I.click(locate('a').withAttr({ href: '#/groups' }));
-   openPage(I)
+Scenario('@basic: Updating a profile', (I) => {
+    openPage(I);
 
-   I.click('TesteProfile')
-   I.uncheckOption('user.viewer')
-   I.uncheckOption('ca.viewer')
-   I.uncheckOption('permission.modifier')
+    I.click('TesteProfile');
+    I.wait(1);
+    I.uncheckOption('user.viewer');
+    I.wait(1);
+    I.uncheckOption('ca.viewer');
+    I.wait(1);
+    I.uncheckOption('permission.modifier');
+    I.wait(1);
 
-   I.click('Save')
-   // Checking message the reply
-   I.wait(3)
-   I.see('Profile updated.')
+    I.click('Save');
+    // Checking message the reply
+    I.wait(3);
+    I.see('Profile updated.');
 });
 
-Scenario('@basic: ')
+Scenario('@basic: ');
 
-Scenario('@basic: Checking Update profile', async (I) => {
-   openPage(I)
+Scenario('@basic: Checking Update profile', (I) => {
+    openPage(I);
 
-   I.click('TesteProfile')
-   I.dontSeeCheckboxIsChecked('user.viewer')
-   I.dontSeeCheckboxIsChecked('ca.viewer')
-   I.dontSeeCheckboxIsChecked('permission.modifier')
+    I.click('TesteProfile');
+    I.wait(5);
+    I.dontSeeCheckboxIsChecked('user.viewer');
+    I.wait(1);
+    I.dontSeeCheckboxIsChecked('ca.viewer');
+    I.wait(1);
+    I.dontSeeCheckboxIsChecked('permission.modifier');
+    I.wait(1);
 });
 
-Scenario('@basic: Invalid characters', async (I) => {
-   openPage(I)
+Scenario('@basic: Invalid characters', (I) => {
+    openPage(I);
 
-   I.click('TesteProfile')
-   I.fillField('name', '--')
-   I.fillField('description', 'Teste de Caracteres')
-   I.click('Save')
+    I.click('TesteProfile');
+    I.fillField('name', '--');
+    I.fillField('description', 'Teste de Caracteres');
+    I.click('Save');
 
-   // Checking message the reply
-   I.wait(3)
-   I.see('Invalid group name, only alphanumeric allowed')
-   I.click(locate('.footer button').withAttr({ title: "Discard" }))
+    // Checking message the reply
+    I.wait(3);
+    I.see('Invalid group name, only alphanumeric allowed');
+    I.click(locate('.footer button').withAttr({ title: 'Discard' }));
 });
 
-Scenario('@basic: Testing discard button', async (I) => {
-   openPage(I)
+Scenario('@basic: Testing discard button', (I) => {
+    openPage(I);
 
-   I.click('TesteProfile')
-   I.click(locate('.footer button').withAttr({ title: "Discard" }))
+    I.click('TesteProfile');
+    I.click(locate('.footer button').withAttr({ title: 'Discard' }));
 });
 
-Scenario('@basic: Remove profile, Button Cancel', async (I) => {
-   openPage(I)
+Scenario('@basic: Remove profile, Button Cancel', (I) => {
+    openPage(I);
 
-   I.click('TesteProfile')
-   I.click(locate('.footer button').withAttr({ title: "Remove" }))
-   I.click(locate('.confirm-modal button').withAttr({ title: "Cancel" }))
-   I.wait(2)
+    I.click('TesteProfile');
+    I.click(locate('.footer button').withAttr({ title: 'Remove' }));
+    I.click(locate('.confirm-modal button').withAttr({ title: 'Cancel' }));
+    I.wait(2);
 });
 
-Scenario('@basic: Remove profile', async (I) => {
-   openPage(I)
+Scenario('@basic: Remove profile', (I) => {
+    openPage(I);
 
-   I.click('TesteProfile')
-   I.click(locate('.footer button').withAttr({ title: "Remove" }))
-   I.click(locate('.confirm-modal button').withAttr({ title: "Remove" }))
+    I.click('TesteProfile');
+    I.click(locate('.footer button').withAttr({ title: 'Remove' }));
+    I.click(locate('.confirm-modal button').withAttr({ title: 'Remove' }));
 
-   // Checking message the reply 
-   I.wait(3)
-   I.see('Profile removed')
+    // Checking message the reply
+    I.wait(3);
+    I.see('Profile removed');
 });
 
-function openPage(I) {
-   I.click(locate('a').withAttr({ href: '#/groups' }));
-}
 
-Scenario('@basic: Creating a profile, description empty', async (I) => {
-   openPage(I)
+Scenario('@basic: Creating a profile, description empty', (I) => {
+    openPage(I);
 
-   I.click(locate('div').withAttr({ title: 'Create a new profile' }))
-   I.fillField('name', 'TesteDescricao')
-   I.fillField('description', '')
-   I.click('Save')
+    I.click(locate('div').withAttr({ title: 'Create a new profile' }));
+    I.fillField('name', 'TesteDescricao');
+    I.fillField('description', '');
+    I.click('Save');
 
-   I.wait(3)
-   I.see('Empty Profile description.')
-   I.click(locate('.footer button').withAttr({ title: "Discard" }))
+    I.wait(3);
+    I.see('Empty Profile description.');
+    I.click(locate('.footer button').withAttr({ title: 'Discard' }));
 });
 
-function openPage(I) {
-   I.click(locate('a').withAttr({ href: '#/groups' }));
-}
+Scenario('@basic: Creating a profile, Name empty', (I) => {
+    openPage(I);
 
-Scenario('@basic: Creating a profile, Name empty', async (I) => {
-   openPage(I)
+    I.click(locate('div').withAttr({ title: 'Create a new profile' }));
+    I.fillField('name', '');
+    I.fillField('description', '');
+    I.click('Save');
 
-   I.click(locate('div').withAttr({ title: 'Create a new profile' }))
-   I.fillField('name', '')
-   I.fillField('description', '')
-   I.click('Save')
-
-   I.wait(3)
-   I.see('Empty Profile name.')
-   I.click(locate('.footer button').withAttr({ title: "Discard" }))
+    I.wait(3);
+    I.see('Empty Profile name.');
+    I.click(locate('.footer button').withAttr({ title: 'Discard' }));
 });
 
-/////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////
 //  Teste de usuario e perfil, configurando permissições //
-//////////////////////////////////////////////////////////// 
+// //////////////////////////////////////////////////////////
 
 
-Feature('User Management');
+// Feature('User Management');
 
-//Usar outro comando, comando não pratico caso mude o endereço IP
-Scenario('@basic: Open page User', async (I) => {
-   I.amOnPage('http://10.4.2.154:8000/#/auth');
-});
+// // Usar outro comando, comando não pratico caso mude o endereço IP
+// Scenario('@basic: Open page User', async (I) => {
+//     I.amOnPage('#/auth');
+// });
 
-Scenario('@basic: Create a new user', async (I) => {
-
-   I.click(locate('input').withAttr({ title: 'userName46465' }));
-   I.fillField('userName46465', 'TestUser1')
-});    
+// Scenario('@basic: Create a new user', async (I) => {
+//     I.click(locate('input').withAttr({ title: 'userName46465' }));
+//     I.fillField('userName46465', 'TestUser1');
+// });
