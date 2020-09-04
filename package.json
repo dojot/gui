@@ -83,7 +83,7 @@
     "materialize-css": "^0.100.2",
     "moment": "^2.22.2",
     "node-libs-browser": "^2.1.0",
-    "node-sass": "~4.9",
+    "node-sass": "~4.13",
     "pkijs": "^2.1.80",
     "prop-types": "^15.6.2",
     "pvutils": "^1.0.17",
