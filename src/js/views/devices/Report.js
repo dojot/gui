@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { DojotCustomButton } from 'Components/DojotButton';
 import toaster from 'Comms/util/materialize';
-import ReportTable from './ReportPage';
+import ReportTable from './ReportPage.js';
 
 const extractAttrsLabels = (listAttrDySelected) => (listAttrDySelected.map((attr) => attr.label));
 
