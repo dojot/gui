@@ -75,7 +75,7 @@ Table.propTypes = {
     })).isRequired,
     isFetching: PropTypes.bool,
     t: PropTypes.func.isRequired,
-    title: PropTypes.string,
+    title: PropTypes.string.isRequired,
 };
 
 export default Table;

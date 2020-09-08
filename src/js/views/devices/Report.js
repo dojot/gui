@@ -176,7 +176,7 @@ ReportComponent.defaultProps = {
 };
 
 ReportComponent.propTypes = {
-    deviceLabel: PropTypes.string,
+    deviceLabel: PropTypes.string.isRequired,
     deviceId: PropTypes.string.isRequired,
     listAttrDySelected: PropTypes.arrayOf(PropTypes.shape({})),
     t: PropTypes.func.isRequired,
