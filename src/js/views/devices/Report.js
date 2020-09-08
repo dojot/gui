@@ -117,7 +117,7 @@ class ReportComponent extends Component {
     }
 
     render() {
-        const { deviceId, t } = this.props;
+        const { deviceId, t, deviceLabel } = this.props;
         const {
             callReport, attrsList, dateFrom, dateTo,
         } = this.state;
@@ -157,6 +157,7 @@ class ReportComponent extends Component {
                 </span>
                 {callReport ? (
                     <ReportTable
+                        deviceLabel={deviceLabel}
                         deviceId={deviceId}
                         attrs={attrsList}
                         dateFrom={new Date(dateFrom)}
@@ -175,6 +176,7 @@ ReportComponent.defaultProps = {
 };
 
 ReportComponent.propTypes = {
+    deviceLabel: PropTypes.string,
     deviceId: PropTypes.string.isRequired,
     listAttrDySelected: PropTypes.arrayOf(PropTypes.shape({})),
     t: PropTypes.func.isRequired,
