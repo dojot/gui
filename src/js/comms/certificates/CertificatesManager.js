@@ -2,27 +2,18 @@ import util from '../util';
 
 class CertificatesManager {
     constructor() {
-        this.baseUrl = '';
+        this.baseUrl = '/x509/v1';
     }
 
-    getCAChain(caName) {
-        return util.GET(`${this.baseUrl}/ca/${caName}`);
+    async getCAChain() {
+        const { caPem } = await util.GET(`${this.baseUrl}/ca`);
+        return caPem;
     }
 
 
-    signCert(commonName, csrPEM) {
-        const req = {
-            certificate: csrPEM,
-            passwd: 'dojot',
-        };
-        return util.POST(`${this.baseUrl}/sign/${commonName}/pkcs10`, req);
-    }
-
-    createEntity(commonName) {
-        const req = {
-            username: commonName,
-        };
-        return util.POST(`${this.baseUrl}/user`, req);
+    async signCert(commonName, csrPEM) {
+        const { certificatePem } = await util.POST(`${this.baseUrl}/certificates`, { csr: csrPEM });
+        return certificatePem;
     }
 }
 

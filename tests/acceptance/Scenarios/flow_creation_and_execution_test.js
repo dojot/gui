@@ -12,8 +12,9 @@ Scenario('@basic: Creating a simple flow', async (I, Flow, Device, Notification)
 
     Flow.clickOpen();
     Flow.clickCreateNew();
-    Flow.setFlowName('my flow');
     I.wait(3);
+    Flow.setFlowName('my flow');
+    I.wait(5);
     Flow.addDeviceInput();
     Flow.addSwitch();
     Flow.addChange();
