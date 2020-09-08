@@ -25,13 +25,13 @@ class ReportTable extends React.PureComponent {
                     <Table key="tb-123" itemList={result.data} t={t} id={deviceId} title={`${deviceLabel} - ${deviceId}`} />
                 </NewWindow>
             ) : (
-                    <NewWindow>
-                        {
+                <NewWindow>
+                    {
                             Object.keys(result.data).map(
                                 (value) => <Table key="tb-321" itemList={result.data[value]} t={t} />,
                             )
                         }
-                    </NewWindow>
+                </NewWindow>
                 );
             this.setState({ reportWindow });
         }).catch(() => {
