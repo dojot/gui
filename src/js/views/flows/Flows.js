@@ -42,7 +42,7 @@ function SummaryItem(props) {
                             <img src="images/update.png"/>
                         </div>
                         <div className="attr-content">
-                            <input type="text" value={util.printTime(props.flow.updated / 1000)}
+                            <input type="text" value={util.iso_to_date(props.flow.updated)}
                                    disabled/>
                             <span><Trans i18nKey="flows:last_update"/></span>
                         </div>

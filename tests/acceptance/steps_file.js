@@ -11,11 +11,12 @@ module.exports = () => {
             I.amOnPage(env.dojot_host);
             I.setEnglishLanghage();
             I.refreshPage();
+            I.wait(3);
             I.see('Sign in');
             I.fillField('Username', 'admin');
             I.fillField('Password', 'admin');
             I.click('Login');
-            I.wait(3);
+            I.wait(10);
             if (clearDb) { I.clearDatabase(); }
             I.refreshPage();
         },
@@ -24,11 +25,12 @@ module.exports = () => {
             I.amOnPage(env.dojot_host);
             I.setEnglishLanghage();
             I.refreshPage();
+            I.wait(3);
             I.see('Sign in');
             I.fillField('Username', username);
             I.fillField('Password', password);
             I.click('Login');
-            I.wait(3);
+            I.wait(10);
             if (clearDb) { I.clearDatabase(); }
             I.refreshPage();
         },
@@ -130,9 +132,19 @@ module.exports = () => {
         },
 
         async sendMQTTMessage(deviceId, message, tenant = 'admin') {
-            const client = await mqtt.connect(env.mqtt_host);
-            await client.publish(`/${tenant}/${deviceId}/attrs`, message);
-            await client.end();
+            try {
+                // vernemq
+                const client = await mqtt.connectAsync(env.mqtt_host, { username: `${tenant}:${deviceId}` });
+                await client.publish(`${tenant}:${deviceId}/attrs`, message);
+
+                // mosca
+                // const client = await mqtt.connectAsync(env.mqtt_host);
+                // await client.publish(`/${tenant}/${deviceId}/attrs`, message);
+
+                await client.end();
+            } catch (e) {
+                console.log(`error when trying publish in topic /${tenant}/${deviceId}/attrs to ${env.mqtt_host}`, e.stack);
+            }
         },
 
     });
