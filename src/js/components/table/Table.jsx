@@ -11,7 +11,7 @@ import styles from './style.scss';
 
 const Table = (props) => {
     const {
-        itemList = [], isFetching, t,
+        itemList = [], isFetching, t, title,
     } = props;
 
     const row = itemList.map((item) => {
@@ -37,6 +37,9 @@ const Table = (props) => {
         <div className={styles.tableScrollable}>
             <table className={styles.table}>
                 <thead>
+                    <tr>
+                        <th>{title}</th>
+                    </tr>
                     <tr>
                         <th>{t('report:reports.attr')}</th>
                         <th>{t('report:reports.value')}</th>
@@ -72,6 +75,7 @@ Table.propTypes = {
     })).isRequired,
     isFetching: PropTypes.bool,
     t: PropTypes.func.isRequired,
+    title: PropTypes.string,
 };
 
 export default Table;

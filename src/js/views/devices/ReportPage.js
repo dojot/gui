@@ -23,7 +23,7 @@ class ReportTable extends React.PureComponent {
             console.log(URL + " ");
             const reportWindow = Array.isArray(result.data) ? (
                 <NewWindow title={deviceLabel + " - " + deviceId}>
-                    <Table key="tb-123" itemList={result.data} t={t} id={deviceId} />
+                    <Table key="tb-123" itemList={result.data} t={t} id={deviceId} title={deviceLabel + " - " + deviceId} />
                 </NewWindow>
             ) : (
                     <NewWindow>
