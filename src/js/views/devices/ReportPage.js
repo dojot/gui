@@ -12,6 +12,7 @@ class ReportTable extends React.PureComponent {
             reportWindow: <div />,
         };
     }
+
     componentDidMount() {
         const token = window.localStorage.getItem('jwt');
         const {
