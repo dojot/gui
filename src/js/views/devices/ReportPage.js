@@ -20,23 +20,27 @@ class ReportTable extends React.PureComponent {
         } = this.props;
         const URL = `history/device/${deviceId}/history?attr=${attrs.join('&attr=')}&dateFrom=${moment(dateFrom).utc().format('YYYY-MM-DDTHH:mm')}&dateTo=${moment(dateTo).utc().format('YYYY-MM-DDTHH:mm')}`;
         axios.get(URL, { headers: { Authorization: `Bearer ${token}` } }).then((result) => {
+<<<<<<< HEAD
+=======
+            console.log(`${URL} `);
+>>>>>>> d85f53da5ec319d72a22286380445dfbc5d1e295
             const reportWindow = Array.isArray(result.data) ? (
-                <NewWindow title={deviceLabel + " - " + deviceId}>
-                    <Table key="tb-123" itemList={result.data} t={t} id={deviceId} title={deviceLabel + " - " + deviceId} />
+                <NewWindow title={`${deviceLabel} - ${deviceId}`}>
+                    <Table key="tb-123" itemList={result.data} t={t} id={deviceId} title={`${deviceLabel} - ${deviceId}`} />
                 </NewWindow>
             ) : (
-                    <NewWindow>
-                        {
+                <NewWindow>
+                    {
                             Object.keys(result.data).map(
                                 (value) => <Table key="tb-321" itemList={result.data[value]} t={t} />,
                             )
                         }
-                    </NewWindow>
+                </NewWindow>
                 );
             this.setState({ reportWindow });
         }).catch(() => {
             const reportWindow = (
-                <NewWindow title={deviceLabel + " - " + deviceId}>
+                <NewWindow title={`${deviceLabel} - ${deviceId}`}>
                     <div style={
                         {
                             fontSize: 32,
