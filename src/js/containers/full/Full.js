@@ -148,7 +148,7 @@ class RightSideBar extends Component {
 
                         <div className="col s12 m12">
                             <div className="logout-page-info col s12 truncate">
-                                {this.props.user.username}
+                                {this.props.user.service}
                             </div>
                         </div>
 

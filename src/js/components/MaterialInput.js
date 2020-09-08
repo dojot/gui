@@ -11,7 +11,7 @@ class MaterialInput extends Component {
     isValid() {
         if (this.props.valid !== undefined) {
             return this.props.valid;
-        }else if (this.props.error !== undefined) {
+        } else if (this.props.error !== undefined) {
             return this.props.error.length == 0;
         }
 

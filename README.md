@@ -50,13 +50,13 @@ To clean the database (devices, templates and flows) and run the acceptance test
 
 ```shell
 yarn install
-yarn run test:clearDb 
+yarn run test:clearDb
 ```
 
 There are 2 types of scenarios: Basic and Advanced.
 In order to run each scenario, run the following command:
 
 ```shell
-yarn run test --grep @basic
-yarn run test --grep @adv
+yarn run test:basic
+yarn run test:adv
 ```

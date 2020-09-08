@@ -50,7 +50,7 @@
       "ca": "Certificate",
       "import": "Import",
       "fw-image": "Firmware Image",
-      "mqtt_metrics": "MQTT Metrics"
+      "backstage-graphql": "Backstage GUI - GraphQL"
     },
     "table_label": {
       "feature": "Features",
@@ -59,4 +59,3 @@
     }
   }
 }
-

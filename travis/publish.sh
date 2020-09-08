@@ -6,9 +6,10 @@ if [ $TRAVIS_PULL_REQUEST == false ] ; then
   fi
 
   DOCKER_TAG=$(echo ${version} | sed 's/\(.*\)\/\(.*\)/\1_\2/')
-  tag=${TRAVIS_REPO_SLUG}:${DOCKER_TAG}
+  pathdockerhub=${TRAVIS_REPO_SLUG}:${DOCKER_TAG}
 
+  docker build -t ${pathdockerhub} . --build-arg DOJOT_VERSION=${DOCKER_TAG}
   echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  docker tag ${TRAVIS_REPO_SLUG} ${tag}
-  docker push $tag
+  
+  docker push $pathdockerhub
 fi
