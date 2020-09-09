@@ -28,7 +28,7 @@ class ReportTable extends React.PureComponent {
                 <NewWindow title={`${deviceLabel} - ${deviceId}`}>
                     {
                             Object.keys(result.data).map(
-                                (value) => <Table key="tb-321" itemList={result.data[value]} t={t} title={`${deviceLabel} - ${deviceId}`} />,
+                                (value) => <Table key="tb-321" itemList={result.data[value]} t={t} />,
                             )
                         }
                 </NewWindow>
