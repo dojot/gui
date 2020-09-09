@@ -11,7 +11,7 @@ import styles from './style.scss';
 
 const Table = (props) => {
     const {
-        itemList = [], isFetching, t, title,
+        itemList = [], isFetching, t, title
     } = props;
 
     const row = itemList.map((item) => {
@@ -75,7 +75,7 @@ Table.propTypes = {
     })).isRequired,
     isFetching: PropTypes.bool,
     t: PropTypes.func.isRequired,
-    title: PropTypes.string,
+    title: PropTypes.string.isRequired,
 };
 
 export default Table;
