@@ -11,7 +11,7 @@ import styles from './style.scss';
 
 const Table = (props) => {
     const {
-        itemList = [], isFetching, t, title
+        itemList = [], isFetching, t, title,
     } = props;
 
     const row = itemList.map((item) => {
