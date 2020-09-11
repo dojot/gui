@@ -16,27 +16,27 @@ class ReportTable extends React.PureComponent {
     componentDidMount() {
         const token = window.localStorage.getItem('jwt');
         const {
-            deviceId, attrs, dateFrom, dateTo, t,
+            deviceId, attrs, dateFrom, dateTo, t, deviceLabel,
         } = this.props;
         const URL = `history/device/${deviceId}/history?attr=${attrs.join('&attr=')}&dateFrom=${moment(dateFrom).utc().format('YYYY-MM-DDTHH:mm')}&dateTo=${moment(dateTo).utc().format('YYYY-MM-DDTHH:mm')}`;
         axios.get(URL, { headers: { Authorization: `Bearer ${token}` } }).then((result) => {
             const reportWindow = Array.isArray(result.data) ? (
-                <NewWindow>
-                    <Table key="tb-123" itemList={result.data} t={t} />
+                <NewWindow title={`${deviceLabel} - ${deviceId}`}>
+                    <Table key="tb-123" itemList={result.data} t={t} id={deviceId} />
                 </NewWindow>
             ) : (
-                <NewWindow>
-                    {
-                        Object.keys(result.data).map(
-                            (value) => <Table key="tb-321" itemList={result.data[value]} t={t} />,
-                        )
-                    }
-                </NewWindow>
-            );
+                    <NewWindow title={`${deviceLabel} - ${deviceId}`}>
+                        {
+                            Object.keys(result.data).map(
+                                (value) => <Table key="tb-321" itemList={result.data[value]} t={t} />,
+                            )
+                        }
+                    </NewWindow>
+                );
             this.setState({ reportWindow });
         }).catch(() => {
             const reportWindow = (
-                <NewWindow>
+                <NewWindow title={`${deviceLabel} - ${deviceId}`}>
                     <div style={
                         {
                             fontSize: 32,
@@ -68,6 +68,7 @@ class ReportTable extends React.PureComponent {
 }
 
 ReportTable.propTypes = {
+    deviceLabel: PropTypes.string.isRequired,
     deviceId: PropTypes.string.isRequired,
     attrs: PropTypes.arrayOf(PropTypes.string).isRequired,
     dateFrom: PropTypes.instanceOf(Date).isRequired,
