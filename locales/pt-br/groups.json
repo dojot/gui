@@ -46,7 +46,7 @@
       "ca": "Certificado",
       "import": "Importar",
       "fw-image": "Firmware Imagem",
-      "mqtt_metrics": "Metricas MQTT"
+      "backstage-graphql": "Backstage GUI - GraphQL"
     },
     "table_label": {
       "feature": "Funcionabilidade",

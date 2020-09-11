@@ -270,9 +270,8 @@ class Certificates {
      * @returns {Promise<string>}
      */
     async retrieveCACertificate() {
-        const responseCAChain = await certManager.getCAChain(this.caName);
-        const crtCARaw64 = responseCAChain.certificate ? responseCAChain.certificate : null;
-        this._setCACrtPEM(crtCARaw64);
+        const caPem = await certManager.getCAChain();
+        this._setCACrtPEM(caPem);
         return this._caCrtPEM;
     }
 
@@ -291,15 +290,13 @@ class Certificates {
             throw error;
         });
 
-        await certManager.createEntity(commonName).catch(() => {});
-
-        const responseSignCert = await certManager
-            .signCert(commonName, this._csrPEM).catch((error) => {
+        const certificatePem = await certManager
+            .signCert(commonName, this._csrPEM)
+            .catch((error) => {
                 throw error;
             });
 
-        const crtRaw64 = responseSignCert.status.data ? responseSignCert.status.data : null;
-        this._setCrtPEM(crtRaw64);
+        this._setCrtPEM(certificatePem);
 
         return {
             privateKey: this._privateKeyPEM,
@@ -324,38 +321,27 @@ class Certificates {
      * @private
      */
     _setCsrPEM(csrRaw) {
-        this._csrPEM = toBase64(arrayBufferToString(csrRaw));
+        this._csrPEM = '-----BEGIN CERTIFICATE REQUEST-----\r\n';
+        this._csrPEM += Certificates._formatPEM(toBase64(arrayBufferToString(csrRaw)));
+        this._csrPEM += '\r\n-----END CERTIFICATE REQUEST-----';
     }
 
     /**
      * Set crt pem in properties of class
-     * @param crtRaw64
+     * @param certificatePem
      * @private
      */
-    _setCrtPEM(crtRaw64) {
-        this._crtPEM = Certificates._formatCRTPEM(crtRaw64);
+    _setCrtPEM(certificatePem) {
+        this._crtPEM = certificatePem;
     }
 
     /**
      *Set ca crt pem in properties of class
-     * @param crtRaw64
+     * @param caPem
      * @private
      */
-    _setCACrtPEM(crtRaw64) {
-        this._caCrtPEM = Certificates._formatCRTPEM(crtRaw64);
-    }
-
-    /**
-     * Format csr PEM
-     * @param crtRaw64
-     * @returns {string}
-     * @private
-     */
-    static _formatCRTPEM(crtRaw64) {
-        let crtPEM = '-----BEGIN CERTIFICATE-----\r\n';
-        crtPEM += `${crtRaw64}`;
-        crtPEM += '\r\n-----END CERTIFICATE-----\r\n';
-        return crtPEM;
+    _setCACrtPEM(caPem) {
+        this._caCrtPEM = caPem;
     }
 
     /**
