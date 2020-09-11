@@ -11,6 +11,8 @@
     "lint:watch": "gulp",
     "lint:fix": "./node_modules/.bin/eslint src/js/* --fix",
     "test": "./node_modules/.bin/codeceptjs --config=tests/acceptance/codecept.conf.js run --steps",
+    "test:basic": "./node_modules/.bin/codeceptjs --config=tests/acceptance/codecept.conf.js run --steps --grep @basic",
+    "test:adv": "./node_modules/.bin/codeceptjs --config=tests/acceptance/codecept.conf.js run --steps --grep @adv",
     "test:clearDb": "./node_modules/.bin/codeceptjs --config=tests/acceptance/custom.conf.js run --steps",
     "perfomaceTests": "tests/acceptance/performanceTests/runTest.sh",
     "snyk-protect": "snyk protect",

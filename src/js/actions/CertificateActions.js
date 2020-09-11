@@ -106,7 +106,7 @@ class CertificateActions {
     updateCertificates(deviceId, tenant, cb, errorCb) {
         return (dispatch) => {
             dispatch();
-            this.cert.generateCertificates(`${tenant}:${deviceId}`).then((cert) => {
+            this.cert.generateCertificates(`${deviceId}`).then((cert) => {
                 const { crtPEM, privateKey } = cert;
                 if (crtPEM && privateKey) {
                     this.setStoreCRT(crtPEM);
