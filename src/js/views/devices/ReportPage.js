@@ -22,21 +22,24 @@ class ReportTable extends React.PureComponent {
         axios.get(URL, { headers: { Authorization: `Bearer ${token}` } }).then((result) => {
             const reportWindow = Array.isArray(result.data) ? (
                 <NewWindow title={`${deviceLabel} - ${deviceId}`}>
-                    <Table key="tb-123" itemList={result.data} t={t} id={deviceId} />
-                </NewWindow>
+                    <div className="ReportTitle">{`${deviceLabel} - ${deviceId}`}</div>
+                    <Table key="tb-123" itemList={result.data} t={t} />
+                </NewWindow >
             ) : (
-                <NewWindow title={`${deviceLabel} - ${deviceId}`}>
-                    {
+                    <NewWindow title={`${deviceLabel} - ${deviceId}`}>
+                        <div className="ReportTitle">{`${deviceLabel} - ${deviceId}`}</div>
+                        {
                             Object.keys(result.data).map(
                                 (value) => <Table key="tb-321" itemList={result.data[value]} t={t} />,
                             )
                         }
-                </NewWindow>
+                    </NewWindow>
                 );
             this.setState({ reportWindow });
         }).catch(() => {
             const reportWindow = (
                 <NewWindow title={`${deviceLabel} - ${deviceId}`}>
+                    <div className="ReportTitle">{`${deviceLabel} - ${deviceId}`}</div>
                     <div style={
                         {
                             fontSize: 32,
