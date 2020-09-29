@@ -178,7 +178,7 @@ class TemplateActions {
     }
 
     toogleSidebar(params) {
-        return dispatch => dispatch(params);
+        return (dispatch) => dispatch(params);
     }
 }
 

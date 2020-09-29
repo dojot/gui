@@ -12,7 +12,7 @@ const MetadataList = ({ values, selectMetadata, t }) => {
                     Metadata
                 </div>
                 {
-                    values.metadata.map(metadata => (
+                    values.metadata.map((metadata) => (
                         <div
                             className="metadata-list-item"
                             key={metadata.id}

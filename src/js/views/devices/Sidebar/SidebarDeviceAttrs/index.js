@@ -38,7 +38,7 @@ const SidebarDeviceAttrs = ({
                             </div>
                             <div className="attrs-list">
                                 {
-                                    selectAttr.map(attr => (
+                                    selectAttr.map((attr) => (
                                         <AttrCard
                                             attr={attr}
                                             key={attr.id}

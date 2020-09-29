@@ -59,7 +59,7 @@ class FStore {
     }
 
     removeTag(tag) {
-        this.device.tags = this.device.tags.filter(i => i !== tag);
+        this.device.tags = this.device.tags.filter((i) => i !== tag);
     }
 
     setAttr(attr) {
@@ -94,10 +94,10 @@ class FStore {
     removeAttr(attribute) {
         if (attribute.value !== undefined && attribute.value.length > 0) {
             this.device.static_attrs = this.device.static_attrs.filter(
-                i => i.object_id !== attribute.object_id,
+                (i) => i.object_id !== attribute.object_id,
             );
         } else {
-            this.device.attrs = this.device.attrs.filter(i => i.object_id !== attribute.object_id);
+            this.device.attrs = this.device.attrs.filter((i) => i.object_id !== attribute.object_id);
         }
     }
 }

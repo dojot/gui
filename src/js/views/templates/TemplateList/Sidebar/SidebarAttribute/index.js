@@ -27,7 +27,7 @@ const SidebarAttribute = ({
     t,
     template,
 }) => (
-    <Fragment>
+    <>
         <Slide right when={showAttribute} duration={300}>
             {showAttribute
                 ? (
@@ -57,8 +57,7 @@ const SidebarAttribute = ({
                                         changeAttrValue={changeAttrValue}
                                         selectAttr={selectAttr}
                                     />
-                                )
-                            }
+                                )}
                             <MetadataList values={selectAttr} selectMetadata={selectMetadata} />
                             <div className="body-actions">
                                 <div className="body-actions--divider" />
@@ -90,19 +89,17 @@ const SidebarAttribute = ({
                                     </Can>
                                 )
                                 : (
-                                    <Fragment>
+                                    <>
                                         <Can do="modifier" on="template">
                                             <DojotBtnClassic label={t('remove.label')} type="secondary" onClick={() => toogleSidebarDelete('showDeleteAttr')} />
                                             <DojotBtnClassic color="red" label={t('save.label')} type="primary" onClick={() => updateTemplateAttr(selectAttr)} />
                                         </Can>
-                                    </Fragment>
-                                )
-                            }
+                                    </>
+                                )}
                         </div>
                     </div>
                 )
-                : <div />
-            }
+                : <div />}
         </Slide>
         <SidebarDelete
             cancel={() => toogleSidebarDelete('showDeleteAttr')}
@@ -110,7 +107,7 @@ const SidebarAttribute = ({
             showSidebar={showDeleteAttr}
             message={t('templates:alerts.qst_remove', { label: t('templates:attribute') })}
         />
-    </Fragment>
+    </>
 );
 
 SidebarAttribute.defaultProps = {

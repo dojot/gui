@@ -96,11 +96,9 @@ class ImageActions {
         };
     }
 
-
     insertEmptyImage(image) {
         return image;
     }
-
 
     insertImage(image, oldimage) {
         return { image, oldimage };

@@ -92,19 +92,18 @@ class Sidebar extends Component {
     }
 
     handleShowManageTemplate() {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             showManageTemplates: !prevState.showManageTemplates,
         }));
     }
-
 
     handleSelectTemplate(checked, template) {
         const { device } = this.state;
         let { selectedTemplates } = this.state;
         if (checked) {
-            device.templates = device.templates.filter(id => id !== template.id);
-            device.attrs = device.attrs.filter(item => +item.template_id !== template.id);
-            selectedTemplates = selectedTemplates.filter(id => id !== template.id);
+            device.templates = device.templates.filter((id) => id !== template.id);
+            device.attrs = device.attrs.filter((item) => +item.template_id !== template.id);
+            selectedTemplates = selectedTemplates.filter((id) => id !== template.id);
         } else {
             device.templates.push(template.id);
             selectedTemplates.push(template);
@@ -117,10 +116,10 @@ class Sidebar extends Component {
         device.actuatorValues = [];
         device.metadata = {};
 
-        device.configValues = device.configValues.concat(device.attrs.filter(item => item.type === 'meta'));
-        device.dynamicValues = device.dynamicValues.concat(device.attrs.filter(item => item.type === 'dynamic'));
-        device.staticValues = device.staticValues.concat(device.attrs.filter(item => item.type === 'static'));
-        device.actuatorValues = device.actuatorValues.concat(device.attrs.filter(item => item.type === 'actuator'));
+        device.configValues = device.configValues.concat(device.attrs.filter((item) => item.type === 'meta'));
+        device.dynamicValues = device.dynamicValues.concat(device.attrs.filter((item) => item.type === 'dynamic'));
+        device.staticValues = device.staticValues.concat(device.attrs.filter((item) => item.type === 'static'));
+        device.actuatorValues = device.actuatorValues.concat(device.attrs.filter((item) => item.type === 'actuator'));
         device.attrs.forEach((item) => {
             if (Object.prototype.hasOwnProperty.call(item, 'metadata')) {
                 device.metadata[item.id] = [...item.metadata];
@@ -137,14 +136,14 @@ class Sidebar extends Component {
     handleChangeName(value) {
         const { device } = this.state;
         device.label = value;
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             ...prevState,
             device,
         }));
     }
 
     handleShowDeviceAttrsDiscard() {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             showDeviceAttrs: !prevState.showDeviceAttrs,
             selectAttr: JSON.parse(JSON.stringify(prevState.selectAttrOriginal)),
             device: JSON.parse(JSON.stringify(prevState.deviceOriginal)),
@@ -155,7 +154,7 @@ class Sidebar extends Component {
     }
 
     handleShowDeviceAttrs(attr, title) {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             showDeviceAttrs: !prevState.showDeviceAttrs,
             selectAttr: attr,
             deviceAttrsTitle: title,
@@ -200,10 +199,10 @@ class Sidebar extends Component {
             device.actuatorValues = [];
             device.metadata = {};
 
-            device.configValues = device.configValues.concat(device.attrs.filter(item => item.type === 'meta'));
-            device.dynamicValues = device.dynamicValues.concat(device.attrs.filter(item => item.type === 'dynamic'));
-            device.staticValues = device.staticValues.concat(device.attrs.filter(item => item.type === 'static'));
-            device.actuatorValues = device.actuatorValues.concat(device.attrs.filter(item => item.type === 'actuator'));
+            device.configValues = device.configValues.concat(device.attrs.filter((item) => item.type === 'meta'));
+            device.dynamicValues = device.dynamicValues.concat(device.attrs.filter((item) => item.type === 'dynamic'));
+            device.staticValues = device.staticValues.concat(device.attrs.filter((item) => item.type === 'static'));
+            device.actuatorValues = device.actuatorValues.concat(device.attrs.filter((item) => item.type === 'actuator'));
             device.attrs.forEach((item) => {
                 if (Object.prototype.hasOwnProperty.call(item, 'metadata')) {
                     device.metadata[item.id] = [...item.metadata];
@@ -242,7 +241,7 @@ class Sidebar extends Component {
         const deviceCopy = JSON.parse(JSON.stringify(device));
 
         function updateMeta(arrayAttrs, arrayMeta, idAttr_) {
-            return arrayAttrs.map(attr => (attr.id === idAttr_
+            return arrayAttrs.map((attr) => (attr.id === idAttr_
                 ? {
                     ...attr,
                     metadata: arrayMeta[idAttr_],
@@ -252,7 +251,7 @@ class Sidebar extends Component {
         }
 
         deviceCopy.metadata[idAttr] = deviceCopy.metadata[idAttr].map(
-            meta => (meta.label === event.target.name
+            (meta) => (meta.label === event.target.name
                 ? {
                     ...meta,
                     static_value: event.target.value,
@@ -268,7 +267,7 @@ class Sidebar extends Component {
     }
 
     toogleSidebarDelete() {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             isShowSidebarDelete: !prevState.isShowSidebarDelete,
             showSidebarDevice: !prevState.showSidebarDevice,
         }));
@@ -379,7 +378,7 @@ class Sidebar extends Component {
 
         if (!Object.prototype.hasOwnProperty.call(device, 'attrs')) return <div />;
         return (
-            <Fragment>
+            <>
                 <AltContainer store={TemplateStore}>
                     <SidebarDevice
                         hasTemplateWithImages={hasTemplateWithImages}
@@ -435,7 +434,7 @@ class Sidebar extends Component {
                         </AltContainer>
                     )
                     : null}
-            </Fragment>
+            </>
         );
     }
 }

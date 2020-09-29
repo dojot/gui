@@ -71,7 +71,7 @@ class GroupStore {
 
     handleGetGroup(groupName) {
         if (groupName) {
-            this.group = this.groups.find(g => g.name === groupName);
+            this.group = this.groups.find((g) => g.name === groupName);
         } else {
             this.group = groupEmpty;
         }

@@ -21,7 +21,7 @@ const InputCheckbox = ({
 const TemplateItem = ({
     template, checked, handleSelectTemplate, t,
 }) => (
-    <Fragment>
+    <>
         <div
             tabIndex="0"
             role="button"
@@ -46,9 +46,8 @@ const TemplateItem = ({
                 />
             </div>
         </div>
-    </Fragment>
+    </>
 );
-
 
 TemplateItem.defaultProps = {
     checked: false,

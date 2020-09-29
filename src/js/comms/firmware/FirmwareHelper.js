@@ -13,15 +13,15 @@ class FirmwareHelper {
      */
     transformStatusToFullTextStatus(metadata, listOfData) {
         function _transformValueToFullText(type) {
-            return listOfData.map(data => ({
+            return listOfData.map((data) => ({
                 ...data,
                 value: typeof data.value === 'number' ? `${i18n.t(`firmware:${type}.${data.value}`)} (${data.value})` : data.value,
             }));
         }
 
         if (metadata) {
-            const result = metadata.filter(meta => meta.label === FW_RESULT_META_LABEL);
-            const state = metadata.filter(meta => meta.label === FW_STATE_META_LABEL);
+            const result = metadata.filter((meta) => meta.label === FW_RESULT_META_LABEL);
+            const state = metadata.filter((meta) => meta.label === FW_STATE_META_LABEL);
 
             if (result.length <= 0 && state.length <= 0) return null;
 

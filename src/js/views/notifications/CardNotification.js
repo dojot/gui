@@ -39,7 +39,7 @@ class CardNotification extends Component {
     }
 
     clickToggle() {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             isShowMetas: !prevState.isShowMetas,
         }));
     }
@@ -92,7 +92,7 @@ class CardNotification extends Component {
                     <div className="card-notification">
                         <div className="meta-body">
                             {Object.keys((metas))
-                                .map(key => (
+                                .map((key) => (
                                     <MetaNotification
                                         value={metas[key]}
                                         keyName={key}
@@ -107,7 +107,6 @@ class CardNotification extends Component {
         );
     }
 }
-
 
 CardNotification.propTypes = {
     t: PropTypes.func.isRequired,

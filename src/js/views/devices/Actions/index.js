@@ -3,5 +3,4 @@ import DeviceHandlerActions from './DeviceHandlerActions';
 
 const FormActions = alt.createActions(DeviceHandlerActions);
 
-
 export { FormActions };

@@ -9,7 +9,6 @@ class TemplateOperations extends GenericOperations {
         this.setDefaultPaginationParams();
     }
 
-
     whenUpdatePagination(config) {
         for (const key in config) this.paginationParams[key] = config[key];
         this._fetch();
@@ -29,7 +28,7 @@ class TemplateOperations extends GenericOperations {
     }
 
     _fetch() {
-        const res = Object.assign({}, this.paginationParams, this.filterParams);
+        const res = { ...this.paginationParams, ...this.filterParams };
         // console.log('fetching: ', res);
         TemplateActions.fetchTemplates(res);
     }

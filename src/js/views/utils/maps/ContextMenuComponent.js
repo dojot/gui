@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import PropTypes from 'prop-types';
 
-
 class ContextMenu {
     // context menu based at: https://codepen.io/devhamsters/pen/yMProm
     updateCurrentContextMenu(event, root) {
@@ -66,7 +65,7 @@ class ContextMenuComponent extends Component {
                 <Link to={`/device/id/${md.device_id}/detail`} title="View details">
                     <div className="contextMenu--option cmenu">
                         <i className="fa fa-info-circle" />
-Details
+                        Details
                     </div>
                 </Link>
                 {(md.allow_tracking)
@@ -83,7 +82,7 @@ Details
                             }}
                         >
                             <img alt="toogle tracking" src="images/icons/location.png" />
-                        Toggle tracking
+                            Toggle tracking
                         </div>
                     ) : null}
                 <div

@@ -123,7 +123,7 @@ class SidebarFirmware extends Component {
         const { showFirmware, toogleSidebarFirmware } = this.props;
 
         return (
-            <Fragment>
+            <>
                 <Slide right when={showFirmware} duration={300}>
                     { showFirmware
                         ? (
@@ -143,27 +143,25 @@ class SidebarFirmware extends Component {
                                     {(!this.state.new_image)
                                         ? (
                                             <div className="body-form-nodata clickable" onClick={this.createNewImage}>
-                                        Click here to add a new image
+                                                Click here to add a new image
                                             </div>
                                         )
                                         : null }
                                 </div>
                                 <div className="footer">
-                                    <Fragment>
+                                    <>
                                         <DojotBtnClassic label="discard" type="secondary" onClick={toogleSidebarFirmware} />
-                                        <DojotBtnClassic color="red" label="save" type="primary" onClick={e => this.saveImages(e)} />
-                                    </Fragment>
+                                        <DojotBtnClassic color="red" label="save" type="primary" onClick={(e) => this.saveImages(e)} />
+                                    </>
                                 </div>
                             </div>
                         )
-                        : <div />
-                    }
+                        : <div />}
                 </Slide>
-            </Fragment>
+            </>
         );
     }
 }
-
 
 SidebarFirmware.defaultProps = {
     showFirmware: false,

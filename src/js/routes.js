@@ -60,7 +60,6 @@ export default (
                 <Route path="groups" name="Groups" component={Groups} />
             </Route>
 
-
             <Route path="deploy" name="Deployment" component={Todo}>
                 <Route path="plugins" name="Template detail" component={Todo} />
                 <Route path="applications" name="Template detail" component={Todo} />

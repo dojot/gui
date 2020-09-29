@@ -11,7 +11,7 @@ mutation ($permissions: [PermissionRequest]!, $group: String!) {
 
 `;
 
-const GQL_GET_PERMISSIONS = groupName => `
+const GQL_GET_PERMISSIONS = (groupName) => `
  query {
   permissions ${groupName ? `(group: "${groupName}")` : ' '}{
   subject        

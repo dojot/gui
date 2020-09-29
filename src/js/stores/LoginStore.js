@@ -1,7 +1,6 @@
 import LoginActions from 'Actions/LoginActions';
 import Util from 'Comms/util/util';
 
-
 const alt = require('../alt');
 
 class LoginStore {

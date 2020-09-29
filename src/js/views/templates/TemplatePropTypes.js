@@ -19,7 +19,6 @@ export const attrsType = {
     ),
 };
 
-
 export const templateType = {
     label: PropTypes.string,
     attrs: PropTypes.arrayOf(PropTypes.shape(attrsType)),

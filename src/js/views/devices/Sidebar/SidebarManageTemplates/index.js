@@ -29,7 +29,7 @@ class SidebarManageTemplates extends Component {
 
     handleFilter(filter) {
         const { templateList } = this.state;
-        const filteredList = templateList.filter(template => template.label.includes(filter));
+        const filteredList = templateList.filter((template) => template.label.includes(filter));
         this.setState({
             filter,
             filteredList,
@@ -92,7 +92,7 @@ class SidebarManageTemplates extends Component {
                                                 name="filter"
                                                 maxLength={40}
                                                 value={filter}
-                                                onChange={e => this.handleFilter(e.target.value)}
+                                                onChange={(e) => this.handleFilter(e.target.value)}
                                             >
                                                 {`${t('text.filter')}  ${t('text.by')}  ${t('text.name')}`}
                                             </MaterialInput>
@@ -134,6 +134,5 @@ SidebarManageTemplates.propTypes = {
     t: PropTypes.func.isRequired,
     selectedTemplates: PropTypes.instanceOf(Object).isRequired,
 };
-
 
 export default withNamespaces()(SidebarManageTemplates);

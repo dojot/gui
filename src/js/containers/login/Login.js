@@ -9,7 +9,6 @@ import LoginActions from 'Actions/LoginActions';
 import LoginStore from 'Stores/LoginStore';
 import { RecoveryPasswordModal } from 'Components/Modal';
 
-
 class Content extends Component {
     constructor(props) {
         super(props);
@@ -63,7 +62,6 @@ class Content extends Component {
         const regex = /^([a-z0-9_])+$/;
         return regex.test(username);
     }
-
 
     validate(user, password) {
         const { t } = this.props;
@@ -154,7 +152,7 @@ class Content extends Component {
                                             className="attribute-type-login pointer"
                                             maxLength={40}
                                             value={username}
-                                            onChange={e => this.handleChange(e)}
+                                            onChange={(e) => this.handleChange(e)}
                                         >
                                             {t('username.label')}
                                         </MaterialInput>
@@ -167,7 +165,7 @@ class Content extends Component {
                                             className="attribute-type-login pointer"
                                             maxLength={40}
                                             value={password}
-                                            onChange={e => this.handleChange(e)}
+                                            onChange={(e) => this.handleChange(e)}
                                         >
                                             {t('login:password.label')}
                                         </MaterialInput>
@@ -234,12 +232,12 @@ class Content extends Component {
                             <div className="slogan">
                                 <b>Do IoT</b>
                                 <br />
-Easy to use
+                                Easy to use
                                 <br />
-                Fast to develop
+                                Fast to develop
                                 <br />
                                 {' '}
-Safe to deploy
+                                Safe to deploy
                             </div>
                         </div>
                     </div>
@@ -260,7 +258,6 @@ Content.propTypes = {
     loading: PropTypes.bool.isRequired,
 };
 
-
 const Login = ({ t }) => (
     <ReactCSSTransitionGroup
         transitionName="first"
@@ -275,10 +272,8 @@ const Login = ({ t }) => (
     </ReactCSSTransitionGroup>
 );
 
-
 Login.propTypes = {
     t: PropTypes.func.isRequired,
 };
-
 
 export default withNamespaces()(Login);

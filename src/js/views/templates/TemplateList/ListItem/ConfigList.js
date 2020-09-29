@@ -66,7 +66,7 @@ class ConfigList extends Component {
                             onChange={this.handleChange}
                         >
                             <option value="">Select type</option>
-                            {this.availableValueTypes.map(opt => (
+                            {this.availableValueTypes.map((opt) => (
                                 <option
                                     value={opt.value}
                                     key={opt.label}
@@ -106,7 +106,7 @@ class ConfigList extends Component {
                             onChange={this.handleChange}
                         >
                             <option value="">Select type</option>
-                            {this.availableTypes.map(opt => (
+                            {this.availableTypes.map((opt) => (
                                 <option
                                     value={opt.value}
                                     key={opt.label}

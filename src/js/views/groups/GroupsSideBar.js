@@ -11,7 +11,7 @@ import { InputCheckbox, InputText } from '../../components/DojotIn';
 
 const groupHasSubject = (subject, groupPermissions) => {
     if (groupPermissions) {
-        const singlePermission = groupPermissions.filter(n1 => subject === n1.subject);
+        const singlePermission = groupPermissions.filter((n1) => subject === n1.subject);
         return (singlePermission.length > 0);
     }
     return false;
@@ -19,9 +19,9 @@ const groupHasSubject = (subject, groupPermissions) => {
 
 const groupHasPermission = (subject, action, groupPermissions) => {
     if (groupPermissions) {
-        const singlePermission = groupPermissions.filter(n1 => subject === n1.subject);
+        const singlePermission = groupPermissions.filter((n1) => subject === n1.subject);
         if (singlePermission[0] && singlePermission[0].actions && singlePermission[0].actions.length > 0) {
-            return singlePermission[0].actions.filter(n1 => n1 === action).length > 0;
+            return singlePermission[0].actions.filter((n1) => n1 === action).length > 0;
         }
     }
     return false;
@@ -50,7 +50,7 @@ function TableGroupsPermissions(params) {
                 </thead>
                 <tbody>
                     {systemPermissions
-                        .map(item => (
+                        .map((item) => (
                             <tr key={`${item.subject}`}>
                                 <td>
                                     <Trans i18nKey={`form.feature.${item.subject}`} />
@@ -102,7 +102,7 @@ function Form(params) {
     }
 
     return (
-        <Fragment>
+        <>
             <InputText
                 label={<Trans i18nKey="form.input.groupname.label" />}
                 name="name"
@@ -126,7 +126,7 @@ function Form(params) {
                 handleChangeCheckbox={handleChangeCheckbox}
                 cannotEdit={cannotEdit}
             />
-        </Fragment>
+        </>
     );
 }
 
@@ -177,7 +177,7 @@ class GroupsSideBar extends Component {
     // applying a DFS algorithm strategy with pre order
     addingCorrelations(subject, action) {
         const { systemcorrelations } = this.props;
-        const corr = systemcorrelations.filter(n1 => subject === n1.subject
+        const corr = systemcorrelations.filter((n1) => subject === n1.subject
             && action === n1.action)[0];
         if (corr === undefined) return;
         corr.requires.forEach((el) => {
@@ -220,10 +220,9 @@ class GroupsSideBar extends Component {
         return retrn;
     }
 
-
     handleInput(e) {
         const { name, value } = e.target;
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             ...prevState,
             group: {
                 ...prevState.group,
@@ -327,14 +326,12 @@ class GroupsSideBar extends Component {
         }
     }
 
-
     handleModalDelete(status) {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             ...prevState,
             showDeleteModal: status,
         }));
     }
-
 
     delete() {
         const { group } = this.state;
@@ -384,9 +381,8 @@ class GroupsSideBar extends Component {
             });
         }
 
-
         return (
-            <Fragment>
+            <>
                 <SideBarRight
                     icon="groups"
                     headerColor="bg-gradient-purple"
@@ -414,7 +410,7 @@ class GroupsSideBar extends Component {
                         openModal={this.handleModalDelete}
                     />
                 ) : <div />}
-            </Fragment>
+            </>
         );
     }
 }

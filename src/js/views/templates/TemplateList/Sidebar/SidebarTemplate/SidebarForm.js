@@ -15,7 +15,7 @@ const SidebarForm = ({
         const templateProps = [];
         if (Object.prototype.hasOwnProperty.call(template, 'data_attrs')) {
             if (template.data_attrs.length > 0) {
-                templateProps.push(template.data_attrs.map(item => (
+                templateProps.push(template.data_attrs.map((item) => (
                     <SidebarProp
                         key={`data_attrs-${item.id}`}
                         attr={item}
@@ -28,7 +28,7 @@ const SidebarForm = ({
 
         if (Object.prototype.hasOwnProperty.call(template, 'config_attrs')) {
             if (template.config_attrs.length > 0) {
-                templateProps.push(template.config_attrs.map(item => (
+                templateProps.push(template.config_attrs.map((item) => (
                     <SidebarProp
                         key={`config_attrs-${item.id}`}
                         attr={item}
@@ -65,7 +65,7 @@ const SidebarForm = ({
                     className="template-name"
                     maxLength={40}
                     value={template.label}
-                    onChange={e => changeValue('label', e)}
+                    onChange={(e) => changeValue('label', e)}
                     disabled={cannotEdit}
                 />
             </div>

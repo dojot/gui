@@ -1,6 +1,5 @@
 import templateManager from 'Comms/templates/TemplateManager';
 
-
 class FActions {
     set(args) { return args; }
 

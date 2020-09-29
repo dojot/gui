@@ -13,7 +13,6 @@ Object.assign(React, {
     createClass,
 });
 
-
 require('materialize-css/dist/css/materialize.min.css');
 require('font-awesome/scss/font-awesome.scss');
 require('../sass/app.scss');

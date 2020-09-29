@@ -31,7 +31,7 @@ const SidebarDeleteImage = ({
                                 <DojotBtnClassic
                                     type="secondary"
                                     label={t('cancel.label')}
-                                    onClick={e => toggleSidebar(e, null)}
+                                    onClick={(e) => toggleSidebar(e, null)}
                                 />
                                 <DojotBtnClassic
                                     color="red"

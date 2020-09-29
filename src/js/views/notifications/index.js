@@ -10,7 +10,6 @@ import SocketIO from './SocketIONotification';
 import CardNotification from './CardNotification';
 import notificationType from './PropTypes';
 
-
 const NotificationList = (props) => {
     const { notifications } = props;
 
@@ -19,7 +18,7 @@ const NotificationList = (props) => {
             ? (
                 <div>
                     <ul>
-                        {notifications.map(notification => (
+                        {notifications.map((notification) => (
                             <CardNotification
                                 notification={notification}
                                 key={Math.random()}

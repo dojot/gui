@@ -25,7 +25,7 @@ class SideBarRight extends Component {
                 </div>
             );
             if (buttonsFooter !== null && buttonsFooter.length > 0) {
-                btnFooter = buttonsFooter.map(btn => (
+                btnFooter = buttonsFooter.map((btn) => (
                     <DojotBtnClassic
                         label={btn.label}
                         onClick={btn.click}

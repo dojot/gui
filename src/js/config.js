@@ -10,7 +10,6 @@ export const mapPinWhite = new L.Icon({
     shadowSize: new L.Point(41, 41),
 });
 
-
 export const mapPinBlack = new L.Icon({
     iconUrl: 'images/pins/black-pin.png',
     iconRetinaUrl: 'images/pins/black-pin.png',
@@ -20,7 +19,6 @@ export const mapPinBlack = new L.Icon({
     iconSize: new L.Point(25, 41),
     shadowSize: new L.Point(41, 41),
 });
-
 
 export const mapPinBlue = new L.Icon({
     iconUrl: 'images/pins/blue-pin.png',
@@ -42,7 +40,6 @@ export const mapPinRed = new L.Icon({
     shadowSize: new L.Point(41, 41),
 });
 
-
 export const mapPinYellow = new L.Icon({
     iconUrl: 'images/pins/yellow-pin.png',
     iconRetinaUrl: 'images/pins/yellow-pin.png',
@@ -52,7 +49,6 @@ export const mapPinYellow = new L.Icon({
     iconSize: new L.Point(25, 41),
     shadowSize: new L.Point(41, 41),
 });
-
 
 export const mapPinOrange = new L.Icon({
     iconUrl: 'images/pins/orange-pin.png',
@@ -64,7 +60,6 @@ export const mapPinOrange = new L.Icon({
     shadowSize: new L.Point(41, 41),
 });
 
-
 export const mapPinPink = new L.Icon({
     iconUrl: 'images/pins/pink-pin.png',
     iconRetinaUrl: 'images/pins/pink-pin.png',
@@ -74,7 +69,6 @@ export const mapPinPink = new L.Icon({
     iconSize: new L.Point(25, 41),
     shadowSize: new L.Point(41, 41),
 });
-
 
 export const mapPinPurple = new L.Icon({
     iconUrl: 'images/pins/purple-pin.png',
@@ -86,7 +80,6 @@ export const mapPinPurple = new L.Icon({
     shadowSize: new L.Point(41, 41),
 });
 
-
 export const mapPinDarkGreen = new L.Icon({
     iconUrl: 'images/pins/dark-green-pin.png',
     iconRetinaUrl: 'images/pins/dark-green-pin.png',
@@ -96,7 +89,6 @@ export const mapPinDarkGreen = new L.Icon({
     iconSize: new L.Point(25, 41),
     shadowSize: new L.Point(41, 41),
 });
-
 
 export const mapPinDarkYellow = new L.Icon({
     iconUrl: 'images/pins/dark-yellow-pin.png',
@@ -108,7 +100,6 @@ export const mapPinDarkYellow = new L.Icon({
     shadowSize: new L.Point(41, 41),
 });
 
-
 export const mapPinBurgundy = new L.Icon({
     iconUrl: 'images/pins/burgundy-pin.png',
     iconRetinaUrl: 'images/pins/burgundy-pin.png',
@@ -118,7 +109,6 @@ export const mapPinBurgundy = new L.Icon({
     iconSize: new L.Point(25, 41),
     shadowSize: new L.Point(41, 41),
 });
-
 
 export const mapPinGreen = new L.Icon({
     iconUrl: 'images/pins/green-pin.png',
@@ -130,7 +120,6 @@ export const mapPinGreen = new L.Icon({
     shadowSize: new L.Point(41, 41),
 });
 
-
 export const mapPinLightGreen = new L.Icon({
     iconUrl: 'images/pins/light-green-pin.png',
     iconRetinaUrl: 'images/pins/light-green-pin.png',
@@ -140,7 +129,6 @@ export const mapPinLightGreen = new L.Icon({
     iconSize: new L.Point(25, 41),
     shadowSize: new L.Point(41, 41),
 });
-
 
 export const mapPinBeige = new L.Icon({
     iconUrl: 'images/pins/beige-pin.png',
@@ -152,7 +140,6 @@ export const mapPinBeige = new L.Icon({
     shadowSize: new L.Point(41, 41),
 });
 
-
 export const mapPinDarkBlue = new L.Icon({
     iconUrl: 'images/pins/dark-blue-pin.png',
     iconRetinaUrl: 'images/pins/dark-blue-pin.png',
@@ -162,7 +149,6 @@ export const mapPinDarkBlue = new L.Icon({
     iconSize: new L.Point(25, 41),
     shadowSize: new L.Point(41, 41),
 });
-
 
 export const mapPinLightBlue = new L.Icon({
     iconUrl: 'images/pins/light-blue-pin.png',
@@ -174,7 +160,6 @@ export const mapPinLightBlue = new L.Icon({
     shadowSize: new L.Point(41, 41),
 });
 
-
 export const mapPinLime = new L.Icon({
     iconUrl: 'images/pins/lime-pin.png',
     iconRetinaUrl: 'images/pins/lime-pin.png',
@@ -184,7 +169,6 @@ export const mapPinLime = new L.Icon({
     iconSize: new L.Point(25, 41),
     shadowSize: new L.Point(41, 41),
 });
-
 
 export const mapPinLightYellow = new L.Icon({
     iconUrl: 'images/pins/light-yellow-pin.png',

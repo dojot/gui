@@ -6,7 +6,6 @@ import ability from 'Components/permissions/ability';
 import { withNamespaces } from 'react-i18next';
 import { attrsType } from '../../../TemplatePropTypes';
 
-
 const SidebarAttributeForm = ({
     selectAttr,
     changeAttrValue,
@@ -26,7 +25,7 @@ const SidebarAttributeForm = ({
                 className="attribute-type"
                 maxLength={40}
                 value={selectAttr.label}
-                onChange={e => changeAttrValue(e, selectAttr)}
+                onChange={(e) => changeAttrValue(e, selectAttr)}
                 disabled={!ability.can('modifier', 'template')}
             >
                 {t('options.attr_name.label')}
@@ -38,7 +37,7 @@ const SidebarAttributeForm = ({
                 name="type"
                 className="attribute-type"
                 value={selectAttr.type}
-                onChange={e => changeAttrValue(e, selectAttr)}
+                onChange={(e) => changeAttrValue(e, selectAttr)}
                 isDisable={!ability.can('modifier', 'template')}
             >
                 <option value="" disabled>
@@ -60,7 +59,7 @@ const SidebarAttributeForm = ({
                 name="value_type"
                 className="value-type"
                 value={selectAttr.value_type}
-                onChange={e => changeAttrValue(e, selectAttr)}
+                onChange={(e) => changeAttrValue(e, selectAttr)}
                 isDisable={!ability.can('modifier', 'template')}
             >
                 <option value="" disabled>
@@ -86,8 +85,7 @@ const SidebarAttributeForm = ({
                         <option value="object" id="adm-option">
                             {t('types.object')}
                         </option>
-                    ) : null
-                }
+                    ) : null}
             </MaterialSelect>
 
             {
@@ -98,7 +96,7 @@ const SidebarAttributeForm = ({
                             className="attribute-value"
                             maxLength={128}
                             value={selectAttr.static_value}
-                            onChange={e => changeAttrValue(e, selectAttr)}
+                            onChange={(e) => changeAttrValue(e, selectAttr)}
                             disabled={!ability.can('modifier', 'template')}
                         >
                             {t('value.label')}

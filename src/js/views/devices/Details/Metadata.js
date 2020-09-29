@@ -5,12 +5,11 @@ import * as PropTypes from 'prop-types';
 const Truncate = (props) => {
     const { value } = props;
     return (
-        <Fragment>
+        <>
             {value.length > 25
                 ? `${value.substr(0, 21)}...`
-                : value
-            }
-        </Fragment>
+                : value}
+        </>
     );
 };
 
@@ -27,7 +26,7 @@ class Metadata extends Component {
     }
 
     showMetadata() {
-        this.setState(prevState => ({ open: !prevState.open }));
+        this.setState((prevState) => ({ open: !prevState.open }));
     }
 
     render() {
@@ -50,7 +49,7 @@ class Metadata extends Component {
                     {`${i18next.t('devices:meta_attributes')} (${metadata.length})`}
                     <i className={`fa ${open ? 'fa-angle-up' : 'fa-angle-down'}`} />
                 </div>
-                {metadata.map(item => (
+                {metadata.map((item) => (
                     open && (
                         <div
                             key={item.id}

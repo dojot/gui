@@ -32,7 +32,7 @@ const SidebarDevice = ({
     const total = device.templates.length ? device.templates.length : 0;
 
     return (
-        <Fragment>
+        <>
             <Slide right when={showSidebarDevice} duration={300}>
                 {
                     showSidebarDevice
@@ -60,7 +60,7 @@ const SidebarDevice = ({
                                                 name="name"
                                                 maxLength={40}
                                                 value={device.label}
-                                                onChange={e => handleChangeName(e.target.value)}
+                                                onChange={(e) => handleChangeName(e.target.value)}
                                             >
                                                 {t('text.name')}
                                             </MaterialInput>
@@ -152,7 +152,7 @@ const SidebarDevice = ({
                                 <div className="footer">
                                     {
                                         isNewDevice ? (
-                                            <Fragment>
+                                            <>
                                                 <DojotBtnClassic
                                                     type="secondary"
                                                     label={t('discard.label')}
@@ -172,9 +172,9 @@ const SidebarDevice = ({
                                                         ''
                                                     )
                                                 }
-                                            </Fragment>
+                                            </>
                                         ) : (
-                                            <Fragment>
+                                            <>
                                                 <DojotBtnClassic
                                                     type="secondary"
                                                     label={t('discard.label')}
@@ -195,7 +195,7 @@ const SidebarDevice = ({
                                                     onClick={update}
                                                 />
 
-                                            </Fragment>
+                                            </>
                                         )
                                     }
                                 </div>
@@ -210,7 +210,7 @@ const SidebarDevice = ({
                 showSidebar={isShowSidebarDelete}
                 message={t('qst_remove', { label: t('devices:device') })}
             />
-        </Fragment>
+        </>
     );
 };
 

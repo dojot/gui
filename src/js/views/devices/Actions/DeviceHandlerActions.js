@@ -2,7 +2,6 @@ import deviceManager from 'Comms/devices';
 import toaster from 'Comms/util/materialize';
 import helper from './DeviceHandlerHelper';
 
-
 class DeviceHandlerActions {
     set(args) {
         if (args) {

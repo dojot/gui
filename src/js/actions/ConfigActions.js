@@ -2,7 +2,6 @@ import configManager from '../comms/config/ConfigManager';
 import toaster from "../comms/util/materialize";
 import alt from "../alt";
 
-
 class ConfigActions {
     fetchCurrentConfig(bool) {
         return (dispatch) => {

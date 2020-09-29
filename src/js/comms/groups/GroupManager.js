@@ -9,7 +9,6 @@ class GroupManager {
         return util.GET(this.baseUrl);
     }
 
-
     getGroup(id) {
         return util.GET(`${this.baseUrl}/${id}`);
     }

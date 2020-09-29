@@ -25,7 +25,7 @@ const MetadataCard = ({
                 className="attribute-type"
                 maxLength={40}
                 value={metadata.label}
-                onChange={e => handleChangeMetadata(e)}
+                onChange={(e) => handleChangeMetadata(e)}
                 disabled={!ability.can('modifier', 'template')}
             >
                 {t('options.attr_name.label')}
@@ -37,7 +37,7 @@ const MetadataCard = ({
                 maxLength={40}
                 className="attribute-type"
                 value={metadata.type}
-                onChange={e => handleChangeMetadata(e)}
+                onChange={(e) => handleChangeMetadata(e)}
                 disabled={!ability.can('modifier', 'template')}
             >
                 {t('templates:attr_type.label')}
@@ -48,7 +48,7 @@ const MetadataCard = ({
                 name="value_type"
                 className="value-type"
                 value={metadata.value_type}
-                onChange={e => handleChangeMetadata(e)}
+                onChange={(e) => handleChangeMetadata(e)}
                 isDisable={!ability.can('modifier', 'template')}
             >
                 <option value="" disabled>
@@ -75,7 +75,7 @@ const MetadataCard = ({
                 className="attribute-value"
                 maxLength={128}
                 value={metadata.static_value}
-                onChange={e => handleChangeMetadata(e)}
+                onChange={(e) => handleChangeMetadata(e)}
                 disabled={!ability.can('modifier', 'template')}
             >
                 {t('value.label')}

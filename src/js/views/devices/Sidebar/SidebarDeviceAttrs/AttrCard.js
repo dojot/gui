@@ -32,7 +32,6 @@ class AttrCard extends PureComponent {
         return null;
     }
 
-
     componentDidMount() {
         const { attr } = this.props;
         this.setState({
@@ -42,7 +41,7 @@ class AttrCard extends PureComponent {
     }
 
     handleShowMetadata() {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             showMetadata: !prevState.showMetadata,
         }));
     }
@@ -78,7 +77,7 @@ class AttrCard extends PureComponent {
                                         title={`${attr.label}`}
                                         maxLength={128}
                                         value={attr.static_value}
-                                        onChange={e => handleChangeAttr(e, attr.id)}
+                                        onChange={(e) => handleChangeAttr(e, attr.id)}
                                         valid={valid}
                                         error={errorMessage}
                                     >
@@ -115,14 +114,14 @@ class AttrCard extends PureComponent {
                         <div className="attr-card-metadata-body" id={`meta_data:${attr.label}`}>
                             {
                                 showMetadata
-                                    ? (metadata.map(meta => (
+                                    ? (metadata.map((meta) => (
                                         <div key={meta.id} className="attr-card-input-wrapper">
                                             <MaterialInput
                                                 className="attr-card-input"
                                                 name={meta.label}
                                                 maxLength={128}
                                                 value={meta.static_value}
-                                                onChange={e => handleChangeMetadata(e, attr.id)}
+                                                onChange={(e) => handleChangeMetadata(e, attr.id)}
                                             >
                                                 {`${meta.label} (${meta.type})`}
                                             </MaterialInput>
@@ -135,8 +134,7 @@ class AttrCard extends PureComponent {
                             }
                         </div>
                     </div>
-                )
-                }
+                )}
                 <div className="divider" />
             </div>
         );

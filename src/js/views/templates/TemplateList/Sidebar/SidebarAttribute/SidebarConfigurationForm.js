@@ -6,13 +6,12 @@ import ability from 'Components/permissions/ability';
 import { withNamespaces } from 'react-i18next';
 import { attrsType } from '../../../TemplatePropTypes';
 
-
 const SidebarConfigurationForm = ({
     selectAttr,
     changeAttrValue,
     t,
 }) => (
-    <Fragment>
+    <>
         <div className="body-config-name">
             <div className="body-config-icon">
                 <img
@@ -26,7 +25,7 @@ const SidebarConfigurationForm = ({
                 name="label"
                 className="config-type"
                 value={selectAttr.label}
-                onChange={e => changeAttrValue(e, selectAttr)}
+                onChange={(e) => changeAttrValue(e, selectAttr)}
                 isDisable={!ability.can('modifier', 'template')}
             >
                 <option value="" disabled>
@@ -43,13 +42,13 @@ const SidebarConfigurationForm = ({
                 className="attribute-value"
                 maxLength={128}
                 value={selectAttr.static_value}
-                onChange={e => changeAttrValue(e, selectAttr)}
+                onChange={(e) => changeAttrValue(e, selectAttr)}
                 disabled={!ability.can('modifier', 'template')}
             >
                 {t('value.label')}
             </MaterialInput>
         </div>
-    </Fragment>
+    </>
 );
 
 SidebarConfigurationForm.propTypes = {
