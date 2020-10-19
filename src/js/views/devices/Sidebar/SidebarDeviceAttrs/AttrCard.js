@@ -49,7 +49,7 @@ class AttrCard extends PureComponent {
     render() {
         const { showMetadata, attr, metadata } = this.state;
         const {
-            handleChangeAttr, handleChangeMetadata, errors, t, handleChangeMeta,
+            handleChangeAttr, errors, t, handleChangeMeta,
         } = this.props;
         const metaLength = metadata !== undefined
             ? metadata.length
@@ -146,7 +146,6 @@ AttrCard.propTypes = {
     attr: PropTypes.instanceOf(Object).isRequired,
     t: PropTypes.func.isRequired,
     handleChangeAttr: PropTypes.func.isRequired,
-    handleChangeMetadata: PropTypes.func.isRequired,
     handleChangeMeta: PropTypes.func.isRequired,
     errors: PropTypes.func.isRequired,
 };

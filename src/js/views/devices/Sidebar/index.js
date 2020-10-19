@@ -270,7 +270,7 @@ class Sidebar extends Component {
 
 
     handleChangeMeta(event, idAttr, metadata) {
-        const { device, selectAttr } = this.state;
+        const { selectAttr } = this.state;
         function updateMeta(arrayAttrs, arrayMeta, idAttr_) {
             return arrayAttrs.map((attr) => (attr.id === idAttr_
                 ? {
