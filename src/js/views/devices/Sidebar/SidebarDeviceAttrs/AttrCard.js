@@ -12,8 +12,6 @@ class AttrCard extends PureComponent {
             attr: {},
             metadata: [],
         };
-
-        this.handleShowMetadata = this.handleShowMetadata.bind(this);
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -24,6 +22,7 @@ class AttrCard extends PureComponent {
             };
         }
         if (nextProps.attr !== prevState.attr) {
+
             return {
                 ...prevState,
                 attr: nextProps.attr,
@@ -50,7 +49,7 @@ class AttrCard extends PureComponent {
     render() {
         const { showMetadata, attr, metadata } = this.state;
         const {
-            handleChangeAttr, handleChangeMetadata, errors, t,
+            handleChangeAttr, handleChangeMetadata, errors, t, handleChangeMeta,
         } = this.props;
         const metaLength = metadata !== undefined
             ? metadata.length
@@ -122,7 +121,7 @@ class AttrCard extends PureComponent {
                                                 name={meta.label}
                                                 maxLength={128}
                                                 value={meta.static_value}
-                                                onChange={e => handleChangeMetadata(e, attr.id)}
+                                                onChange={e => handleChangeMeta(e, attr.id, metadata)}
                                             >
                                                 {`${meta.label} (${meta.type})`}
                                             </MaterialInput>
@@ -148,6 +147,7 @@ AttrCard.propTypes = {
     t: PropTypes.func.isRequired,
     handleChangeAttr: PropTypes.func.isRequired,
     handleChangeMetadata: PropTypes.func.isRequired,
+    handleChangeMeta: PropTypes.func.isRequired,
     errors: PropTypes.func.isRequired,
 };
 
