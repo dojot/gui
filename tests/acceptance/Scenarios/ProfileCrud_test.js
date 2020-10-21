@@ -113,9 +113,6 @@ Scenario('@basic: Remove profile', async (I) => {
     I.see('Profile removed')
 });
 
-function openPage(I) {
-    I.click(locate('a').withAttr({ href: '#/groups' }));
-}
 
 Scenario('@basic: Creating a profile, description empty', async (I) => {
     openPage(I)
