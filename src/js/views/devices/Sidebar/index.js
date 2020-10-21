@@ -98,7 +98,6 @@ class Sidebar extends Component {
         }));
     }
 
-
     handleSelectTemplate(checked, template) {
         const { device } = this.state;
         let { selectedTemplates } = this.state;
@@ -268,7 +267,6 @@ class Sidebar extends Component {
         });
     }
 
-
     handleChangeMeta(event, idAttr, metadata) {
         const { selectAttr } = this.state;
         function updateMeta(arrayAttrs, arrayMeta, idAttr_) {
@@ -286,8 +284,7 @@ class Sidebar extends Component {
                 ...meta,
                 static_value: event.target.value,
             } : meta
-        ),
-        );
+        ),);
         this.setState({
             selectAttr: updateMeta(selectAttr, metadata, idAttr),
             errors: [],
