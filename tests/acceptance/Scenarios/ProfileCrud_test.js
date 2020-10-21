@@ -130,9 +130,6 @@ Scenario('@basic: Creating a profile, description empty', async (I) => {
     I.click(locate('.footer button').withAttr({ title: "Discard" }))
 });
 
-function openPage(I) {
-    I.click(locate('a').withAttr({ href: '#/groups' }));
-}
 
 Scenario('@basic: Creating a profile, Name empty', async (I) => {
     openPage(I)
