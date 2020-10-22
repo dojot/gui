@@ -41,6 +41,7 @@ class Sidebar extends Component {
         this.handleSelectTemplate = this.handleSelectTemplate.bind(this);
         this.handleChangeName = this.handleChangeName.bind(this);
         this.handleChangeMetadata = this.handleChangeMetadata.bind(this);
+        this.handleChangeMeta = this.handleChangeMeta.bind(this);
         this.handleChangeAttr = this.handleChangeAttr.bind(this);
         this.handleShowDeviceAttrsDiscard = this.handleShowDeviceAttrsDiscard.bind(this);
         this.toogleSidebarDelete = this.toogleSidebarDelete.bind(this);
@@ -267,6 +268,31 @@ class Sidebar extends Component {
         });
     }
 
+
+    handleChangeMeta(event, idAttr, metadata) {
+        const { selectAttr } = this.state;
+        function updateMeta(arrayAttrs, arrayMeta, idAttr_) {
+            return arrayAttrs.map((attr) => (attr.id === idAttr_
+                ? {
+                    ...attr,
+                    metadata: arrayMeta,
+                }
+                : attr
+            ));
+        }
+
+        metadata = metadata.map((meta) => (meta.label === event.target.name
+            ? {
+                ...meta,
+                static_value: event.target.value,
+            } : meta
+        ));
+        this.setState({
+            selectAttr: updateMeta(selectAttr, metadata, idAttr),
+            errors: [],
+        });
+    }
+
     toogleSidebarDelete() {
         this.setState((prevState) => ({
             isShowSidebarDelete: !prevState.isShowSidebarDelete,
@@ -413,7 +439,7 @@ class Sidebar extends Component {
                     selectAttr={selectAttr}
                     deviceAttrsTitle={deviceAttrsTitle}
                     validAttrs={this.validAttrs}
-                    handleChangeMetadata={this.handleChangeMetadata}
+                    handleChangeMeta={this.handleChangeMeta}
                     handleChangeAttr={this.handleChangeAttr}
                     handleShowDeviceAttrsDiscard={this.handleShowDeviceAttrsDiscard}
                     handleShowDeviceAttrs={this.handleShowDeviceAttrs}
