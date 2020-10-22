@@ -98,7 +98,6 @@ class Sidebar extends Component {
         }));
     }
 
-
     handleSelectTemplate(checked, template) {
         const { device } = this.state;
         let { selectedTemplates } = this.state;
@@ -267,7 +266,6 @@ class Sidebar extends Component {
             errors: [],
         });
     }
-
 
     handleChangeMeta(event, idAttr, metadata) {
         const { selectAttr } = this.state;
