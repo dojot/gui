@@ -16,8 +16,8 @@ const SidebarDeviceAttrs = ({
     errors,
     t,
 }) => (
-        <Slide right when={showDeviceAttrs} duration={300}>
-            {
+    <Slide right when={showDeviceAttrs} duration={300}>
+        {
                 showDeviceAttrs
                     ? (
                         <div className="sidebar-device-attrs">
@@ -38,7 +38,7 @@ const SidebarDeviceAttrs = ({
                                 </div>
                                 <div className="attrs-list">
                                     {
-                                        selectAttr.map(attr => (
+                                        selectAttr.map((attr) => (
                                             <AttrCard
                                                 attr={attr}
                                                 key={attr.id}
@@ -68,7 +68,7 @@ const SidebarDeviceAttrs = ({
                     )
                     : <div />
             }
-        </Slide>
+    </Slide>
     );
 
 SidebarDeviceAttrs.defaultProps = {
