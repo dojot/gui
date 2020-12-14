@@ -16,7 +16,13 @@
     "test:clearDb": "./node_modules/.bin/codeceptjs --config=tests/acceptance/custom.conf.js run --steps",
     "perfomaceTests": "tests/acceptance/performanceTests/runTest.sh",
     "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "prepublish": "npm run snyk-protect",
+    "check-licenses": "apache2-license-checker"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn run check-licenses"
+    }
   },
   "babel": {
     "plugins": [
@@ -58,6 +64,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "caniuse-lite": "1.0.30001154",
     "chart.js": "^2.7.2",
     "copy-webpack-plugin": "^4.5.2",
     "create-react-class": "^15.6.3",
@@ -115,6 +122,7 @@
     "webpack-dev-server": "^3.1.4"
   },
   "devDependencies": {
+    "@bbc/apache2-license-checker": "^1.1.4",
     "allure-commandline": "^2.9.0",
     "async-mqtt": "^2.2.1",
     "child_process": "^1.0.2",
@@ -126,6 +134,7 @@
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-react": "^7.11.1",
     "gulp": "^3.9.1",
+    "husky": "^4.3.6",
     "mqtt": "^2.18.8",
     "puppeteer": "^1.13.0",
     "sync-request": "^6.1.0"
