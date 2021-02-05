@@ -50,7 +50,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
 
-      - name: Release Version
+    - name: Release Version
       id: release_version
       env:
           GITHUB_REF: ${{ github.ref }}
