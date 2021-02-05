@@ -30,7 +30,6 @@ jobs:
       run: |
         yarn
         yarn run check-licenses
-        yarn run build
 
   docker-hub:
     needs: yarn-build
