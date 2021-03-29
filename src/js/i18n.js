@@ -1,13 +1,13 @@
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import backend from 'i18next-xhr-backend';
-import { appURL } from 'Src/config';
+const appURL = "/cpqd-dojot/";
 
 i18n.use(LanguageDetector)
     .use(backend)
     .init({
         backend: {
-            loadPath: `${appURL}locales/{{lng}}/{{ns}}.json`,
+            loadPath: `/cpqd-dojot/locales/{{lng}}/{{ns}}.json`,
         },
         resGetPath: '__ns__-__lng__.json',
         load: 'All',
