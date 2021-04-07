@@ -319,7 +319,7 @@ class MapSocket {
         util._runFetch(this.token_url)
             .then((reply) => {
                 this.token = reply.token;
-                // Step 2: initiate Socket 
+                // Step 2: initiate Socket
                 this.socketInstance = socketio(this.target, {
                     query: `token=${this.token}`,
                     transports: ['polling'],
