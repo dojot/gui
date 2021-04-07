@@ -6,7 +6,7 @@ import FirmwareHelper from '../comms/firmware/FirmwareHelper';
 import util from '../comms/util/util';
 import { SmallPositionRenderer } from 'Views/utils/Maps';
 import { t } from 'i18next';
-import LeafMap from '../views/utils/LeafMap';
+import LeafMap, {MapWithSocket} from '../views/utils/LeafMap';
 
 const CommandFooter = ({ deviceId, attrLabel, deviceType = '' }) => {
 
@@ -299,31 +299,17 @@ class HandleGeoElements extends Component {
             validDevices = this.handleDevicePosition(this.props.MeasureStore.data[this.props.device.id]);
         }
 
-        let geoconfs = this.props.Config;
-        if (geoconfs === undefined) {
-            geoconfs = {};
-        }
+        if (validDevices.length === 0)  return <NoData />;
 
-
-        if (validDevices.length === 0) {
-            return <NoData />;
+        if (this.props.isStatic) {
+            return <LeafMap point={validDevices[0].sp_value}> </LeafMap>;
         } else {
-            if (this.props.isStatic) {
-                return <span>
-                    <LeafMap point={validDevices[0].sp_value}> </LeafMap>
-                </span>;
-            } else {
-                return (
-                    <SmallPositionRenderer
-                        showLayersIcons={false}
-                        dynamicDevices={validDevices}
-                        allowContextMenu={false}
-                        zoom={14}
-                        showPolyline={false}
-                        config={geoconfs}
-                    />
-                );
-            }
+            return (
+                <MapWithSocket
+                    device={validDevices[0]}
+                    initialZoom={14}
+                />
+            );
         }
     }
 }

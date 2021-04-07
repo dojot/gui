@@ -9,7 +9,7 @@
   "scripts": {
     "start": "http-server ./dist -p 3000",
     "build": "webpack -p --config production.config.js --bail",
-    "watch": "webpack-dev-server --hot --progress --colors",
+    "watch": "webpack-dev-server --hot --colors",
     "lint": "./node_modules/.bin/eslint src/js/*",
     "lint:watch": "gulp",
     "lint:fix": "./node_modules/.bin/eslint src/js/* --fix",
@@ -104,7 +104,7 @@
     "react-filepond": "^5.0.0",
     "react-hot-loader": "^4.3.3",
     "react-i18next": "^9.0.10",
-    "react-leaflet": "1.2.2",
+    "react-leaflet": "2.8.0",
     "react-leaflet-div-icon": "^1.1.0",
     "react-load-script": "0.0.6",
     "react-new-window": "^0.1.2",
