@@ -27,10 +27,16 @@
         "jszip@3.5.0": {
             "reason": "MIT or GPL-3.0 are compatible with Apache-2.0"
         },
+        "jszip@3.6.0": {
+            "reason": "MIT or GPL-3.0 are compatible with Apache-2.0"
+        },
         "axe-core@4.0.2": {
             "reason": "It's licensed under the MPL-2.0 License and no code changes, what makes compatible with Apache-2.0"
         },
         "axe-core@4.1.1": {
+            "reason": "It's licensed under the MPL-2.0 License and no code changes, what makes compatible with Apache-2.0"
+        },
+        "axe-core@4.1.4": {
             "reason": "It's licensed under the MPL-2.0 License and no code changes, what makes compatible with Apache-2.0"
         },
         "parse-function@5.6.10": {
