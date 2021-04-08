@@ -48,7 +48,6 @@ export const MapWithSocket = ({ device, initialZoom }) => {
     const URL = `${baseURL}stream/socketio`;
     const mapRef = useRef();
 
-
     if (mapRef.current) {
         // We need to wait for the window to finish resizing
         setTimeout(() => {
@@ -79,7 +78,7 @@ export const MapWithSocket = ({ device, initialZoom }) => {
 
     useEffect(() => {
         if (socketInstance) {
-            socketInstance.on(id, data => handlePosition(data));
+            socketInstance.on(id, (data) => handlePosition(data));
             socketInstance.on('error', (data) => { console.error('Websocket error: ', data); });
         }
         // Destroy the socket instance when dismounting the component
@@ -120,6 +119,5 @@ MapWithSocket.propTypes = {
     }).isRequired,
     initialZoom: PropTypes.number,
 };
-
 
 export default LeafMap;
