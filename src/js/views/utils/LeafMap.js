@@ -40,14 +40,13 @@ LeafMap.propTypes = {
     point: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
 
-export const MapWithSocket = ({ device, initialZoom }) => {
+export const MapWithSocket = ({ device, initialZoom, attributeLabel }) => {
     const { position, id } = device;
     const [socketInstance, setSocketInstance] = useState(undefined);
     const [devicePosition, setDevicePosition] = useState(position);
     const [mapZoom, setMapZoom] = useState(initialZoom);
     const URL = `${baseURL}stream/socketio`;
     const mapRef = useRef();
-
     if (mapRef.current) {
         // We need to wait for the window to finish resizing
         setTimeout(() => {
@@ -56,10 +55,11 @@ export const MapWithSocket = ({ device, initialZoom }) => {
     }
 
     const handlePosition = ({ attrs }) => {
-        const { location } = attrs;
-        const toParse = location || '[0, 0]';
-        const [lat, long] = toParse.split(',');
-        setDevicePosition([parseFloat(lat), parseFloat(long)]);
+        if (attrs[attributeLabel]) {
+            const toParse = attrs[attributeLabel] || '[0, 0]';
+            const [lat, long] = toParse.split(',');
+            setDevicePosition([parseFloat(lat), parseFloat(long)]);
+        }
     };
 
     const handleZoom = () => {
@@ -110,6 +110,7 @@ export const MapWithSocket = ({ device, initialZoom }) => {
 
 MapWithSocket.defaultProps = {
     initialZoom: 14,
+    attributeLabel: 'unknown',
 };
 
 MapWithSocket.propTypes = {
@@ -118,6 +119,7 @@ MapWithSocket.propTypes = {
         id: PropTypes.string,
     }).isRequired,
     initialZoom: PropTypes.number,
+    attributeLabel: PropTypes.string,
 };
 
 export default LeafMap;
