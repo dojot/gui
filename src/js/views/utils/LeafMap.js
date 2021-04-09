@@ -73,7 +73,7 @@ const MarkerUpdater = ({
 
     useEffect(() => {
         if (socketInstance) {
-            socketInstance.on(id, data => handlePosition(data));
+            socketInstance.on(id, (data) => handlePosition(data));
             socketInstance.on('error', (data) => { console.error('Websocket error: ', data); });
         }
         // Destroy the socket instance when dismounting the component
