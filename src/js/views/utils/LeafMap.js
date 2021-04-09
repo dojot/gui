@@ -40,31 +40,26 @@ LeafMap.propTypes = {
     point: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
 
-export const MapWithSocket = ({ device, initialZoom, attributeLabel }) => {
-    const { position, id } = device;
+const MarkerUpdater = ({
+    initialPosition, id, attributeLabel, setMapCenter,
+}) => {
     const [socketInstance, setSocketInstance] = useState(undefined);
-    const [devicePosition, setDevicePosition] = useState(position);
-    const [mapZoom, setMapZoom] = useState(initialZoom);
+    const [devicePosition, setDevicePosition] = useState(initialPosition);
     const URL = `${baseURL}stream/socketio`;
-    const mapRef = useRef();
-    if (mapRef.current) {
-        // We need to wait for the window to finish resizing
-        setTimeout(() => {
-            mapRef.current.leafletElement.invalidateSize();
-        }, 250);
-    }
 
     const handlePosition = ({ attrs }) => {
         if (attrs[attributeLabel]) {
             const toParse = attrs[attributeLabel] || '[0, 0]';
-            const [lat, long] = toParse.split(',');
+            let coordinates;
+            try {
+                coordinates = toParse.split(',');
+            } catch (e) {
+                coordinates = [0, 0];
+            }
+            const [lat, long] = coordinates;
             setDevicePosition([parseFloat(lat), parseFloat(long)]);
+            setMapCenter([parseFloat(lat), parseFloat(long)]);
         }
-    };
-
-    const handleZoom = () => {
-        // The zoom value is stored in the local hook
-        setMapZoom(mapRef.current.leafletElement.getZoom());
     };
 
     useEffect(() => {
@@ -78,7 +73,7 @@ export const MapWithSocket = ({ device, initialZoom, attributeLabel }) => {
 
     useEffect(() => {
         if (socketInstance) {
-            socketInstance.on(id, (data) => handlePosition(data));
+            socketInstance.on(id, data => handlePosition(data));
             socketInstance.on('error', (data) => { console.error('Websocket error: ', data); });
         }
         // Destroy the socket instance when dismounting the component
@@ -86,9 +81,37 @@ export const MapWithSocket = ({ device, initialZoom, attributeLabel }) => {
     }, [socketInstance]);
 
     return (
+        <Marker position={devicePosition} />
+    );
+};
+
+MarkerUpdater.propTypes = {
+    setMapCenter: PropTypes.func.isRequired,
+    id: PropTypes.string.isRequired,
+    initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
+    attributeLabel: PropTypes.string.isRequired,
+};
+
+export const MapWithSocket = ({ device, initialZoom, attributeLabel }) => {
+    const { position, id } = device;
+    const [mapCenter, setMapCenter] = useState(position);
+    const [mapZoom, setMapZoom] = useState(initialZoom);
+    const mapRef = useRef();
+    if (mapRef.current) {
+        // We need to wait for the window to finish resizing
+        setTimeout(() => {
+            mapRef.current.leafletElement.invalidateSize();
+        }, 250);
+    }
+
+    const handleZoom = () => {
+        // The zoom value is stored in the local hook
+        setMapZoom(mapRef.current.leafletElement.getZoom());
+    };
+    return (
         <Map
             ref={mapRef}
-            center={devicePosition}
+            center={mapCenter}
             zoom={mapZoom}
             attributionControl
             zoomControl
@@ -97,13 +120,18 @@ export const MapWithSocket = ({ device, initialZoom, attributeLabel }) => {
             dragging
             animate
             easeLinearity={0.35}
-            onzoomend={() => handleZoom()}
+            onzoomend={handleZoom}
         >
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             />
-            <Marker position={devicePosition} />
+            <MarkerUpdater
+                initialPosition={position}
+                id={id}
+                attributeLabel={attributeLabel}
+                setMapCenter={setMapCenter}
+            />
         </Map>
     );
 };
