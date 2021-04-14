@@ -10,7 +10,6 @@ import util from '../../comms/util/util';
 import * as pins from '../../config';
 import ContextMenuComponent from './maps/ContextMenuComponent';
 
-
 /*
 WebSocket
 */
@@ -118,7 +117,6 @@ const MultipleMapWithSocket = ({
     const [dynamicPosition, setDynamicPosition] = useState([]);
     const [staticPosition, setStaticPosition] = useState([]);
 
-
     const mapRef = useRef();
     if (mapRef.current) {
     // We need to wait for the window to finish resizing
@@ -127,11 +125,9 @@ const MultipleMapWithSocket = ({
         }, 500);
     }
 
-
     useEffect(() => {
         wsGlobal.init();
     }, []);
-
 
     const handleBounds = (positionList) => {
         if (positionList.length) {
@@ -139,7 +135,6 @@ const MultipleMapWithSocket = ({
             setInitialBounds(bounds);
         }
     };
-
 
     useEffect(() => {
         const positionList = [];
@@ -156,7 +151,6 @@ const MultipleMapWithSocket = ({
         setStDevices(staticList);
         setStaticPosition(positionList);
     }, [staticDevices]);
-
 
     useEffect(() => {
         const positionList = [];
@@ -178,17 +172,14 @@ const MultipleMapWithSocket = ({
         setDynamicPosition(positionList);
     }, [dynamicDevices]);
 
-
     useEffect(() => {
         const position = [...staticPosition, ...dynamicPosition];
         handleBounds(position);
     }, [dynamicPosition, staticPosition]);
 
-
     const closeContextMenu = () => {
         setIsMenuVisible(false);
     };
-
 
     const handleContextMenu = (e, deviceId) => {
         e.originalEvent.preventDefault();
@@ -243,10 +234,10 @@ const MultipleMapWithSocket = ({
                 />
             ) : null}
 
-            {stDevices.map(device => (
+            {stDevices.map((device) => (
                 <Marker
                     icon={pins.mapPinGreen}
-                    onClick={e => handleContextMenu(e, device.id)}
+                    onClick={(e) => handleContextMenu(e, device.id)}
                     key={device.key}
                     position={device.position}
                 >
@@ -254,12 +245,12 @@ const MultipleMapWithSocket = ({
                 </Marker>
             ))}
 
-            {dyDevices.map(device => (
+            {dyDevices.map((device) => (
                 device.position ? (
                     <MarkerUpdater
                         icon={pins.mapPinBlue}
                         id={device.id}
-                        onClick={e => handleContextMenu(e, device.id)}
+                        onClick={(e) => handleContextMenu(e, device.id)}
                         key={device.key}
                         deviceKey={device.key}
                         attributeLabel={device.attr}
@@ -284,7 +275,6 @@ MultipleMapWithSocket.propTypes = {
     staticDevices: PropTypes.arrayOf(PropTypes.shape),
     initialZoom: PropTypes.number,
 };
-
 
 /*
 
@@ -343,7 +333,6 @@ export const MarkerUpdater = ({
     );
 };
 
-
 MarkerUpdater.defaultProps = {
     name: '',
     icon: pins.mapPinBlue,
@@ -358,6 +347,5 @@ MarkerUpdater.propTypes = {
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     attributeLabel: PropTypes.string.isRequired,
 };
-
 
 export default MultipleMapWithSocket;
