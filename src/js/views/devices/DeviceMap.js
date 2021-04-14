@@ -32,7 +32,6 @@ class DeviceMapWrapperComponent extends Component {
     }
 
     render() {
-        console.log("DeviceMapWrapperComponent, render: ");
         if (!this.state.didMount || this.props.positions.loading) {
             return <Loading />
         }
@@ -185,7 +184,6 @@ class DeviceMap extends Component {
     }
 
     render() {
-        console.log("deviceMap: render:");
         const { t } = this.props;
         if (!this.state.didMount)
             return <Loading />;

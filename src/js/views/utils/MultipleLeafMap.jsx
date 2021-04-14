@@ -44,7 +44,6 @@ class WebSocket {
             // The socket was already started.
             return;
         }
-        console.log('websocket: requesting token');
         this.isInstatiated = true;
 
         // Step 1: Fetching Token
@@ -74,12 +73,10 @@ class WebSocket {
     }
 
     setDeviceIdAvailable(id) {
-        console.log('setDeviceIdAvailable: ', id);
         this.deviceIds[id] = true;
     }
 
     removeIdAvailable(id, cback) {
-        console.log('removeIdAvailable: ', id);
         this.deviceIds[id] = false;
         this.markerEmitter.removeListener(id, cback);
     }
@@ -145,9 +142,7 @@ const MultipleMapWithSocket = ({
 
 
     useEffect(() => {
-        console.log('MultipleMapWithSocket: static: useEffect', staticDevices);
         const positionList = [];
-
         const staticList = [];
         staticDevices.forEach((device) => {
             positionList.push(device.sp_value);
@@ -164,7 +159,6 @@ const MultipleMapWithSocket = ({
 
 
     useEffect(() => {
-        console.log('MultipleMapWithSocket: dynamic: useEffect', dynamicDevices);
         const positionList = [];
         const dynamicList = [];
 
@@ -187,7 +181,6 @@ const MultipleMapWithSocket = ({
 
     useEffect(() => {
         const position = [...staticPosition, ...dynamicPosition];
-        console.log('---> initialPosition', position, position.length);
         handleBounds(position);
     }, [dynamicPosition, staticPosition]);
 
@@ -209,7 +202,6 @@ const MultipleMapWithSocket = ({
         setIsMenuVisible(true);
     };
 
-    console.log('MultipleMapWithSocket, render: ');
     return (
         <Map
             ref={mapRef}
@@ -307,7 +299,6 @@ export const MarkerUpdater = ({
 
     const handlePosition = (data) => {
         const { attrs } = data;
-        console.log('handlePosition', data, data.metadata.deviceid, id);
         if (attrs[attributeLabel]) {
             const toParse = attrs[attributeLabel] || '[0, 0]';
             let coordinates;
@@ -322,7 +313,6 @@ export const MarkerUpdater = ({
     };
 
     useEffect(() => {
-        console.log('MarkerUpdater, useEffeect');
         const hasData = (data) => {
             handlePosition(data);
         };
@@ -340,7 +330,6 @@ export const MarkerUpdater = ({
         };
     }, []);
 
-    console.log('MarkerUpdater, render: ');
     return (
         <Marker
             position={devicePosition}
