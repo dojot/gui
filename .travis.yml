@@ -1,9 +1,0 @@
-sudo: false
-language: node_js
-node_js: 10
-services:
-  - docker
-script:
-  - yarn
-  - yarn run check-licenses
-  - travis/publish.sh
