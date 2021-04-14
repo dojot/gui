@@ -75,7 +75,7 @@ const MarkerUpdater = ({
 
     useEffect(() => {
         if (socketInstance) {
-            socketInstance.on(id, data => handlePosition(data));
+            socketInstance.on(id, (data) => handlePosition(data));
             socketInstance.on('error', (data) => {
                 // @TODO We should better handle these errors
                 // eslint-disable-next-line no-console

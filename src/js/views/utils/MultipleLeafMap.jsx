@@ -237,10 +237,10 @@ const MultipleMapWithSocket = ({
                 />
             ) : null}
 
-            {stDevices.map(device => (
+            {stDevices.map((device) => (
                 <Marker
                     icon={pins.mapPinGreen}
-                    onClick={e => handleContextMenu(e, device.id)}
+                    onClick={(e) => handleContextMenu(e, device.id)}
                     key={device.key}
                     position={device.position}
                 >
@@ -248,12 +248,12 @@ const MultipleMapWithSocket = ({
                 </Marker>
             ))}
 
-            {dyDevices.map(device => (
+            {dyDevices.map((device) => (
                 device.position ? (
                     <MarkerUpdater
                         icon={pins.mapPinBlue}
                         id={device.id}
-                        onClick={e => handleContextMenu(e, device.id)}
+                        onClick={(e) => handleContextMenu(e, device.id)}
                         key={device.key}
                         deviceKey={device.key}
                         attributeLabel={device.attr}
