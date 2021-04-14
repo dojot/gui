@@ -63,11 +63,15 @@ class WebSocket {
 
                 // Step 3: Set emmiter for errors
                 this.socketInstance.on('error', (data) => {
+                    // @TODO We should better handle these errors
+                    // eslint-disable-next-line no-console
                     console.error('Websocket error: ', data);
                 });
             })
             .catch((error) => {
-                console.error('An error occurred to fetch token to socket: ');
+                // @TODO We should better handle these errors
+                // eslint-disable-next-line no-console
+                console.error(`An error occurred to fetch token to socket: ${JSON.stringify(error)}`);
             });
     }
 
@@ -229,15 +233,14 @@ const MultipleMapWithSocket = ({
             {isMenuVisible ? (
                 <ContextMenuComponent
                     closeContextMenu={closeContextMenu}
-                    handleTracking={null}
                     metadata={menuInfo}
                 />
             ) : null}
 
-            {stDevices.map((device) => (
+            {stDevices.map(device => (
                 <Marker
                     icon={pins.mapPinGreen}
-                    onClick={(e) => handleContextMenu(e, device.id)}
+                    onClick={e => handleContextMenu(e, device.id)}
                     key={device.key}
                     position={device.position}
                 >
@@ -245,12 +248,12 @@ const MultipleMapWithSocket = ({
                 </Marker>
             ))}
 
-            {dyDevices.map((device) => (
+            {dyDevices.map(device => (
                 device.position ? (
                     <MarkerUpdater
                         icon={pins.mapPinBlue}
                         id={device.id}
-                        onClick={(e) => handleContextMenu(e, device.id)}
+                        onClick={e => handleContextMenu(e, device.id)}
                         key={device.key}
                         deviceKey={device.key}
                         attributeLabel={device.attr}

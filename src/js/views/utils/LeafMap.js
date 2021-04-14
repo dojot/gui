@@ -67,14 +67,20 @@ const MarkerUpdater = ({
         axios.get(URL, { headers: { Authorization: `Bearer ${userToken}` } }).then(({ data }) => {
             setSocketInstance(socketio(baseURL, { query: `token=${data.token}`, transports: ['polling'] }));
         }).catch((error) => {
+            // @TODO We should better handle these errors
+            // eslint-disable-next-line no-console
             console.error(error);
         });
     }, []);
 
     useEffect(() => {
         if (socketInstance) {
-            socketInstance.on(id, (data) => handlePosition(data));
-            socketInstance.on('error', (data) => { console.error('Websocket error: ', data); });
+            socketInstance.on(id, data => handlePosition(data));
+            socketInstance.on('error', (data) => {
+                // @TODO We should better handle these errors
+                // eslint-disable-next-line no-console
+                console.error('Websocket error: ', data);
+            });
         }
         // Destroy the socket instance when dismounting the component
         return () => (socketInstance ? socketInstance.close() : undefined);
