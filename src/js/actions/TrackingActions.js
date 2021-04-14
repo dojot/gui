@@ -6,7 +6,7 @@ import LoginStore from '../stores/LoginStore';
 class TrackingActions {
     fetch(device_id, attrName, history_length) {
         function getUrl() {
-           return '/history/device/' + device_id + '/history?lastN=' + history_length + '&attr=' + attrName;
+            return '/history/device/' + device_id + '/history?lastN=' + history_length + '&attr=' + attrName;
         }
 
         function parserPosition(position) {
@@ -34,6 +34,7 @@ class TrackingActions {
                     for (const k in reply) {
                         const data = { device_id };
                         if (reply[k].value !== null && reply[k].value !== undefined) {
+                            data.attr = reply[k].attr;
                             data.position = parserPosition(reply[k].value);
                             data.timestamp = util.iso_to_date(reply[k].ts);
                         }

@@ -66,26 +66,9 @@ class ContextMenuComponent extends Component {
                 <Link to={`/device/id/${md.device_id}/detail`} title="View details">
                     <div className="contextMenu--option cmenu">
                         <i className="fa fa-info-circle" />
-Details
+                        Details
                     </div>
                 </Link>
-                {(md.allow_tracking)
-                    ? (
-                        <div
-                            tabIndex="0"
-                            role="button"
-                            className="contextMenu--option cmenu"
-                            onClick={() => {
-                                this.handleTracking(md.device_id);
-                            }}
-                            onKeyPress={() => {
-                                this.handleTracking(md.device_id);
-                            }}
-                        >
-                            <img alt="toogle tracking" src="images/icons/location.png" />
-                        Toggle tracking
-                        </div>
-                    ) : null}
                 <div
                     tabIndex="0"
                     role="button"
