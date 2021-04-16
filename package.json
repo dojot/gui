@@ -56,7 +56,7 @@
     "ace-builds": "^1.3.3",
     "alt": "^0.18.6",
     "alt-container": "^1.1.1",
-    "asn1js": "^2.0.26",
+    "asn1js": "^2.1.1",
     "axios": "^0.18.0",
     "babel-core": "^6.26.3",
     "babel-loader": "~7",
