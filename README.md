@@ -43,3 +43,10 @@ To run the created image:
 ```shell
 docker run -d [-n name] <tag name>
 ```
+
+
+# License
+
+Dojot's GUI source code is released under Apache License 2.0.
+
+Check NOTICE and LICENSE files for more information.
