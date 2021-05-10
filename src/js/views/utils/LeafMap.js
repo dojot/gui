@@ -40,31 +40,26 @@ LeafMap.propTypes = {
     point: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
 
-export const MapWithSocket = ({ device, initialZoom }) => {
-    const { position, id } = device;
+const MarkerUpdater = ({
+    initialPosition, id, attributeLabel, setMapCenter,
+}) => {
     const [socketInstance, setSocketInstance] = useState(undefined);
-    const [devicePosition, setDevicePosition] = useState(position);
-    const [mapZoom, setMapZoom] = useState(initialZoom);
+    const [devicePosition, setDevicePosition] = useState(initialPosition);
     const URL = `${baseURL}stream/socketio`;
-    const mapRef = useRef();
-
-    if (mapRef.current) {
-        // We need to wait for the window to finish resizing
-        setTimeout(() => {
-            mapRef.current.leafletElement.invalidateSize();
-        }, 250);
-    }
 
     const handlePosition = ({ attrs }) => {
-        const { location } = attrs;
-        const toParse = location || '[0, 0]';
-        const [lat, long] = toParse.split(',');
-        setDevicePosition([parseFloat(lat), parseFloat(long)]);
-    };
-
-    const handleZoom = () => {
-        // The zoom value is stored in the local hook
-        setMapZoom(mapRef.current.leafletElement.getZoom());
+        if (attrs[attributeLabel]) {
+            const toParse = attrs[attributeLabel] || '[0, 0]';
+            let coordinates;
+            try {
+                coordinates = toParse.split(',');
+            } catch (e) {
+                coordinates = [0, 0];
+            }
+            const [lat, long] = coordinates;
+            setDevicePosition([parseFloat(lat), parseFloat(long)]);
+            setMapCenter([parseFloat(lat), parseFloat(long)]);
+        }
     };
 
     useEffect(() => {
@@ -72,6 +67,8 @@ export const MapWithSocket = ({ device, initialZoom }) => {
         axios.get(URL, { headers: { Authorization: `Bearer ${userToken}` } }).then(({ data }) => {
             setSocketInstance(socketio(baseURL, { query: `token=${data.token}`, transports: ['polling'] }));
         }).catch((error) => {
+            // @TODO We should better handle these errors
+            // eslint-disable-next-line no-console
             console.error(error);
         });
     }, []);
@@ -79,16 +76,48 @@ export const MapWithSocket = ({ device, initialZoom }) => {
     useEffect(() => {
         if (socketInstance) {
             socketInstance.on(id, (data) => handlePosition(data));
-            socketInstance.on('error', (data) => { console.error('Websocket error: ', data); });
+            socketInstance.on('error', (data) => {
+                // @TODO We should better handle these errors
+                // eslint-disable-next-line no-console
+                console.error('Websocket error: ', data);
+            });
         }
         // Destroy the socket instance when dismounting the component
         return () => (socketInstance ? socketInstance.close() : undefined);
     }, [socketInstance]);
 
     return (
+        <Marker position={devicePosition} />
+    );
+};
+
+MarkerUpdater.propTypes = {
+    setMapCenter: PropTypes.func.isRequired,
+    id: PropTypes.string.isRequired,
+    initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
+    attributeLabel: PropTypes.string.isRequired,
+};
+
+export const MapWithSocket = ({ device, initialZoom, attributeLabel }) => {
+    const { position, id } = device;
+    const [mapCenter, setMapCenter] = useState(position);
+    const [mapZoom, setMapZoom] = useState(initialZoom);
+    const mapRef = useRef();
+    if (mapRef.current) {
+        // We need to wait for the window to finish resizing
+        setTimeout(() => {
+            mapRef.current.leafletElement.invalidateSize();
+        }, 250);
+    }
+
+    const handleZoom = () => {
+        // The zoom value is stored in the local hook
+        setMapZoom(mapRef.current.leafletElement.getZoom());
+    };
+    return (
         <Map
             ref={mapRef}
-            center={devicePosition}
+            center={mapCenter}
             zoom={mapZoom}
             attributionControl
             zoomControl
@@ -97,19 +126,25 @@ export const MapWithSocket = ({ device, initialZoom }) => {
             dragging
             animate
             easeLinearity={0.35}
-            onzoomend={() => handleZoom()}
+            onzoomend={handleZoom}
         >
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             />
-            <Marker position={devicePosition} />
+            <MarkerUpdater
+                initialPosition={position}
+                id={id}
+                attributeLabel={attributeLabel}
+                setMapCenter={setMapCenter}
+            />
         </Map>
     );
 };
 
 MapWithSocket.defaultProps = {
     initialZoom: 14,
+    attributeLabel: 'unknown',
 };
 
 MapWithSocket.propTypes = {
@@ -118,6 +153,7 @@ MapWithSocket.propTypes = {
         id: PropTypes.string,
     }).isRequired,
     initialZoom: PropTypes.number,
+    attributeLabel: PropTypes.string,
 };
 
 export default LeafMap;

@@ -214,7 +214,6 @@ class HandleGeoElements extends Component {
             hasPosition: false,
             pos: []
         };
-
         this.handleDevicePosition = this.handleDevicePosition.bind(this);
         this.copyingStaticAttr = this.copyingStaticAttr.bind(this);
         this.toogleExpand = this.toogleExpand.bind(this);
@@ -308,6 +307,7 @@ class HandleGeoElements extends Component {
                 <MapWithSocket
                     device={validDevices[0]}
                     initialZoom={14}
+                    attributeLabel={this.props.label}
                 />
             );
         }

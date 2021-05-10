@@ -29,7 +29,7 @@ class MeasureStore {
     }
 
     handleUpdateGeoLabel(info) {
-        const {geoLabel, deviceID} = info;
+        const { geoLabel, deviceID } = info;
         this.geoLabelForTracking[deviceID] = geoLabel;
     }
 
@@ -68,13 +68,14 @@ class MeasureStore {
      * @param measureData
      */
     handleUpdateTracking(measureData) {
-        const {metadata: {deviceid, timestamp}, attrs} = measureData;
+        const { metadata: { deviceid, timestamp }, attrs } = measureData;
         if (this.geoLabelForTracking[deviceid]) {
             for (const label in attrs) {
                 if (this.geoLabelForTracking[deviceid] === label) {
                     if (this.tracking[deviceid] !== undefined && this.tracking[deviceid] !== null) {
                         const trackingStructure = {
                             device_id: deviceid,
+                            attr_label: label,
                             position: this.parserPosition(attrs[this.geoLabelForTracking[deviceid]]),
                             timestamp: util.iso_to_date(timestamp),
                         };
@@ -90,40 +91,41 @@ class MeasureStore {
     }
 
     handleAppendMeasures(measureData) {
-        const now = measureData.metadata.timestamp;
-        const deviceID = measureData.metadata.deviceid;
-        if (typeof this.data[deviceID] !== 'undefined') {
-            for (const templateID in this.data[deviceID].attrs) {
-                for (const attrID in this.data[deviceID].attrs[templateID]) {
+        const { metadata: { deviceid, timestamp } } = measureData;
+
+        if (typeof this.data[deviceid] !== 'undefined') {
+            for (const templateID in this.data[deviceid].attrs) {
+                for (const attrID in this.data[deviceid].attrs[templateID]) {
                     for (const label in measureData.attrs) {
-                        if (this.data[deviceID].attrs[templateID][attrID].label === label) {
+                        if (this.data[deviceid].attrs[templateID][attrID].label === label) {
 
                             const attrValue = {
-                                ts: now,
+                                ts: timestamp,
                                 value: measureData.attrs[label],
                             };
 
 
-                            if (this.data[deviceID][`_${label}`] === undefined) {
-                                this.data[deviceID][`_${label}`] = [];
+                            if (this.data[deviceid][`_${label}`] === undefined) {
+                                this.data[deviceid][`_${label}`] = [];
                             }
-                            this.data[deviceID][`_${label}`].push(attrValue);
+                            this.data[deviceid][`_${label}`].push(attrValue);
 
-                            if (this.data[deviceID].attrs[templateID][attrID].value_type === 'geo:point') {
-                                this.data[deviceID].position = this.parserPosition(measureData.attrs[label]);
-                                if (this.tracking[measureData.metadata.deviceid] !== undefined && this.tracking[measureData.metadata.deviceid] !== null) {
+                            if (this.data[deviceid].attrs[templateID][attrID].value_type === 'geo:point') {
+                                this.data[deviceid].position = this.parserPosition(measureData.attrs[label]);
+                                if (this.tracking[deviceid] !== undefined && this.tracking[deviceid] !== null) {
                                     const trackingStructure = {
-                                        device_id: measureData.metadata.deviceid,
+                                        device_id: deviceid,
                                         position: this.parserPosition(measureData.attrs[label]),
-                                        timestamp: util.iso_to_date(now),
+                                        attr_label: label,
+                                        timestamp: util.iso_to_date(timestamp),
                                     };
-                                    if (this.tracking[measureData.metadata.deviceid].unshift(trackingStructure) > 5) {
-                                        this.tracking[measureData.metadata.deviceid] = this.tracking[measureData.metadata.deviceid].slice(0, 4);
+                                    if (this.tracking[deviceid].unshift(trackingStructure) > 5) {
+                                        this.tracking[deviceid] = this.tracking[deviceid].slice(0, 4);
                                     }
                                 }
                             } else {
-                                if (this.data[deviceID][`_${label}`].length > 10) {
-                                    this.data[deviceID][`_${label}`].shift();
+                                if (this.data[deviceid][`_${label}`].length > 10) {
+                                    this.data[deviceid][`_${label}`].shift();
                                 }
                             }
                         }
