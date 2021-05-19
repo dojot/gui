@@ -27,7 +27,7 @@ const SidebarConfigurationForm = ({
                 className="config-type"
                 value={selectAttr.label}
                 onChange={e => changeAttrValue(e, selectAttr)}
-                isDisable={!ability.can('modifier', 'template')}
+                isDisable={!ability.can('modifier', 'device-manager-template')}
             >
                 <option value="" disabled>
                     {t('text.select_type')}
@@ -44,7 +44,7 @@ const SidebarConfigurationForm = ({
                 maxLength={128}
                 value={selectAttr.static_value}
                 onChange={e => changeAttrValue(e, selectAttr)}
-                disabled={!ability.can('modifier', 'template')}
+                disabled={!ability.can('modifier', 'device-manager-template')}
             >
                 {t('value.label')}
             </MaterialInput>

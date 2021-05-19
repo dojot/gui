@@ -1,7 +1,7 @@
-import { baseURL } from 'Src/config';
+import { PROXY_URL, GQL_URL } from 'Src/config';
 import util from '../util';
 
-const GQL_TEMPLATE = (templateId) => `
+const GQL_TEMPLATE = templateId => `
 {
     template(id: ${templateId}) {
       label
@@ -84,47 +84,47 @@ const GQL_TEMPLATE = (templateId) => `
   `;
 
 class TemplateManager {
-    getLastTemplates(field) {
-        return util.GET(`${baseURL}template?limit=10&sortDsc=${field}`);
-    }
+  getLastTemplates(field) {
+    return util.GET(`${PROXY_URL}template?limit=10&sortDsc=${field}`);
+  }
 
-    getTemplates(params) {
-        if (params) {
-            const qs = Object.keys(params).map((key) => `${key}=${params[key]}`).join('&');
-            return util.GET(`${baseURL}template?${qs}`);
-        }
-        return util.GET(`${baseURL}template`);
+  getTemplates(params) {
+    if (params) {
+      const qs = Object.keys(params).map(key => `${key}=${params[key]}`).join('&');
+      return util.GET(`${PROXY_URL}template?${qs}`);
     }
+    return util.GET(`${PROXY_URL}template`);
+  }
 
-    getTemplate(id) {
-        return util.GET(`${baseURL}template/${id}`);
-    }
+  getTemplate(id) {
+    return util.GET(`${PROXY_URL}template/${id}`);
+  }
 
-    getTemplateGQL(id) {
-        const req = {
-            query: GQL_TEMPLATE(id),
-        };
-        return util.POST(`${baseURL}graphql/`, req);
-    }
+  getTemplateGQL(id) {
+    const req = {
+      query: GQL_TEMPLATE(id),
+    };
+    return util.POST(`${GQL_URL}/`, req);
+  }
 
-    setTemplate(template) {
-        return util.PUT(`${baseURL}template/${template.id}`, template);
-    }
+  setTemplate(template) {
+    return util.PUT(`${PROXY_URL}template/${template.id}`, template);
+  }
 
-    addTemplate(d) {
-        return util.POST(`${baseURL}template`, d);
-    }
+  addTemplate(d) {
+    return util.POST(`${PROXY_URL}template`, d);
+  }
 
-    deleteTemplate(id) {
-        return util.DELETE(`${baseURL}template/${id}`);
-    }
+  deleteTemplate(id) {
+    return util.DELETE(`${PROXY_URL}template/${id}`);
+  }
 
-    setIcon(id, icon) {
-        const data = new FormData();
-        data.append('icon', icon);
-        const config = { method: 'put', body: data };
-        return util._runFetch(`${baseURL}template/${id}/icon`, config);
-    }
+  setIcon(id, icon) {
+    const data = new FormData();
+    data.append('icon', icon);
+    const config = { method: 'put', body: data };
+    return util._runFetch(`${PROXY_URL}template/${id}/icon`, config);
+  }
 }
 
 const templateManager = new TemplateManager();

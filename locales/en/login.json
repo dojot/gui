@@ -1,5 +1,6 @@
 {
     "title": "Login",
+    "go_to_login": "Go to login page",
     "alerts": {
         "empty_pass": "Empty password.",
         "empty_user": "Empty username.",

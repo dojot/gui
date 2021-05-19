@@ -9,6 +9,7 @@ import toaster from '../../comms/util/materialize';
 import { RemoveModal } from '../../components/Modal';
 import { InputCheckbox, InputText } from '../../components/DojotIn';
 
+
 const groupHasSubject = (subject, groupPermissions) => {
     if (groupPermissions) {
         const singlePermission = groupPermissions.filter(n1 => subject === n1.subject);
@@ -86,6 +87,15 @@ function TableGroupsPermissions(params) {
         </div>
     );
 }
+
+TableGroupsPermissions.propTypes = {
+    cannotEdit: PropTypes.any,
+    groupPermissions: PropTypes.any,
+    handleChangeCheckbox: PropTypes.any,
+    systemPermissions: PropTypes.shape({
+        map: PropTypes.func,
+    }),
+};
 
 function Form(params) {
     const {

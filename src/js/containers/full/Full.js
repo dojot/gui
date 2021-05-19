@@ -1,17 +1,19 @@
 /* eslint-disable */
-import React, { Component } from 'react';
+import React, {
+    Component, useEffect, useState,
+} from 'react';
 import { Link, hashHistory } from 'react-router';
 import AltContainer from 'alt-container';
-import MenuActions from '../../actions/MenuActions';
 import { Trans, withNamespaces } from 'react-i18next';
+import { ChangePasswordModal } from 'Components/Modal';
+import { GUI_VERSION } from 'Src/config';
+import MenuActions from '../../actions/MenuActions';
 import MenuStore from '../../stores/MenuStore';
 import LoginStore from '../../stores/LoginStore';
 import LoginActions from '../../actions/LoginActions';
-import { ChangePasswordModal } from 'Components/Modal';
-import ConfigActions from "../../actions/ConfigActions";
+import ConfigActions from '../../actions/ConfigActions';
 import ImportExportMain from '../../components/importExport/ImportExportMain';
 import ability from '../../components/permissions/ability';
-import {appURL, guiVersion} from 'Src/config';
 
 class Navbar extends Component {
     // TODO: header widgets should be received as children to this (Navbar) node
@@ -31,11 +33,6 @@ class Navbar extends Component {
     }
 
     render() {
-        if (this.props.user === undefined) {
-            console.error('no active user session');
-            return null;
-        }
-
         return (
             <nav className="nav outer-header">
                 <div className="nav-line">
@@ -46,7 +43,10 @@ class Navbar extends Component {
                             {this.state.page_icon}
                         </div>
                         <div className="status-item user-area">
-                            <div className="user-name clickable" onClick={this.handleClick}>{(this.props.user.name ? this.props.user.name : this.props.user.username)}</div>
+                            <div className="user-name clickable" onClick={this.handleClick}>
+                                {this.props.user}
+
+                            </div>
                             <div className="clickable" onClick={this.handleClick} title="Login details">
                                 {this.props.open === false && <i className="fa fa-caret-down line-normal center-caret" />}
                                 {this.props.open === true && <i className="fa fa-caret-up line-normal center-caret" />}
@@ -108,9 +108,9 @@ class RightSideBar extends Component {
 
 
         const { t } = this.props;
-        const canSeeImportOrExport = ability.can('modifier', 'import')
-            || ability.can('viewer', 'export')
-            || ability.can('modifier', 'export');
+        const canSeeImportOrExport = ability.can('modifier', 'data-manager-import')
+            || ability.can('viewer', 'data-manager-export')
+            || ability.can('modifier', 'data-manager-export');
 
         return (
             <div className="">
@@ -129,7 +129,10 @@ class RightSideBar extends Component {
                         {this.props.user.email !== undefined && (
                             <div>
                                 <div className="col s12 m12">
-                                    <div className="logout-page-subtitle"> {t('email.label')}</div>
+                                    <div className="logout-page-subtitle">
+                                        {' '}
+                                        {t('email.label')}
+                                    </div>
                                 </div>
 
                                 <div className="col s12 m12">
@@ -157,7 +160,7 @@ class RightSideBar extends Component {
 
                             <div className="col s12 m12">
                                 <div className="logout-page-info truncate">
-                                    {guiVersion || t('text.not_found')}
+                                    {GUI_VERSION || t('text.not_found')}
                                 </div>
                             </div>
                         </div>
@@ -174,11 +177,14 @@ class RightSideBar extends Component {
                     <div className="horizontal-line" />
                     {canSeeImportOrExport ? (
                         <div className="logout-page-settings">
-                            <div className="logout-page-changePassword col s12 m12"
-                                 onClick={this.handleImportExport}>
+                            <div
+                                className="logout-page-changePassword col s12 m12"
+                                onClick={this.handleImportExport}
+                            >
                                 {t('text.import_export')}
                             </div>
-                        </div>) : <div/>
+                        </div>
+                    ) : <div />
                     }
 
                     <div className="horizontal-line" />
@@ -190,12 +196,15 @@ class RightSideBar extends Component {
                     </div>
                 </div>
                 {this.state.open_change_password_modal ? <ChangePasswordModal openChangePasswordModal={this.openChangePasswordModal} toggleSidebar={this.props.toggleSidebar} /> : <div />}
-                {this.state.openImportExportMain ?
-                    <ImportExportMain
-                    type='main'
-                    openModal={this.openImportExportMain}
-                    toggleSidebar={this.props.toggleSidebar}/>
-                 : <div />
+                {this.state.openImportExportMain
+                    ? (
+                        <ImportExportMain
+                            type="main"
+                            openModal={this.openImportExportMain}
+                            toggleSidebar={this.props.toggleSidebar}
+                        />
+                    )
+                    : <div />
                 }
             </div>
         );
@@ -250,10 +259,9 @@ function SidebarItem(props) {
         </li>
     );
 }
-const width =
-window.innerWidth ||
-document.documentElement.clientWidth ||
-document.body.clientWidth;
+const width = window.innerWidth
+    || document.documentElement.clientWidth
+    || document.body.clientWidth;
 class LeftSidebar extends Component {
     constructor(props) {
         super(props);
@@ -261,28 +269,29 @@ class LeftSidebar extends Component {
     }
 
     handleClick(e) {
-        if(width > 800){
+        if (width > 800) {
             e.preventDefault();
             MenuActions.toggleLeft();
         }
     }
-    componentDidUpdate(){
+
+    componentDidUpdate() {
         LeftSidebar.createMenu();
     }
 
-    componentDidMount(){
+    componentDidMount() {
         LeftSidebar.createMenu();
     }
 
     static createMenu() {
         const entriesLocal = [];
-        if (ability.can('viewer', 'device') || ability.can( 'modifier', 'device')) {
+        if (ability.can('viewer', 'device-manager-devices') || ability.can('modifier', 'device-manager-devices')) {
             entriesLocal.push({
                 image: 'chip',
                 target: '/device',
                 iconClass: 'material-icons mi-ic-memory',
-                label: <Trans i18nKey="menu:devices.text"/>,
-                desc: <Trans i18nKey="menu:devices.alt"/>,
+                label: <Trans i18nKey="menu:devices.text" />,
+                desc: <Trans i18nKey="menu:devices.alt" />,
                 children: [
                     {
                         target: '/device/list',
@@ -301,88 +310,85 @@ class LeftSidebar extends Component {
             });
         }
 
-        if (ability.can('viewer', 'template') || ability.can( 'modifier', 'template')) {
+        if (ability.can('viewer', 'device-manager-template') || ability.can('modifier', 'device-manager-template')) {
             entriesLocal.push({
                 image: 'template',
                 target: '/template/list',
                 iconClass: 'fa fa-cubes',
-                label: <Trans i18nKey="menu:templates.text"/>,
-                desc: <Trans i18nKey="menu:templates.alt"/>,
+                label: <Trans i18nKey="menu:templates.text" />,
+                desc: <Trans i18nKey="menu:templates.alt" />,
             });
         }
 
-        if (ability.can('viewer', 'flows') || ability.can( 'modifier', 'flows')) {
+        if (ability.can('viewer', 'flows') || ability.can('modifier', 'flows')) {
             entriesLocal.push({
                 image: 'graph',
                 target: '/flows',
                 iconClass: 'material-icons mi-device-hub',
-                label: <Trans i18nKey="menu:flows.text"/>,
-                desc: <Trans i18nKey="menu:flows.alt"/>,
+                label: <Trans i18nKey="menu:flows.text" />,
+                desc: <Trans i18nKey="menu:flows.alt" />,
             });
         }
 
-        if (ability.can('viewer', 'socketio')) {
+        if (ability.can('viewer', 'history')) {
             entriesLocal.push({
                 image: 'bell',
                 target: '/notifications',
                 iconClass: 'fa fa-unlock-alt',
-                label: <Trans i18nKey="menu:notifications.text"/>,
-                desc: <Trans i18nKey="menu:notifications.alt"/>,
+                label: <Trans i18nKey="menu:notifications.text" />,
+                desc: <Trans i18nKey="menu:notifications.alt" />,
             });
         }
 
-        if (ability.can('viewer', 'user') || ability.can( 'modifier', 'user')) {
-            entriesLocal.push({
-                image: 'user',
-                target: '/auth',
-                iconClass: 'fa fa-unlock-alt',
-                label: <Trans i18nKey="menu:users.text"/>,
-                desc: <Trans i18nKey="menu:users.alt"/>,
-            });
-        }
+        entriesLocal.push({
+            image: 'user',
+            target: '/auth',
+            iconClass: 'fa fa-unlock-alt',
+            label: <Trans i18nKey="menu:users.text" />,
+            desc: <Trans i18nKey="menu:users.alt" />,
+        });
 
-        if (ability.can( 'viewer', 'permission') || ability.can( 'modifier', 'permission')) {
-            entriesLocal.push({
-                image: 'groups',
-                target: '/groups',
-                iconClass: 'fa fa-unlock-alt',
-                label: <Trans i18nKey="menu:groups.text"/>,
-                desc: <Trans i18nKey="menu:groups.alt"/>,
-            });
-        }
+        entriesLocal.push({
+            image: 'groups',
+            target: '/groups',
+            iconClass: 'fa fa-unlock-alt',
+            label: <Trans i18nKey="menu:groups.text" />,
+            desc: <Trans i18nKey="menu:groups.alt" />,
+        });
+
         return entriesLocal;
     }
 
     render() {
-        const entries= LeftSidebar.createMenu();
+        const entries = LeftSidebar.createMenu();
         return (
             <div className="sidebar expand z-depth-4" tabIndex="-1">
                 <div className="header">
                     {this.props.open
-            && (
-                <div className="logo-n-bars">
-                    <img className="logo" src="images/logo-bl.png" />
-                    <div className="bars action waves-effect waves-light" onClick={this.handleClick}>
-                        <img className="img-bars" src="images/menu.png" />
-                    </div>
-                </div>
-            )
+                        && (
+                            <div className="logo-n-bars">
+                                <img className="logo" src="images/logo-bl.png" />
+                                <div className="bars action waves-effect waves-light" onClick={this.handleClick}>
+                                    <img className="img-bars" src="images/menu.png" />
+                                </div>
+                            </div>
+                        )
                     }
                     {!this.props.open
-            && (
-                <div className="logo-n-bars">
-                    <img className="closed-logo" src="images/logo-bl.png" />
-                    <div className={`bars action waves-effect waves-light ${(width > 800) ? '' : 'hidden'} `} onClick={this.handleClick}>
-                        <img className="img-bars" src="images/menu.png" />
-                    </div>
-                </div>
-            )
+                        && (
+                            <div className="logo-n-bars">
+                                <img className="closed-logo" src="images/logo-bl.png" />
+                                <div className={`bars action waves-effect waves-light ${(width > 800) ? '' : 'hidden'} `} onClick={this.handleClick}>
+                                    <img className="img-bars" src="images/menu.png" />
+                                </div>
+                            </div>
+                        )
                     }
                 </div>
 
                 <nav className="sidebar-nav line-normal">
                     <ul className="nav">
-                        { entries.map(item => <SidebarItem item={item} key={Math.random()} open={this.props.open} router={this.props.router} />)}
+                        {entries.map(item => <SidebarItem item={item} key={Math.random()} open={this.props.open} router={this.props.router} />)}
                     </ul>
                 </nav>
             </div>
@@ -404,55 +410,44 @@ function Content(props) {
 }
 
 
-function SpanWrapper(props) {
-    function renderChildren() {
-        return React.Children.map(props.children, child => React.cloneElement(child, props));
-    }
+const Full = ({ t, router, children }) => {
+    const [userSidebar, setUserSidebar] = useState(false);
+
+    const toggleUserSidebar = () => {
+        setUserSidebar(!userSidebar);
+    };
+
+    useEffect(() => {
+        ConfigActions.fetchCurrentConfig.defer(true);
+    }, []);
+
 
     return (
-        <span>
-            { renderChildren() }
-        </span>
+        <div className="full-height overflow-x-hidden">
+            <AltContainer store={LoginStore}>
+                {
+                    (userSidebar)
+                        ? (
+                            <RightSideBar
+                                toggleSidebar={toggleUserSidebar}
+                                t={t}
+                            />
+                        )
+                        : <div />
+                }
+                <Navbar
+                    toggleSidebar={toggleUserSidebar}
+                    open={userSidebar}
+                />
+            </AltContainer>
+            <AltContainer store={MenuStore}>
+                <Content router={router}>
+                    {children}
+                </Content>
+            </AltContainer>
+        </div>
     );
-}
+};
 
-class Full extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            user_sidebar: false,
-        };
-
-        this.toggleUserSidebar = this.toggleUserSidebar.bind(this);
-    }
-
-    componentDidMount() {
-        ConfigActions.fetchCurrentConfig.defer(true);
-    }
-
-    toggleUserSidebar() {
-        this.setState({ user_sidebar: !this.state.user_sidebar });
-    }
-
-    render() {
-        return (
-            <div className="full-height overflow-x-hidden">
-                <AltContainer store={LoginStore}>
-
-                    {
-                        (this.state.user_sidebar)
-                            ? <RightSideBar toggleSidebar={this.toggleUserSidebar} t={this.props.t}/>
-                            : <div />
-                    }
-
-                    <Navbar toggleSidebar={this.toggleUserSidebar} open={this.state.user_sidebar} />
-                </AltContainer>
-                <AltContainer store={MenuStore}>
-                    <Content router={this.props.router}>{this.props.children}</Content>
-                </AltContainer>
-            </div>
-        );
-    }
-}
 
 export default withNamespaces()(Full);

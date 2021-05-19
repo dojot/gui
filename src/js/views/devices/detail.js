@@ -217,7 +217,7 @@ class GenericList extends Component {
             <div className="row stt-attributes">
                 <div className="col s12 header">
                     <div className="icon">
-                        <img src={img} alt={boxTitle}/>
+                        <img src={img} alt={boxTitle} />
                     </div>
                     <label>{boxTitle}</label>
                 </div>
@@ -243,13 +243,13 @@ class GenericList extends Component {
 
                                 </div>
                             </div>
-                            <hr/>
+                            <hr />
                             <AltContainer stores={{
                                 certStore: CertificateStore,
                                 loginStore: LoginStore,
                             }}
                             >
-                                <CertificateComponent deviceId={device.id} t={t}/>
+                                <CertificateComponent deviceId={device.id} t={t} />
 
                             </AltContainer>
 
@@ -276,7 +276,7 @@ class GenericList extends Component {
                                         >
                                             {i18next.exists(`options.config_type.values.${attr.label}`) ? t(`options.config_type.values.${attr.label}`) : `${attr.label}`}
                                             <div className="star">
-                                                <i className={`fa ${this.state.visibleMaps.filter(i => i === attr.id).length ? 'fa-star' : 'fa-star-o'}`}/>
+                                                <i className={`fa ${this.state.visibleMaps.filter(i => i === attr.id).length ? 'fa-star' : 'fa-star-o'}`} />
                                             </div>
                                         </div>
 
@@ -301,9 +301,9 @@ class GenericList extends Component {
                                     </div>
                                 </div>
                                 {Object.prototype.hasOwnProperty.call(attr, 'metadata') ?
-                                    <div className="line line-meta-btn"><Metadata attr={attr}/>
+                                    <div className="line line-meta-btn"><Metadata attr={attr} />
                                     </div> : null}
-                                <hr/>
+                                <hr />
                             </Fragment>
                         ) : (
                             <Fragment>
@@ -337,9 +337,9 @@ class GenericList extends Component {
                                     </div>
                                 </div>
                                 {Object.prototype.hasOwnProperty.call(attr, 'metadata') ?
-                                    <div className="line line-meta-btn"><Metadata attr={attr}/>
+                                    <div className="line line-meta-btn"><Metadata attr={attr} />
                                     </div> : null}
-                                <hr/>
+                                <hr />
                             </Fragment>
                         )
                     ))}
@@ -429,7 +429,7 @@ class DyAttributeArea extends Component {
                 <div className="second-col">
                     {selectedAttributes.length === 0 && atStatic.length === 0
                         ? (
-                            <NoActiveAttr/>
+                            <NoActiveAttr />
                         )
                         : null
                     }
@@ -444,7 +444,7 @@ class DyAttributeArea extends Component {
                         ))
                     }
                     {selectedAttributes.map(at => (
-                        <Attribute key={at.id} device={device} attr={at}/>
+                        <Attribute key={at.id} device={device} attr={at} />
                     ))}
                 </div>
                 <div className="third-col">
@@ -514,7 +514,7 @@ class ActuatorsList extends Component {
             <div className="stt-attributes dy_attributes">
                 <div className="col s12 header">
                     <div className="icon">
-                        <img src="images/gear-dark.png"/>
+                        <img src="images/gear-dark.png" />
                     </div>
                     <span>{t('text.actuators')}</span>
                 </div>
@@ -546,14 +546,14 @@ class ActuatorsList extends Component {
                                 </div>
                                 <div className="col-label-star">
                                     <div className="star">
-                                        <i className={`fa ${actuator.visible ? 'fa-star' : 'fa-star-o'}`}/>
+                                        <i className={`fa ${actuator.visible ? 'fa-star' : 'fa-star-o'}`} />
                                     </div>
                                 </div>
 
                             </div>
                             {Object.prototype.hasOwnProperty.call(actuator, 'metadata') ?
-                                <Metadata attr={actuator}/> : null}
-                            <hr/>
+                                <Metadata attr={actuator} /> : null}
+                            <hr />
                         </Fragment>
                     ))}
                 </div>
@@ -618,7 +618,7 @@ class DynamicAttributeList extends Component {
             <div className="stt-attributes dy_attributes">
                 <div className="col s12 header">
                     <div className="icon">
-                        <img src="images/tag.png"/>
+                        <img src="images/tag.png" />
                     </div>
                     <span>{t('devices:dynamic_attributes')}</span>
                 </div>
@@ -650,14 +650,14 @@ class DynamicAttributeList extends Component {
                                 </div>
                                 <div className="col-label-star">
                                     <div className="star">
-                                        <i className={`fa ${attr.visible ? 'fa-star' : 'fa-star-o'}`}/>
+                                        <i className={`fa ${attr.visible ? 'fa-star' : 'fa-star-o'}`} />
                                     </div>
                                 </div>
 
                             </div>
                             {Object.prototype.hasOwnProperty.call(attr, 'metadata') ?
-                                <Metadata attr={attr}/> : null}
-                            <hr/>
+                                <Metadata attr={attr} /> : null}
+                            <hr />
                         </Fragment>
                     ))}
                 </div>
@@ -842,7 +842,7 @@ class ViewDeviceImpl extends Component {
         }
 
         if (device === undefined) {
-            return (<Loading/>);
+            return (<Loading />);
         }
         return (
             <div className="full-height bg-light-gray">
@@ -899,11 +899,11 @@ class CertificateComponent extends Component {
             t,
             deviceId,
             certStore:
-                {
-                    privateKey,
-                    crt,
-                    caCrt
-                },
+            {
+                privateKey,
+                crt,
+                caCrt
+            },
             loginStore: {
                 user: {
                     service
@@ -929,30 +929,30 @@ class CertificateComponent extends Component {
                                 <div className="w100">
                                     <div className="w100">
                                         <button type="button"
-                                                title={t('certificates:btn_generate')}
-                                                className="btn-crl"
-                                                onClick={this.handleClickNewCerts}
-                                                disabled={!!privateKey && !!crt}>
+                                            title={t('certificates:btn_generate')}
+                                            className="btn-crl"
+                                            onClick={this.handleClickNewCerts}
+                                            disabled={!!privateKey && !!crt}>
                                             {t('certificates:btn_generate')}
                                             &nbsp; &nbsp;
-                                            <i className="fa fa-lock"/>
+                                            <i className="fa fa-lock" />
                                         </button>
 
                                     </div>
                                     <div>
                                         <a href={'data:application/pkcs8,' + encodeURIComponent(privateKey)}
-                                           download={nameFile + '.key'}
-                                           className={privateKey ? '' : 'hide'}
-                                           title={t('certificates:down_private_key')}>
-                                            <i className="fa fa-arrow-circle-down"/> {t('certificates:down_private_key')}
+                                            download={nameFile + '.key'}
+                                            className={privateKey ? '' : 'hide'}
+                                            title={t('certificates:down_private_key')}>
+                                            <i className="fa fa-arrow-circle-down" /> {t('certificates:down_private_key')}
                                         </a>
                                     </div>
                                     <div>
                                         <a href={'data:application/pkcs8,' + encodeURIComponent(crt)}
-                                           title={t('certificates:down_crt')}
-                                           download={nameFile + '.crt'}
-                                           className={crt ? '' : 'hide'}>
-                                            <i className="fa fa-arrow-circle-down"/> {t('certificates:down_crt')}
+                                            title={t('certificates:down_crt')}
+                                            download={nameFile + '.crt'}
+                                            className={crt ? '' : 'hide'}>
+                                            <i className="fa fa-arrow-circle-down" /> {t('certificates:down_crt')}
                                         </a>
                                     </div>
 
@@ -961,7 +961,7 @@ class CertificateComponent extends Component {
                         </div>
                     </div>
                 </Can>
-                <hr/>
+                <hr />
                 <Can do="viewer" on="ca">
                     <div className="line">
                         <div className="display-flex-column flex-1">
@@ -978,20 +978,20 @@ class CertificateComponent extends Component {
                                 >
                                     <div className="w100">
                                         <button type="button" title={t('certificates:btn_load')}
-                                                className="btn-crl"
-                                                onClick={this.handleClickCACert}
-                                                disabled={!!caCrt}>
+                                            className="btn-crl"
+                                            onClick={this.handleClickCACert}
+                                            disabled={!!caCrt}>
                                             {t('certificates:btn_load')}
                                             &nbsp; &nbsp;
-                                            <i className="fa fa-lock"/>
+                                            <i className="fa fa-lock" />
                                         </button>
 
                                     </div>
                                     <div>
                                         <a href={'data:application/pkcs8,' + encodeURIComponent(caCrt)}
-                                           download='ca.crt'
-                                           className={caCrt ? '' : 'hide'}>
-                                            <i className="fa fa-arrow-circle-down"/> {t('certificates:down_ca_crt')}
+                                            download='ca.crt'
+                                            className={caCrt ? '' : 'hide'}>
+                                            <i className="fa fa-arrow-circle-down" /> {t('certificates:down_ca_crt')}
                                         </a>
                                     </div>
                                     <div>
@@ -1002,7 +1002,7 @@ class CertificateComponent extends Component {
                         </div>
                     </div>
                 </Can>
-                <hr/>
+                <hr />
             </Fragment>
         );
     }
@@ -1014,12 +1014,12 @@ class ViewDeviceComponent extends Component {
 
         const { params } = this.props;
 
-        this.socketBaseURL = `${window.location.protocol}//${window.location.host}`;
-        this.tokenURL = `${this.socketBaseURL}/stream/socketio`;
+        this.socketBASE_URL = `${window.location.protocol}//${window.location.host}`;
+        this.tokenURL = `${this.socketBASE_URL}/stream/socketio`;
         this.keepConnected = true;
 
         // socket to receive real time data
-        this.socket = socketio(this.socketBaseURL, {
+        this.socket = socketio(this.socketBASE_URL, {
             transports: ['polling'],
             autoConnect: false,
             reconnection: false,
@@ -1085,7 +1085,7 @@ class ViewDeviceComponent extends Component {
         return (
             <div className="full-width full-height">
                 <AltContainer store={DeviceStore}>
-                    <ViewDeviceImpl device_id={params.device} t={t}/>
+                    <ViewDeviceImpl device_id={params.device} t={t} />
                 </AltContainer>
             </div>
         );

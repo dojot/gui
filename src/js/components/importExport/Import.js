@@ -98,7 +98,7 @@ class Import extends Component {
         const title = t('importExport:import.titleModal');
         const firstMessage = t('importExport:import.subtitleModal');
 
-        const canSeeImport = ability.can('modifier', 'import');
+        const canSeeImport = ability.can('modifier', 'data-manager-import');
 
         return (
             <div>
@@ -110,12 +110,12 @@ class Import extends Component {
                             title={t('importExport:import.titleMain')}
                             firstMessage={t('importExport:import.subtitle')}
                         />
-                    ) : <div /> }
+                    ) : <div />}
                     <FilePond
                         ref={this.pond}
                         onupdatefiles={(fileItems) => {
                             this.setState({
-                                file: fileItems.map((fileItem) => fileItem.file),
+                                file: fileItems.map(fileItem => fileItem.file),
                             });
                         }}
                         allowFileTypeValidation
@@ -123,7 +123,7 @@ class Import extends Component {
                         allowFileSizeValidation
                         maxTotalFileSize={314572800}
                     >
-                        {file.map((files) => (
+                        {file.map(files => (
                             <File
                                 key={files}
                                 src={files}

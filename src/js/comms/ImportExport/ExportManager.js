@@ -1,4 +1,4 @@
-import { baseURL } from 'Src/config';
+import { PROXY_URL } from 'Src/config';
 import util from '../util/util';
 
 class ExportManager {
@@ -10,7 +10,7 @@ class ExportManager {
             'Content-Disposition': 'attachment; filename="download"',
         };
 
-        return util.GET(`${baseURL}export`, headers);
+        return util.GET(`${PROXY_URL}export`, headers);
     }
 }
 

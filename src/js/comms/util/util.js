@@ -61,14 +61,15 @@ class Util {
         return sha1(data);
     }
 
-
     getToken() {
         return window.localStorage.getItem('jwt');
     }
 
+
     getUserLoggedInfo() {
         return JSON.parse(atob(this.getToken().split('.')[1]));
     }
+
 
     setToken(token) {
         try {
@@ -85,12 +86,14 @@ class Util {
         }
     }
 
+
     getPermissions() {
         return JSON.parse(window.localStorage.getItem('roles'));
     }
 
     setPermissions(permissions) {
         const objPermStr = JSON.stringify(permissions);
+        console.log("setPermissions", objPermStr);
         try {
             // Test webstorage existence.
             if (!window.localStorage || !window.sessionStorage) throw 'exception';
@@ -159,15 +162,6 @@ class Util {
     _runFetch(url, config) {
         const local = this;
         let authConfig = config || {};
-        authConfig.credentials = 'include';
-        if (this.getToken()) {
-            if (authConfig.headers) {
-                authConfig.headers.append('Authorization', `Bearer ${this.getToken()}`);
-            } else {
-                authConfig.headers = new Headers();
-                authConfig.headers.append('Authorization', `Bearer ${this.getToken()}`);
-            }
-        }
         return new Promise(((resolve, reject) => {
             fetch(url, authConfig)
                 .then(local._status)

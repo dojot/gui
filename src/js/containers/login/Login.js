@@ -1,14 +1,17 @@
-import React, { Component } from 'react';
+import React, {
+    Component, useEffect, useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import Fade from 'react-reveal/Fade';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import AltContainer from 'alt-container';
 import MaterialInput from 'Components/MaterialInput';
 import { withNamespaces } from 'react-i18next';
 import LoginActions from 'Actions/LoginActions';
 import LoginStore from 'Stores/LoginStore';
 import { RecoveryPasswordModal } from 'Components/Modal';
+import { LOGIN_URL } from 'Src/config';
 
+import toaster from 'Comms/util/materialize';
 
 class Content extends Component {
     constructor(props) {
@@ -209,7 +212,7 @@ class Content extends Component {
                                 </div>
                                 <div className="row">
                                     <div className="col s12 m8 offset-m2">
-                                        { (hasBeError || !valid.state) ? (
+                                        {(hasBeError || !valid.state) ? (
                                             <Fade
                                                 bottom
                                                 when={appear}
@@ -234,12 +237,12 @@ class Content extends Component {
                             <div className="slogan">
                                 <b>Do IoT</b>
                                 <br />
-Easy to use
+                                Easy to use
                                 <br />
-                Fast to develop
+                                Fast to develop
                                 <br />
                                 {' '}
-Safe to deploy
+                                Safe to deploy
                             </div>
                         </div>
                     </div>
@@ -260,19 +263,115 @@ Content.propTypes = {
     loading: PropTypes.bool.isRequired,
 };
 
+const LoginContent = (props) => {
+    const [tenant, setTenant] = useState('admin');
+    const { t, authenticated } = props;
+
+    // this value will be returned upon return from the login,
+    // it can be useful to identify something,
+    // with what page the user was on for example.
+    const state = 'login-gui';
+
+    useEffect(() => {
+        // Since the react route failed to capture the query string, I used
+        // javascript's location method.
+        const { location: { href } } = window;
+        const url = new URL(href);
+        const stateQueryString = url.searchParams.get('state');
+        // getting the parameter state e error (if it exists) in the query string
+        const errorQueryString = url.searchParams.get('error');
+        if (errorQueryString) {
+            // shows toast with the error message;
+            toaster.error(errorQueryString);
+        }
+
+        console.log('useEffect authenticated: ', authenticated);
+
+        // only if isn't authenticated
+        console.log('stateQueryString', stateQueryString);
+        if (!authenticated && stateQueryString === 'login-state') {
+            console.log('stateQueryString', stateQueryString);
+            LoginActions.getUserData();
+        }
+    }, []);
+
+
+    const titleLogin = `[  ${t('login:title')}  ]`;
+
+    // const returnPath = '/#return';
+    const returnPath = '/';
+
+    const redirectLogin = (e) => {
+        e.preventDefault();
+        console.log('state', state);
+        window.location.href = `${LOGIN_URL}?tenant=${tenant}&state=${state}&return=${returnPath}`;
+    };
+
+
+    return (
+        <div className="row m0">
+            <div className="login col s12 p0 bg-left">
+                <div className="col  s4 p0 left-side" />
+                <div className="col s8 login-area-right-side bg-right">
+                    <div className="col s7">
+                        <form>
+                            <div className="row">
+                                <div className="col s12  offset-m1">
+                                    <div className="login-page-title">
+                                        {titleLogin}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row mb0">
+                                <div className="col s12  offset-m2">
+                                    <div className="login-page-subtitle">
+                                        {t('login:sign_in_desc')}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="col s11 text-center">
+                                    <br />
+                                    <button
+                                        type="submit"
+                                        tabIndex="0"
+                                        onKeyPress={e => redirectLogin(e)}
+                                        onClick={e => redirectLogin(e)}
+                                        className="clear-btn new-btn-flat red sp-btn-login"
+                                    >
+                                        {t('login:go_to_login')}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div className="col s5 right-side">
+                        <div className="dojot-logo">
+                            <img alt="dojot logo" src="images/dojot_white.png" />
+                        </div>
+                        <div className="slogan">
+                            <b>Do IoT</b>
+                            <br />
+                            Easy to use
+                            <br />
+                            Fast to develop
+                            <br />
+                            {' '}
+                            Safe to deploy
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 const Login = ({ t }) => (
-    <ReactCSSTransitionGroup
-        transitionName="first"
-        transitionAppear
-        transitionAppearTimeout={500}
-        transitionEnterTimeout={500}
-        transitionLeaveTimeout={500}
-    >
-        <AltContainer store={LoginStore}>
-            <Content t={t} />
-        </AltContainer>
-    </ReactCSSTransitionGroup>
+    <AltContainer store={LoginStore}>
+        <LoginContent t={t} />
+    </AltContainer>
 );
 
 

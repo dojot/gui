@@ -208,7 +208,7 @@ class Sidebar extends Component {
 
         // verify if attr name already exists
         const existName = template[type].some(
-            (item) => item.label === values.label && item.id !== values.id,
+            item => item.label === values.label && item.id !== values.id,
         );
 
         if (existName) {
@@ -225,7 +225,7 @@ class Sidebar extends Component {
                 return false;
             }
 
-            if (template[type].some((item) => item.label === values.label && values.id !== item.id)) {
+            if (template[type].some(item => item.label === values.label && values.id !== item.id)) {
                 toaster.warning(t('templates:alerts.conf_already_exist', { label: values.label }));
                 return false;
             }
@@ -331,7 +331,7 @@ class Sidebar extends Component {
         }
 
         const existName = selectAttr.metadata.some(
-            (item) => item.label === metadata.label && item.id !== metadata.id,
+            item => item.label === metadata.label && item.id !== metadata.id,
         );
         if (existName) {
             toaster.warning(t('templates:alerts.conf_already_exist', { label: metadata.label }));
@@ -373,8 +373,8 @@ class Sidebar extends Component {
     deleteTemplate() {
         const { template } = this.state;
         const {
- temp_opex, toogleSidebar, t, numOfTempPage,
-} = this.props;
+            temp_opex, toogleSidebar, t, numOfTempPage,
+        } = this.props;
         TemplateActions.triggerRemoval(template.id, () => {
             toaster.success(t('templates:alerts.remove'));
             this.toogleSidebarDelete();
@@ -387,7 +387,7 @@ class Sidebar extends Component {
     }
 
     toogleSidebarDelete(sidebar) {
-        this.setState((prevState) => (
+        this.setState(prevState => (
             { [sidebar]: !prevState[sidebar] }
         ));
     }
@@ -395,7 +395,7 @@ class Sidebar extends Component {
     removeSelectAttr() {
         const { template, selectAttr } = this.state;
         template[selectAttr.attrType] = template[selectAttr.attrType].filter(
-            (item) => item.id !== selectAttr.id,
+            item => item.id !== selectAttr.id,
         );
         this.toogleSidebarDelete('showDeleteAttr');
         this.toogleSidebarAttribute();
@@ -406,7 +406,7 @@ class Sidebar extends Component {
 
     removeSelectMeta() {
         const { selectAttr, metadata } = this.state;
-        selectAttr.metadata = selectAttr.metadata.filter((item) => item.id !== metadata.id);
+        selectAttr.metadata = selectAttr.metadata.filter(item => item.id !== metadata.id);
         this.toogleSidebarDelete('showDeleteMeta');
         this.toogleSidebarMetadata();
         this.setState({
@@ -441,7 +441,7 @@ class Sidebar extends Component {
             showDeleteMeta,
             isNewMetadata,
         } = this.state;
-        const templateModifier = ability.can('modifier', 'template');
+        const templateModifier = ability.can('modifier', 'device-manager-template');
 
         return (
             <Fragment>

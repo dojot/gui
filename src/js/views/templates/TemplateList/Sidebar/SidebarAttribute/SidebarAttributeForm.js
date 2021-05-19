@@ -27,7 +27,7 @@ const SidebarAttributeForm = ({
                 maxLength={40}
                 value={selectAttr.label}
                 onChange={e => changeAttrValue(e, selectAttr)}
-                disabled={!ability.can('modifier', 'template')}
+                disabled={!ability.can('modifier', 'device-manager-template')}
             >
                 {t('options.attr_name.label')}
             </MaterialInput>
@@ -39,7 +39,7 @@ const SidebarAttributeForm = ({
                 className="attribute-type"
                 value={selectAttr.type}
                 onChange={e => changeAttrValue(e, selectAttr)}
-                isDisable={!ability.can('modifier', 'template')}
+                isDisable={!ability.can('modifier', 'device-manager-template')}
             >
                 <option value="" disabled>
                     {t('text.select_type')}
@@ -61,7 +61,7 @@ const SidebarAttributeForm = ({
                 className="value-type"
                 value={selectAttr.value_type}
                 onChange={e => changeAttrValue(e, selectAttr)}
-                isDisable={!ability.can('modifier', 'template')}
+                isDisable={!ability.can('modifier', 'device-manager-template')}
             >
                 <option value="" disabled>
                     {t('text.select_type')}
@@ -99,7 +99,7 @@ const SidebarAttributeForm = ({
                             maxLength={128}
                             value={selectAttr.static_value}
                             onChange={e => changeAttrValue(e, selectAttr)}
-                            disabled={!ability.can('modifier', 'template')}
+                            disabled={!ability.can('modifier', 'device-manager-template')}
                         >
                             {t('value.label')}
                         </MaterialInput>

@@ -5,7 +5,7 @@ import { Router, hashHistory } from 'react-router';
 import LoginStore from '../../stores/LoginStore';
 import routes from '../../outsideRoutes';
 
-const GatekeeperRenderer = ({authenticated, children}) => {
+const GatekeeperRenderer = ({ authenticated, children }) => {
     if (authenticated) {
         return (
             <span>
@@ -20,7 +20,7 @@ const GatekeeperRenderer = ({authenticated, children}) => {
 
 const Gatekeeper = ({ children }) => (
     <AltContainer store={LoginStore}>
-        <GatekeeperRenderer key={localStorage.jwt}>
+        <GatekeeperRenderer>
             {children}
         </GatekeeperRenderer>
     </AltContainer>

@@ -32,15 +32,15 @@ function ToggleWidget(props) {
     return (
         <div className="box-sh">
             <div className="toggle-icon" onClick={checkAndToggle.bind(this, true)}>
-                <img src="images/icons/pin.png"/>
+                <img src="images/icons/pin.png" />
             </div>
             <div className="toggle-map">
                 <MuiThemeProvider>
-                    <Toggle label="" defaultToggled={props.toggleState} onToggle={props.toggle}/>
+                    <Toggle label="" defaultToggled={props.toggleState} onToggle={props.toggle} />
                 </MuiThemeProvider>
             </div>
             <div className="toggle-icon" onClick={checkAndToggle.bind(this, false)}>
-                <i className="fa fa-th-large" aria-hidden="true"/>
+                <i className="fa fa-th-large" aria-hidden="true" />
             </div>
         </div>
     );
@@ -57,7 +57,7 @@ class MapWrapper extends Component {
             measures: MeasureStore,
             configs: ConfigStore
         }}>
-            <DeviceMapWrapper showFilter={this.props.showFilter} dev_opex={this.props.dev_opex}/>
+            <DeviceMapWrapper showFilter={this.props.showFilter} dev_opex={this.props.dev_opex} />
         </AltContainer>;
     }
 }
@@ -110,7 +110,7 @@ class DeviceOperations extends GenericOperations {
 
     _fetch(cb = null) {
         const res = Object.assign({}, this.paginationParams, this.filterParams);
-        
+
         if (this.filterParams.templates) {
             delete res.templates;
             res.template = this.filterParams.templates;
@@ -141,7 +141,9 @@ class DevicesComponent extends Component {
         this.dev_opex = new DeviceOperations();
     }
 
+
     componentDidMount() {
+        console.log("DevicesComponent");
         this.dev_opex._fetch();
         FormActions.toggleSidebarDevice.defer(false);
     }
@@ -161,7 +163,7 @@ class DevicesComponent extends Component {
         // reload devices for maps
         this.dev_opex.setDefaultFilter();
         if (!newDisplay)
-             this.dev_opex.setFilterToMap();
+            this.dev_opex.setFilterToMap();
 
         this.dev_opex._fetch(() => {
             this.setState({ displayList: newDisplay });
@@ -169,6 +171,9 @@ class DevicesComponent extends Component {
     }
 
     render() {
+        console.log("DevicesComponent render");
+
+
         const detail = 'detail' in this.props.location.query
             ? this.props.location.query.detail
             : null;
@@ -185,17 +190,17 @@ class DevicesComponent extends Component {
             <div className="full-device-area">
                 <AltContainer store={DeviceStore}>
                     <NewPageHeader title={t('devices:title')} subtitle="" icon="device">
-                        <FilterLabel ops={this.dev_opex} text={t('devices:header.filter.alt2')}/>
-                        <Pagination show_pagination={show_pagination} ops={this.dev_opex}/>
+                        <FilterLabel ops={this.dev_opex} text={t('devices:header.filter.alt2')} />
+                        <Pagination show_pagination={show_pagination} ops={this.dev_opex} />
                         <OperationsHeader displayToggle={displayToggle}
-                                          toggleSearchBar={this.toggleSearchBar.bind(this)} t={t}/>
+                            toggleSearchBar={this.toggleSearchBar.bind(this)} t={t} />
                     </NewPageHeader>
                     {this.state.displayList
                         ? <DeviceCardList deviceid={detail} toggle={displayToggle}
-                                          dev_opex={this.dev_opex}
-                                          showFilter={this.state.showFilter}/>
+                            dev_opex={this.dev_opex}
+                            showFilter={this.state.showFilter} />
                         : <MapWrapper toggle={displayToggle} showFilter={this.state.showFilter}
-                                      dev_opex={this.dev_opex}/>}
+                            dev_opex={this.dev_opex} />}
                 </AltContainer>
             </div>
         );
@@ -210,7 +215,7 @@ function OperationsHeader(props) {
                 title={props.t('devices:header.filter.alt')}
                 onClick={props.toggleSearchBar}
             >
-                <i className="fa fa-search"/>
+                <i className="fa fa-search" />
             </div>
             {props.displayToggle}
             <Can do="modifier" on="device">

@@ -1,29 +1,30 @@
 {
-  "title": "Entrar",
-  "alerts": {
-    "empty_pass": "Senha vazia.",
-    "empty_user": "Nome de usuário vazio.",
-    "invalid_user": "Nome de usuário invalido: Use apenas letras (a-z) e números (0-9).",
-    "empty": "Aa senhas devem ser inseridas",
-    "least_8": "A senha deve conter pelo menos 8 caracteres",
-    "password_mismatch": "Senhas não coincidem"
-  },
-  "errors": {
-    "not_found": "Usuário não encontrado ou senha incorreta.",
-    "no_connection": "Sem conexão com o servidor.",
-    "internal_error": "Erro interno, tente novamente mais tarde.",
-    "auth_failed": "Falha de autenticação."
-  },
-  "sign_in_desc": "Entre para iniciar sua sessão",
-  "confirm_pass": "Confirme sua senha",
-  "type_password": "Digite sua senha",
-  "forgot_password": "Esqueceu a senha?",
-  "sent_email": "E-mail enviado",
-  "assoc_username": "Digite o nome de usuário associado à sua conta dojot.",
-  "email_message_body": "Enviamos um email com as instruções e o link para você alterar a senha (lembre-se de verificar sua caixa de spam). Se você não receber o email, repita o processo. ",
-  "password": {
-    "label": "Senha"
-  },
-  "new_password": "Nova Senha",
-  "old_password": "Senha Antiga"
+    "title": "Login",
+    "go_to_login": "Ir para a tela de Login",
+    "alerts": {
+        "empty_pass": "Senha vazia.",
+        "empty_user": "Nome de usuário vazio.",
+        "invalid_user": "Nome de usuário invalido: Use apenas letras (a-z) e números (0-9).",
+        "empty": "Aa senhas devem ser inseridas",
+        "least_8": "A senha deve conter pelo menos 8 caracteres",
+        "password_mismatch": "Senhas não coincidem"
+    },
+    "errors": {
+        "not_found": "Usuário não encontrado ou senha incorreta.",
+        "no_connection": "Sem conexão com o servidor.",
+        "internal_error": "Erro interno, tente novamente mais tarde.",
+        "auth_failed": "Falha de autenticação."
+    },
+    "sign_in_desc": "Entre para iniciar sua sessão",
+    "confirm_pass": "Confirme sua senha",
+    "type_password": "Digite sua senha",
+    "forgot_password": "Esqueceu a senha?",
+    "sent_email": "E-mail enviado",
+    "assoc_username": "Digite o nome de usuário associado à sua conta dojot.",
+    "email_message_body": "Enviamos um email com as instruções e o link para você alterar a senha (lembre-se de verificar sua caixa de spam). Se você não receber o email, repita o processo. ",
+    "password": {
+        "label": "Senha"
+    },
+    "new_password": "Nova Senha",
+    "old_password": "Senha Antiga"
 }

@@ -138,12 +138,12 @@ class SidebarFirmConfig extends Component {
         } = this.props;
         const clssBtn = imageAllowed ? 'fw_btn_pushed' : 'fw_btn_push';
         const { attrs, showFirmwareImage } = this.state;
-        const fwImageModifier = ability.can('modifier', 'fw-image');
+        const fwImageModifier = ability.can('modifier', 'image');
 
         return (
             <Fragment>
                 <Slide right when={showFirmware} duration={300}>
-                    { showFirmware
+                    {showFirmware
                         ? (
                             <div className="sidebar-firmware">
                                 <div className="header">
@@ -179,7 +179,7 @@ class SidebarFirmConfig extends Component {
                                                 {t('firmware:states.short_desc')}
                                             </div>
                                         </div>
-                                        { imageAllowed
+                                        {imageAllowed
                                             ? (
                                                 <div className="image-related-attrs">
                                                     <span>
@@ -242,7 +242,7 @@ class SidebarFirmConfig extends Component {
                                                     </div>
                                                 </div>
                                             )
-                                            : null }
+                                            : null}
                                     </div>
                                     <div className="body-actions">
                                         <div className="body-actions--divider" />
@@ -273,7 +273,7 @@ class SidebarFirmConfig extends Component {
                             images={images}
                             toogleSidebarFirmware={this.toogleSidebarFirmImage}
                         />
-                    ) : null }
+                    ) : null}
             </Fragment>
         );
     }

@@ -48,7 +48,7 @@ const SidebarForm = ({
             );
     };
 
-    const cannotEdit = !ability.can('modifier', 'template');
+    const cannotEdit = !ability.can('modifier', 'device-manager-template');
 
     return (
         <div className="body">

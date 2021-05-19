@@ -1,9 +1,9 @@
-import { baseURL } from 'Src/config';
+import { PROXY_URL } from 'Src/config';
 import util from '../util/util';
 
 class HistoryManager {
     getLastAttrDataByDeviceIDAndAttrLabel(deviceId, attrLabel) {
-        return util.GET(`${baseURL}history/device/${deviceId}/history?lastN=1&attr=${attrLabel}`);
+        return util.GET(`${PROXY_URL}history/device/${deviceId}/history?lastN=1&attr=${attrLabel}`);
     }
 }
 

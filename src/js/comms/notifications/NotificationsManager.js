@@ -1,4 +1,4 @@
-import { baseURL } from 'Src/config';
+import { PROXY_URL } from 'Src/config';
 import util from '../util/util';
 
 class NotificationsManager {
@@ -8,7 +8,7 @@ class NotificationsManager {
      * @returns {*}
      */
     getNotificationsHistory(subject) {
-        return util.GET(`${baseURL}history/notifications/history/?subject="${subject}"`);
+        return util.GET(`${PROXY_URL}history/notifications/history/?subject="${subject}"`);
     }
 }
 

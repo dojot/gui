@@ -1,4 +1,4 @@
-import { baseURL } from 'Src/config';
+import { GQL_URL } from 'Src/config';
 import util from '../util/util';
 
 const GQL_SAVE_PERMISSIONS = `
@@ -31,7 +31,7 @@ class GroupPermissionsManager {
         const req = {
             query: GQL_GET_PERMISSIONS(groupName),
         };
-        return util.POST(`${baseURL}graphql/permissions`, req);
+        return util.POST(`${GQL_URL}/permissions`, req);
     }
 
     /**
@@ -49,7 +49,7 @@ class GroupPermissionsManager {
             query: GQL_SAVE_PERMISSIONS,
             variables: JSON.stringify(variablesConver),
         };
-        return util.POST(`${baseURL}graphql/permissions`, req);
+        return util.POST(`${GQL_URL}/permissions`, req);
     }
 }
 

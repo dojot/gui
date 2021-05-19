@@ -295,7 +295,7 @@ class SidebarImage extends Component {
         }
         device.attrs[templateId].forEach((attr) => {
             if (attr.metadata) {
-                const el = attr.metadata.filter((meta) => meta.label === labelMeta);
+                const el = attr.metadata.filter(meta => meta.label === labelMeta);
                 if (el.length) {
                     relatedLabel = attr.label;
                 } // found the attr
@@ -416,7 +416,7 @@ class SidebarImage extends Component {
             attrs, showFirmwareImage, templateIdAllowedImage, currentImageId, showApplyModal,
         } = this.state;
         const listAvailableOptionsImages = this.createImageOptions();
-        const fwImageModifier = ability.can('modifier', 'fw-image');
+        const fwImageModifier = ability.can('modifier', 'image');
 
         const {
             fwUpdateState: state,
@@ -478,7 +478,7 @@ class SidebarImage extends Component {
                                         <div className="body-form-fw">
                                             <ImgToTransfer
                                                 currentImgId={this.currentImageId}
-                                                onChange={(e) => this.onChangeImage(e)}
+                                                onChange={e => this.onChangeImage(e)}
                                                 options={listAvailableOptionsImages}
                                                 onClickBtnTransfer={this.callUploadImage}
                                                 onClickBtnApply={this.showModalApply}

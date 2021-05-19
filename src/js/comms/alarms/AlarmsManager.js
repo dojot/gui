@@ -1,29 +1,29 @@
-import { baseURL } from 'Src/config';
+import { PROXY_URL } from 'Src/config';
 import util from '../util';
 
 class AlarmsManager {
     getCurrentAlarmsWithoutNamespace() {
-        return util.GET(`${baseURL}alarmmanager/api/alarms/current`);
+        return util.GET(`${PROXY_URL}alarmmanager/api/alarms/current`);
     }
 
     getAllCurrentAlarmsWithNamespace(namespace) {
-        return util.GET(`${baseURL}alarmmanager/api/alarms/current/${namespace}`);
+        return util.GET(`${PROXY_URL}alarmmanager/api/alarms/current/${namespace}`);
     }
 
     getAllCurrentAlarms() {
-        return util.GET(`${baseURL}alarmmanager/api/alarms/current/all`);
+        return util.GET(`${PROXY_URL}alarmmanager/api/alarms/current/all`);
     }
 
     getHistoryWithoutNamespace() {
-        return util.GET(`${baseURL}alarmmanager/api/alarms/history/all`);
+        return util.GET(`${PROXY_URL}alarmmanager/api/alarms/history/all`);
     }
 
     getHistoryWithNamespace(namespace) {
-        return util.GET(`${baseURL}alarmmanager/api/alarms/history/${namespace}`);
+        return util.GET(`${PROXY_URL}alarmmanager/api/alarms/history/${namespace}`);
     }
 
     getNamespaces() {
-        return util.GET(`${baseURL}alarmmanager/api/alarms/namespaces`);
+        return util.GET(`${PROXY_URL}alarmmanager/api/alarms/namespaces`);
     }
 }
 

@@ -14,7 +14,7 @@ import FlowActions from '../../actions/FlowActions';
 import FlowStore from '../../stores/FlowStore';
 import util from '../../comms/util/util';
 import toaster from '../../comms/util/materialize';
-import {baseURL} from "Src/config";
+import { PROXY_URL } from "Src/config";
 
 
 
@@ -47,7 +47,7 @@ class FlowCanvas extends Component {
                     authorization: `Bearer ${util.getToken()}`,
                 },
             };
-            fetch(`${baseURL}flows/nodes`, config)
+            fetch(`${PROXY_URL}flows/nodes`, config)
                 .then(response => response.json())
                 .then((nodes) => {
                     RED.nodes.setNodeList(nodes);
@@ -89,7 +89,7 @@ class FlowCanvas extends Component {
                     authorization: `Bearer ${util.getToken()}`,
                 },
             };
-            fetch(`${baseURL}flows/nodes`, config)
+            fetch(`${PROXY_URL}flows/nodes`, config)
                 .then(response => response.text())
                 .then((dom) => {
                     // this makes me *VERY* sad
@@ -180,7 +180,7 @@ class FlowCanvas extends Component {
                     <div id="editor-stack" />
 
                     <div id="palette" style={this.cannotEdit ? { display: 'none' } : {}}>
-                        <img src={`${baseURL}flows/red/images/spin.svg`} className="palette-spinner hide" />
+                        <img src={`${PROXY_URL}flows/red/images/spin.svg`} className="palette-spinner hide" />
                         <div id="palette-container" className="palette-scroll" />
                         <div id="palette-footer">
                             <a className="palette-button" id="palette-collapse-all" href="#">
@@ -202,7 +202,7 @@ class FlowCanvas extends Component {
 
                 <div id="flows-node-scripts" ref={elem => (this.scriptHolder = elem)} />
 
-                <MutationSchema isSaved={this.props.isSaved} somethingChanged={this.props.somethingChanged}/>
+                <MutationSchema isSaved={this.props.isSaved} somethingChanged={this.props.somethingChanged} />
             </div>
         );
     }
@@ -214,26 +214,23 @@ var observer = {};
 const MutationSchema = ({ somethingChanged, isSaved }) => {
     var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
 
-    if (isSaved === false)
-    {
+    if (isSaved === false) {
         // if we already know that we should save, let's disconnect the observer
         observer.disconnect();
         alreadySetted = false;
     }
-    else if (!alreadySetted)
-    {
+    else if (!alreadySetted) {
         setTimeout(() => {
             setMutation();
         }, 1000);
         alreadySetted = true;
     }
 
-    function setMutation()
-    {
+    function setMutation() {
         var target1 = document.querySelector('#chart>svg');
         //var target2 = document.querySelector('.editor-tray.ui-draggable');
         if (target1) {
-            observer = new MutationObserver(function(mutations) {
+            observer = new MutationObserver(function (mutations) {
                 // sending false means isSaved = false;
                 somethingChanged(false);
             });
@@ -310,9 +307,9 @@ class NameForm extends Component {
         return (
             <Fragment>
                 <div className="col s2 text-right bold">
-                <span>
-                    {t('flows:header.name.label')}
-                </span>
+                    <span>
+                        {t('flows:header.name.label')}
+                    </span>
                 </div>
                 <div className="col s5 ml0 input-field">
                     <input
@@ -344,18 +341,17 @@ class EditFlowComponent extends Component {
         this.removeFlow = this.removeFlow.bind(this);
         this.enableBeforeUnload = this.enableBeforeUnload.bind(this);
         this.disableBeforeUnload = this.disableBeforeUnload.bind(this);
-        this.somethingChanged= this.somethingChanged.bind(this);
+        this.somethingChanged = this.somethingChanged.bind(this);
         this.routerWillLeave = this.routerWillLeave.bind(this);
     }
 
-    somethingChanged(newState)
-    {
+    somethingChanged(newState) {
         const isSaved = newState;
         if (isSaved)
             this.disableBeforeUnload();
         else
             this.enableBeforeUnload();
-        this.setState({isSaved:isSaved});
+        this.setState({ isSaved: isSaved });
     }
 
     enableBeforeUnload() {
@@ -436,7 +432,7 @@ class EditFlowComponent extends Component {
                                     <span>{i18n('flows:alerts.maybe_not_saved')}</span>
                                     <i className="fa fa-exclamation-triangle" ></i>
                                 </div>
-                            </Slide> : null )}
+                            </Slide> : null)}
                         <AltContainer store={FlowStore}>
                             <NameForm t={i18n} />
                         </AltContainer>
@@ -445,17 +441,17 @@ class EditFlowComponent extends Component {
                                 icon=" fa fa-save"
                                 tooltip={i18n('flows:header.save.label')}
                                 click={() => {
-                                    handleSave(this.props.params.flowid, i18n,this.somethingChanged);
+                                    handleSave(this.props.params.flowid, i18n, this.somethingChanged);
                                 }}
                             />
                             {this.props.params.flowid
-                            && (
-                                <DojotBtnRedCircle
-                                    icon="fa fa-trash"
-                                    tooltip={i18n('flows:header.remove.label')}
-                                    click={this.openRemoveModal}
-                                />
-                            )}
+                                && (
+                                    <DojotBtnRedCircle
+                                        icon="fa fa-trash"
+                                        tooltip={i18n('flows:header.remove.label')}
+                                        click={this.openRemoveModal}
+                                    />
+                                )}
                         </Can>
                         <DojotBtnRedCircle
                             to="/flows"

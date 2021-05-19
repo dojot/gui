@@ -1,43 +1,24 @@
 /* eslint-disable */
 import util from '../util';
-import {baseURL} from 'Src/config'
-
-const GQL_LOGIN = (username, passwd) => `
-  mutation {
-  login(username: "${username}", passwd: "${passwd}") {
-    jwt
-    user {
-      username
-      profile
-      permissions {
-        subject
-        actions
-      }
-    }
-  }
-}
-`;
+import { BASE_URL } from 'Src/config'
+import { USER_INFO_URL } from 'Src/config';
 
 class LoginManager {
 
-
-  authenticate(login) {
-    const req = {
-      query: GQL_LOGIN(login.username, login.password),
-    };
-    return util.POST(`${baseURL}graphql-auth/`, req);
+  getUserData() {
+    return util.GET(USER_INFO_URL);
   }
 
   setNewPassword(token) {
-    return util.POST(`${baseURL}auth/password/resetlink?link=${token.token}`, token);
+    return util.POST(`${BASE_URL}auth/password/resetlink?link=${token.token}`, token);
   }
 
   resetPassword(username) {
-    return util.POST(`${baseURL}auth/password/reset/${username}`);
+    return util.POST(`${BASE_URL}auth/password/reset/${username}`);
   }
 
   updatePassword(data) {
-    return util.POST(`${baseURL}auth/password/update/`, data);
+    return util.POST(`${BASE_URL}auth/password/update/`, data);
   }
 }
 

@@ -1,6 +1,6 @@
 import LoginActions from 'Actions/LoginActions';
 import Util from 'Comms/util/util';
-
+import { BASE_URL } from 'Src/config';
 
 const alt = require('../alt');
 
@@ -9,34 +9,32 @@ class LoginStore {
         this.authenticated = false;
         this.error = '';
         this.hasError = false;
+        this.user = undefined;
         this.loading = false;
 
-        const token = Util.getToken();
-        if (token) {
-            this.set(token);
+        const username = Util.getToken();
+        if (username) {
+            this.set(username);
         } else {
             this.reset();
         }
+        console.log('this.authenticated', this.authenticated);
 
         this.bindListeners({
-            handleAuthenticate: LoginActions.AUTHENTICATE,
+            handleGetUserData: LoginActions.GET_USER_DATA,
             handleFailure: LoginActions.LOGIN_FAILED,
             handleSuccess: LoginActions.LOGIN_SUCCESS,
             handleLogout: LoginActions.LOGOUT,
         });
     }
 
-    set(token) {
-        try {
-            this.user = JSON.parse(atob(token.split('.')[1]));
-            Util.setToken(token);
-            this.authenticated = true;
-            this.loading = false;
-        } catch (e) {
-            this.reset();
-            this.hasError = true;
-            this.Irror = 'Invalid session information detected';
-        }
+    set(username) {
+        console.log('username', username);
+        this.user = username;
+        Util.setToken(username); // could be any value;
+        this.authenticated = true;
+        console.log('set   .authenticated', this.authenticated);
+        this.loading = false;
     }
 
     reset() {
@@ -48,15 +46,17 @@ class LoginStore {
         Util.setToken(undefined);
     }
 
-    handleAuthenticate() {
-        this.authenticated = false;
+    handleGetUserData() {
+        // this.authenticated = false;
         this.loading = true;
     }
 
     handleSuccess(login) {
         this.hasError = false;
         this.error = '';
-        this.set(login.jwt);
+        this.set(login);
+        // trying to find other way
+        window.location.href = `${window.location.origin}`;
     }
 
     handleFailure(error) {

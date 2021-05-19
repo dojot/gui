@@ -196,8 +196,17 @@ export const mapPinLightYellow = new L.Icon({
     shadowSize: new L.Point(41, 41),
 });
 
-export const guiVersion = process.env.GUI_VERSION;
 
-export const baseURL = process.env.BASE_URL;
+// export const BASE_URL = process.env.BASE_URL;
+const { GUI_VERSION } = process.env;
+const BASE_URL = `${window.location.origin}/`;
+const APP_URL = process.env.APPLICATION_URL;
+const LOGIN_URL = `${BASE_URL}backstage/v1/auth`;
+const LOGOUT_URL = `${BASE_URL}backstage/v1/auth/revoke`;
+const USER_INFO_URL = `${BASE_URL}backstage/v1/auth/user-info`;
+const GQL_URL = `${BASE_URL}backstage/v1/graphql`;
+const PROXY_URL = `${BASE_URL}backstage/v1/proxy/`;
 
-export const appURL = process.env.APPLICATION_URL;
+export {
+    GUI_VERSION, BASE_URL, APP_URL, LOGIN_URL, LOGOUT_URL, USER_INFO_URL, GQL_URL, PROXY_URL,
+};

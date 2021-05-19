@@ -14,34 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { baseURL } from 'Src/config'
+import { BASE_URL } from 'Src/config'
 var RED = {};
 
-RED.events = (function() {
+RED.events = (function () {
     var handlers = {};
 
-    function on(evt,func) {
-        handlers[evt] = handlers[evt]||[];
+    function on(evt, func) {
+        handlers[evt] = handlers[evt] || [];
         handlers[evt].push(func);
     }
-    function off(evt,func) {
+    function off(evt, func) {
         var handler = handlers[evt];
         if (handler) {
-            for (var i=0;i<handler.length;i++) {
+            for (var i = 0; i < handler.length; i++) {
                 if (handler[i] === func) {
-                    handler.splice(i,1);
+                    handler.splice(i, 1);
                     return;
                 }
             }
         }
     }
-    function emit(evt,arg) {
+    function emit(evt, arg) {
         if (handlers[evt]) {
-            for (var i=0;i<handlers[evt].length;i++) {
+            for (var i = 0; i < handlers[evt].length; i++) {
                 try {
                     handlers[evt][i](arg);
-                } catch(err) {
-                    console.log("RED.events.emit error: ["+evt+"] "+(err.toString()));
+                } catch (err) {
+                    console.log("RED.events.emit error: [" + evt + "] " + (err.toString()));
                     console.log(err);
                 }
             }
@@ -55,27 +55,27 @@ RED.events = (function() {
     }
 })();
 
-RED.i18n = (function() {
+RED.i18n = (function () {
     return {
-        init: function(accessToken, done) {
+        init: function (accessToken, done) {
             i18next
                 .use(i18nextXHRBackend)
                 .init({
                     fallbackLng: 'en',
-                    ns: ["editor","node-red","jsonata","infotips"],
+                    ns: ["editor", "node-red", "jsonata", "infotips"],
                     defaultNS: 'editor',
                     backend: {
-                        loadPath: function(lngs, ns) {
-                            return `${baseURL}flows/locales/${ns}`;
+                        loadPath: function (lngs, ns) {
+                            return `${BASE_URL}flows/locales/${ns}`;
                         },
                         withCredentials: true,
-                        customHeaders: {'Authorization': accessToken},
+                        customHeaders: { 'Authorization': accessToken },
                     },
                     interpolation: {
                         prefix: "__",
                         suffix: "__",
                     }
-                }, function(t) {
+                }, function (t) {
                     jqueryI18next.init(i18next, $, {
                         tName: 't', // --> appends $.t = i18next.t
                         i18nName: 'i18n', // --> appends $.i18n = i18next
@@ -86,14 +86,14 @@ RED.i18n = (function() {
                         useOptionsAttr: false, // see optionsAttr
                         parseDefaultValueFromContent: true // parses default values from content ele.val or ele.text
                     });
-                    RED["_"] = function(key, options) {
+                    RED["_"] = function (key, options) {
                         return i18next.t(key, options);
                     }
 
                     done();
                 });
         },
-        loadCatalog: function(namespace,done) {
+        loadCatalog: function (namespace, done) {
             i18next.loadNamespaces(namespace, done);
         }
     }
@@ -138,7 +138,7 @@ RED.settings = (function () {
         localStorage.removeItem(key);
     };
 
-    var setProperties = function(data) {
+    var setProperties = function (data) {
         for (var prop in loadedSettings) {
             if (loadedSettings.hasOwnProperty(prop) && RED.settings.hasOwnProperty(prop)) {
                 delete RED.settings[prop];
@@ -156,19 +156,19 @@ RED.settings = (function () {
         var accessTokenMatch = /[?&]access_token=(.*?)(?:$|&)/.exec(window.location.search);
         if (accessTokenMatch) {
             var accessToken = accessTokenMatch[1];
-            RED.settings.set("auth-tokens",{access_token: accessToken});
+            RED.settings.set("auth-tokens", { access_token: accessToken });
             window.location.search = "";
         }
 
         $.ajaxSetup({
-            beforeSend: function(jqXHR,settings) {
+            beforeSend: function (jqXHR, settings) {
                 // Only attach auth header for requests to relative paths
                 if (!/^\s*(https?:|\/|\.)/.test(settings.url)) {
                     var auth_tokens = RED.settings.get("auth-tokens");
                     if (auth_tokens) {
-                        jqXHR.setRequestHeader("Authorization","Bearer "+auth_tokens.access_token);
+                        jqXHR.setRequestHeader("Authorization", "Bearer " + auth_tokens.access_token);
                     }
-                    jqXHR.setRequestHeader("Node-RED-API-Version","v2");
+                    jqXHR.setRequestHeader("Node-RED-API-Version", "v2");
                 }
             }
         });
@@ -176,7 +176,7 @@ RED.settings = (function () {
         load(done);
     }
 
-    var load = function(done) {
+    var load = function (done) {
         $.ajax({
             headers: {
                 "Accept": "application/json"
@@ -184,7 +184,7 @@ RED.settings = (function () {
             dataType: "json",
             cache: false,
             //  url: 'http://localhost:1880/settings',
-            url: `${baseURL}flows/settings`,
+            url: `${BASE_URL}flows/settings`,
             success: function (data) {
                 setProperties(data);
                 if (!RED.settings.user || RED.settings.user.anonymous) {
@@ -193,34 +193,34 @@ RED.settings = (function () {
                 // console.log("Node-RED: " + data.version);
                 done();
             },
-            error: function(jqXHR,textStatus,errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 if (jqXHR.status === 401) {
                     if (/[?&]access_token=(.*?)(?:$|&)/.test(window.location.search)) {
                         window.location.search = "";
                     }
-                    RED.user.login(function() { load(done); });
+                    RED.user.login(function () { load(done); });
                 } else {
-                    console.log("Unexpected error:",jqXHR.status,textStatus);
+                    console.log("Unexpected error:", jqXHR.status, textStatus);
                 }
             }
         });
     };
 
-    function theme(property,defaultValue) {
+    function theme(property, defaultValue) {
         if (!RED.settings.editorTheme) {
             return defaultValue;
         }
         var parts = property.split(".");
         var v = RED.settings.editorTheme;
         try {
-            for (var i=0;i<parts.length;i++) {
+            for (var i = 0; i < parts.length; i++) {
                 v = v[parts[i]];
             }
             if (v === undefined) {
                 return defaultValue;
             }
             return v;
-        } catch(err) {
+        } catch (err) {
             return defaultValue;
         }
     }
@@ -234,7 +234,7 @@ RED.settings = (function () {
         theme: theme
     }
 })
-();
+    ();
 
 // RED.user is not needed
 
@@ -243,7 +243,7 @@ RED.settings = (function () {
 // RED.comms is not needed
 
 RED.text = {};
-RED.text.bidi = (function() {
+RED.text.bidi = (function () {
     var textDir = "";
     var LRE = "\u202A",
         RLE = "\u202B",
@@ -251,28 +251,28 @@ RED.text.bidi = (function() {
 
     function isRTLValue(stringValue) {
         var length = stringValue.length;
-        for (var i=0;i<length;i++) {
+        for (var i = 0; i < length; i++) {
             if (isBidiChar(stringValue.charCodeAt(i))) {
                 return true;
             }
-            else if(isLatinChar(stringValue.charCodeAt(i))) {
+            else if (isLatinChar(stringValue.charCodeAt(i))) {
                 return false;
             }
         }
         return false;
     }
 
-    function isBidiChar(c)  {
-        return (c >= 0x05d0 && c <= 0x05ff)||
-            (c >= 0x0600 && c <= 0x065f)||
-            (c >= 0x066a && c <= 0x06ef)||
-            (c >= 0x06fa && c <= 0x07ff)||
-            (c >= 0xfb1d && c <= 0xfdff)||
+    function isBidiChar(c) {
+        return (c >= 0x05d0 && c <= 0x05ff) ||
+            (c >= 0x0600 && c <= 0x065f) ||
+            (c >= 0x066a && c <= 0x06ef) ||
+            (c >= 0x06fa && c <= 0x07ff) ||
+            (c >= 0xfb1d && c <= 0xfdff) ||
             (c >= 0xfe70 && c <= 0xfefc);
     }
 
-    function isLatinChar(c){
-        return (c > 64 && c < 91)||(c > 96 && c < 123)
+    function isLatinChar(c) {
+        return (c > 64 && c < 91) || (c > 96 && c < 123)
     }
 
     /**
@@ -302,7 +302,7 @@ RED.text.bidi = (function() {
      * @param input - the input field
      */
     function prepareInput(input) {
-        input.on("keyup",onInputChange).on("paste",onInputChange).on("cut",onInputChange);
+        input.on("keyup", onInputChange).on("paste", onInputChange).on("cut", onInputChange);
         // Set the initial text direction
         onInputChange.call(input);
     }
@@ -330,10 +330,10 @@ RED.text.bidi = (function() {
      * workspace or sidebar div
      */
     function enforceTextDirectionOnPage() {
-        $("#workspace").find('span.bidiAware').each(function() {
+        $("#workspace").find('span.bidiAware').each(function () {
             $(this).attr("dir", resolveBaseTextDir($(this).html()));
         });
-        $("#sidebar").find('span.bidiAware').each(function() {
+        $("#sidebar").find('span.bidiAware').each(function () {
             $(this).attr("dir", resolveBaseTextDir($(this).text()));
         });
     }
@@ -344,7 +344,7 @@ RED.text.bidi = (function() {
      */
     function setTextDirection(dir) {
         textDir = dir;
-        RED.nodes.eachNode(function(n) { n.dirty = true;});
+        RED.nodes.eachNode(function (n) { n.dirty = true; });
         RED.view.redraw();
         RED.palette.refresh();
         enforceTextDirectionOnPage();
@@ -357,9 +357,9 @@ RED.text.bidi = (function() {
         prepareInput: prepareInput
     }
 })();
-RED.text.format = (function() {
+RED.text.format = (function () {
 
-    var TextSegment = (function() {
+    var TextSegment = (function () {
         var TextSegment = function (obj) {
             this.content = "";
             this.actual = "";
@@ -381,24 +381,24 @@ RED.text.format = (function() {
         return TextSegment;
     })();
 
-    var tools = (function() {
+    var tools = (function () {
         function initBounds(bounds) {
             if (!bounds) {
                 return false;
             }
-            if (typeof(bounds.start) === "undefined") {
+            if (typeof (bounds.start) === "undefined") {
                 bounds.start = "";
             }
-            if (typeof(bounds.end) === "undefined") {
+            if (typeof (bounds.end) === "undefined") {
                 bounds.end = "";
             }
-            if (typeof(bounds.startAfter) !== "undefined") {
+            if (typeof (bounds.startAfter) !== "undefined") {
                 bounds.start = bounds.startAfter;
                 bounds.after = true;
             } else {
                 bounds.after = false;
             }
-            if (typeof(bounds.endBefore) !== "undefined") {
+            if (typeof (bounds.endBefore) !== "undefined") {
                 bounds.end = bounds.endBefore;
                 bounds.before = true;
             } else {
@@ -416,7 +416,7 @@ RED.text.format = (function() {
             } else {
                 bounds.useLength = false;
             }
-            bounds.loops = typeof(bounds.loops) !== "undefined" ? !!bounds.loops : true;
+            bounds.loops = typeof (bounds.loops) !== "undefined" ? !!bounds.loops : true;
             return true;
         }
 
@@ -451,11 +451,11 @@ RED.text.format = (function() {
 
         return {
             handleSubcontents: function (segments, args, subs, origContent, locale) { // jshint unused: false
-                if (!subs.content || typeof(subs.content) !== "string" || subs.content.length === 0) {
+                if (!subs.content || typeof (subs.content) !== "string" || subs.content.length === 0) {
                     return segments;
                 }
                 var sLoops = true;
-                if (typeof(subs.loops) !== "undefined") {
+                if (typeof (subs.loops) !== "undefined") {
                     sLoops = !!subs.loops;
                 }
                 for (var j = 0; true; j++) {
@@ -587,8 +587,8 @@ RED.text.format = (function() {
                         hArgs[prop] = args[prop];
                     }
                 }
-                for (var i =  0; i < cases.length; i++) {
-                    if (!cases[i].handler || typeof(cases[i].handler.handle) !== "function") {
+                for (var i = 0; i < cases.length; i++) {
+                    if (!cases[i].handler || typeof (cases[i].handler.handle) !== "function") {
                         cases[i].handler = args.commonHandler;
                     }
                     if (cases[i].args) {
@@ -648,7 +648,7 @@ RED.text.format = (function() {
                 for (i = 0; i < segments.length; i++) {
                     if (segments[i].keep) {
                         segments[i].keep = false;
-                    } else if(segments[i].inPoints){
+                    } else if (segments[i].inPoints) {
                         segments[i].isParsed = true;
                         segments[i].inPoints = false;
                     }
@@ -658,7 +658,7 @@ RED.text.format = (function() {
         };
     })();
 
-    var common = (function() {
+    var common = (function () {
         return {
             handle: function (content, segments, args, locale) {
                 var cases = [];
@@ -666,15 +666,15 @@ RED.text.format = (function() {
                     cases = args.cases;
                 }
                 var points = [];
-                if (typeof(args.points) !== "undefined") {
+                if (typeof (args.points) !== "undefined") {
                     if (Array.isArray(args.points)) {
                         points = args.points;
-                    } else if (typeof(args.points) === "string") {
+                    } else if (typeof (args.points) === "string") {
                         points = args.points.split("");
                     }
                 }
                 var subs = {};
-                if (typeof(args.subs) === "object") {
+                if (typeof (args.subs) === "object") {
                     subs = args.subs;
                 }
                 var aBounds = [];
@@ -691,7 +691,7 @@ RED.text.format = (function() {
         };
     })();
 
-    var misc = (function() {
+    var misc = (function () {
         var isBidiLocale = function (locale) {
             var lang = !locale ? "" : locale.split("-")[0];
             if (!lang || lang.length < 2) {
@@ -728,9 +728,9 @@ RED.text.format = (function() {
                 locale = locale.toLowerCase();
                 if (isBidiLocale(locale)) {
                     var full = locale.split("-");
-                    return {lang: full[0], country: full[1] ? full[1] : ""};
+                    return { lang: full[0], country: full[1] ? full[1] : "" };
                 }
-                return {lang: "not-bidi"};
+                return { lang: "not-bidi" };
             },
 
             removeUcc: function (text) {
@@ -792,7 +792,7 @@ RED.text.format = (function() {
                             result += c;
                     }
                 }
-                var mark = typeof(guiDir) === "undefined" || !((/^(rtl|ltr)$/i).test(guiDir)) ? "" :
+                var mark = typeof (guiDir) === "undefined" || !((/^(rtl|ltr)$/i).test(guiDir)) ? "" :
                     guiDir === "rtl" ? RLO : LRO;
                 return mark + result + (mark === "" ? "" : PDF);
             },
@@ -807,12 +807,12 @@ RED.text.format = (function() {
             },
 
             hideTags: function (text) {
-                return text.replace(/<xmp>/g,"").replace(/<\/xmp>/g,"");
+                return text.replace(/<xmp>/g, "").replace(/<\/xmp>/g, "");
             }
         };
     })();
 
-    var stext = (function() {
+    var stext = (function () {
         var stt = {};
 
         // args
@@ -832,7 +832,7 @@ RED.text.format = (function() {
         }
 
         function checkArguments(fArgs, fullCheck) {
-            var args = Array.isArray(fArgs)? fArgs[0] : fArgs;
+            var args = Array.isArray(fArgs) ? fArgs[0] : fArgs;
             if (!args.guiDir) {
                 args.guiDir = "ltr";
             }
@@ -842,7 +842,7 @@ RED.text.format = (function() {
             if (!fullCheck) {
                 return args;
             }
-            if (typeof(args.points) === "undefined") {
+            if (typeof (args.points) === "undefined") {
                 args.points = [];
             }
             if (!args.cases) {
@@ -857,7 +857,7 @@ RED.text.format = (function() {
 
         function parseStructure(content, fArgs, locale) {
             if (!content || !fArgs) {
-                return new TextSegment({content: ""});
+                return new TextSegment({ content: "" });
             }
             var args = checkArguments(fArgs, true);
             var segments = [new TextSegment(
@@ -867,7 +867,7 @@ RED.text.format = (function() {
                     localGui: args.dir
                 })];
             var parse = common.handle;
-            if (args.handler && typeof(args.handler) === "function") {
+            if (args.handler && typeof (args.handler) === "function") {
                 parse = args.handler.handle;
             }
             parse(content, segments, args, locale);
@@ -896,8 +896,8 @@ RED.text.format = (function() {
                     if (lDir !== "" && prevDir === "") {
                         result += (lDir === "rtl" ? misc.RLE : misc.LRE);
                     }
-                    else if(prevDir !== "" && (lDir === "" || lDir !== prevDir || stop)) {
-                        result += misc.PDF + (i == segments.length - 1 && lDir !== ""? "" : args.dir === "rtl" ? misc.RLM : misc.LRM);
+                    else if (prevDir !== "" && (lDir === "" || lDir !== prevDir || stop)) {
+                        result += misc.PDF + (i == segments.length - 1 && lDir !== "" ? "" : args.dir === "rtl" ? misc.RLM : misc.LRM);
                         if (lDir !== "") {
                             result += (lDir === "rtl" ? misc.RLE : misc.LRE);
                         }
@@ -914,10 +914,10 @@ RED.text.format = (function() {
                         checkedDir = misc.getDirection(segments[i].content, dir, args.guiDir, true);
                     }
                     if (i < segments.length - 1) {
-                        var locDir = lDir && segments[i+1].localGui? lDir : args.dir;
+                        var locDir = lDir && segments[i + 1].localGui ? lDir : args.dir;
                         result += locDir === "rtl" ? misc.RLM : misc.LRM;
                     }
-                    else if(prevDir !== "") {
+                    else if (prevDir !== "") {
                         result += misc.PDF;
                     }
                     prevDir = lDir;
@@ -945,8 +945,8 @@ RED.text.format = (function() {
                     if (lDir !== "" && prevDir === "") {
                         result += "<bdi dir='" + (lDir === "rtl" ? "rtl" : "ltr") + "'>";
                     }
-                    else if(prevDir !== "" && (lDir === "" || lDir !== prevDir || stop)) {
-                        result += "</bdi>" + (i == segments.length - 1 && lDir !== ""? "" : "<span style='unicode-bidi: embed; direction: " + (args.dir === "rtl" ? "rtl" : "ltr") + ";'></span>");
+                    else if (prevDir !== "" && (lDir === "" || lDir !== prevDir || stop)) {
+                        result += "</bdi>" + (i == segments.length - 1 && lDir !== "" ? "" : "<span style='unicode-bidi: embed; direction: " + (args.dir === "rtl" ? "rtl" : "ltr") + ";'></span>");
                         if (lDir !== "") {
                             result += "<bdi dir='" + (lDir === "rtl" ? "rtl" : "ltr") + "'>";
                         }
@@ -965,10 +965,10 @@ RED.text.format = (function() {
                         checkedDir = misc.getDirection(segments[i].content, dir, args.guiDir, true);
                     }
                     if (i < segments.length - 1) {
-                        var locDir = lDir && segments[i+1].localGui? lDir : args.dir;
+                        var locDir = lDir && segments[i + 1].localGui ? lDir : args.dir;
                         result += "<span style='unicode-bidi: embed; direction: " + (locDir === "rtl" ? "rtl" : "ltr") + ";'></span>";
                     }
-                    else if(prevDir !== "") {
+                    else if (prevDir !== "") {
                         result += "</bdi>";
                     }
                     prevDir = lDir;
@@ -998,28 +998,28 @@ RED.text.format = (function() {
         return stt;
     })();
 
-    var breadcrumb = (function() {
+    var breadcrumb = (function () {
         return {
             format: function (text, args, isRtl, isHtml, locale, parseOnly) {
                 var fArgs =
-                    {
-                        guiDir: isRtl ? "rtl" : "ltr",
-                        dir: args.dir ? args.dir : isRtl ? "rtl" : "ltr",
-                        subs: {
-                            content: ">",
-                            continued: true,
-                            subDir: isRtl ? "rtl" : "ltr"
-                        },
-                        cases: [{
-                            args: {
-                                subs: {
-                                    content: "<",
-                                    continued: true,
-                                    subDir: isRtl ? "ltr" : "rtl"
-                                }
+                {
+                    guiDir: isRtl ? "rtl" : "ltr",
+                    dir: args.dir ? args.dir : isRtl ? "rtl" : "ltr",
+                    subs: {
+                        content: ">",
+                        continued: true,
+                        subDir: isRtl ? "rtl" : "ltr"
+                    },
+                    cases: [{
+                        args: {
+                            subs: {
+                                content: "<",
+                                continued: true,
+                                subDir: isRtl ? "ltr" : "rtl"
                             }
-                        }]
-                    };
+                        }
+                    }]
+                };
 
                 if (!parseOnly) {
                     return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
@@ -1031,15 +1031,15 @@ RED.text.format = (function() {
         };
     })();
 
-    var comma = (function() {
+    var comma = (function () {
         return {
             format: function (text, args, isRtl, isHtml, locale, parseOnly) {
                 var fArgs =
-                    {
-                        guiDir: isRtl ? "rtl" : "ltr",
-                        dir: "ltr",
-                        points: ","
-                    };
+                {
+                    guiDir: isRtl ? "rtl" : "ltr",
+                    dir: "ltr",
+                    points: ","
+                };
                 if (!parseOnly) {
                     return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
                 }
@@ -1050,7 +1050,7 @@ RED.text.format = (function() {
         };
     })();
 
-    var email = (function() {
+    var email = (function () {
         function getDir(text, locale) {
             if (misc.getLocaleDetails(locale).lang !== "ar") {
                 return "ltr";
@@ -1065,124 +1065,26 @@ RED.text.format = (function() {
         return {
             format: function (text, args, isRtl, isHtml, locale, parseOnly) {
                 var fArgs =
-                    {
-                        guiDir: isRtl ? "rtl" : "ltr",
-                        dir: getDir(text, locale),
-                        points: "<>.:,;@",
-                        cases: [{
-                            handler: common,
-                            args: {
-                                bounds: [{
-                                    startAfter: "\"",
-                                    endBefore: "\""
-                                },
-                                    {
-                                        startAfter: "(",
-                                        endBefore: ")"
-                                    }
-                                ],
-                                points: ""
-                            }
-                        }]
-                    };
-                if (!parseOnly) {
-                    return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
-                }
-                else {
-                    return stext.parseStructure(text, fArgs, !!isHtml, locale);
-                }
-            }
-        };
-    })();
-
-    var filepath = (function() {
-        return {
-            format: function (text, args, isRtl, isHtml, locale, parseOnly) {
-                var fArgs =
-                    {
-                        guiDir: isRtl ? "rtl" : "ltr",
-                        dir: "ltr",
-                        points: "/\\:."
-                    };
-                if (!parseOnly) {
-                    return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
-                }
-                else {
-                    return stext.parseStructure(text, fArgs, !!isHtml, locale);
-                }
-            }
-        };
-    })();
-
-    var formula = (function() {
-        return {
-            format: function (text, args, isRtl, isHtml, locale, parseOnly) {
-                var fArgs =
-                    {
-                        guiDir: isRtl ? "rtl" : "ltr",
-                        dir: "ltr",
-                        points: " /%^&[]<>=!?~:.,|()+-*{}",
-                    };
-                if (!parseOnly) {
-                    return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
-                }
-                else {
-                    return stext.parseStructure(text, fArgs, !!isHtml, locale);
-                }
-            }
-        };
-    })();
-
-    var sql = (function() {
-        return {
-            format: function (text, args, isRtl, isHtml, locale, parseOnly) {
-                var fArgs =
-                    {
-                        guiDir: isRtl ? "rtl" : "ltr",
-                        dir: "ltr",
-                        points: "\t!#%&()*+,-./:;<=>?|[]{}",
-                        cases: [{
-                            handler: common,
-                            args: {
-                                bounds: [{
-                                    startAfter: "/*",
-                                    endBefore: "*/"
-                                },
-                                    {
-                                        startAfter: "--",
-                                        end: "\n"
-                                    },
-                                    {
-                                        startAfter: "--"
-                                    }
-                                ]
-                            }
-                        },
-                            {
-                                handler: common,
-                                args: {
-                                    subs: {
-                                        content: " ",
-                                        continued: true
-                                    }
-                                }
+                {
+                    guiDir: isRtl ? "rtl" : "ltr",
+                    dir: getDir(text, locale),
+                    points: "<>.:,;@",
+                    cases: [{
+                        handler: common,
+                        args: {
+                            bounds: [{
+                                startAfter: "\"",
+                                endBefore: "\""
                             },
                             {
-                                handler: common,
-                                args: {
-                                    bounds: [{
-                                        startAfter: "'",
-                                        endBefore: "'"
-                                    },
-                                        {
-                                            startAfter: "\"",
-                                            endBefore: "\""
-                                        }
-                                    ]
-                                }
+                                startAfter: "(",
+                                endBefore: ")"
                             }
-                        ]
-                    };
+                            ],
+                            points: ""
+                        }
+                    }]
+                };
                 if (!parseOnly) {
                     return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
                 }
@@ -1193,15 +1095,15 @@ RED.text.format = (function() {
         };
     })();
 
-    var underscore = (function() {
+    var filepath = (function () {
         return {
             format: function (text, args, isRtl, isHtml, locale, parseOnly) {
                 var fArgs =
-                    {
-                        guiDir: isRtl ? "rtl" : "ltr",
-                        dir: "ltr",
-                        points: "_"
-                    };
+                {
+                    guiDir: isRtl ? "rtl" : "ltr",
+                    dir: "ltr",
+                    points: "/\\:."
+                };
                 if (!parseOnly) {
                     return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
                 }
@@ -1212,15 +1114,15 @@ RED.text.format = (function() {
         };
     })();
 
-    var url = (function() {
+    var formula = (function () {
         return {
             format: function (text, args, isRtl, isHtml, locale, parseOnly) {
                 var fArgs =
-                    {
-                        guiDir: isRtl ? "rtl" : "ltr",
-                        dir: "ltr",
-                        points: ":?#/@.[]="
-                    };
+                {
+                    guiDir: isRtl ? "rtl" : "ltr",
+                    dir: "ltr",
+                    points: " /%^&[]<>=!?~:.,|()+-*{}",
+                };
                 if (!parseOnly) {
                     return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
                 }
@@ -1231,50 +1133,56 @@ RED.text.format = (function() {
         };
     })();
 
-    var word = (function() {
+    var sql = (function () {
         return {
             format: function (text, args, isRtl, isHtml, locale, parseOnly) {
                 var fArgs =
+                {
+                    guiDir: isRtl ? "rtl" : "ltr",
+                    dir: "ltr",
+                    points: "\t!#%&()*+,-./:;<=>?|[]{}",
+                    cases: [{
+                        handler: common,
+                        args: {
+                            bounds: [{
+                                startAfter: "/*",
+                                endBefore: "*/"
+                            },
+                            {
+                                startAfter: "--",
+                                end: "\n"
+                            },
+                            {
+                                startAfter: "--"
+                            }
+                            ]
+                        }
+                    },
                     {
-                        guiDir: isRtl ? "rtl" : "ltr",
-                        dir: args.dir ? args.dir : isRtl ? "rtl" : "ltr",
-                        points: " ,.!?;:",
-                    };
-                if (!parseOnly) {
-                    return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
-                }
-                else {
-                    return stext.parseStructure(text, fArgs, !!isHtml, locale);
-                }
-            }
-        };
-    })();
-
-    var xpath = (function() {
-        return {
-            format: function (text, args, isRtl, isHtml, locale, parseOnly) {
-                var fArgs =
-                    {
-                        guiDir: isRtl ? "rtl" : "ltr",
-                        dir: "ltr",
-                        points: " /[]<>=!:@.|()+-*",
-                        cases: [{
-                            handler: common,
-                            args: {
-                                bounds: [{
-                                    startAfter: "\"",
-                                    endBefore: "\""
-                                },
-                                    {
-                                        startAfter: "'",
-                                        endBefore: "'"
-                                    }
-                                ],
-                                points: ""
+                        handler: common,
+                        args: {
+                            subs: {
+                                content: " ",
+                                continued: true
                             }
                         }
-                        ]
-                    };
+                    },
+                    {
+                        handler: common,
+                        args: {
+                            bounds: [{
+                                startAfter: "'",
+                                endBefore: "'"
+                            },
+                            {
+                                startAfter: "\"",
+                                endBefore: "\""
+                            }
+                            ]
+                        }
+                    }
+                    ]
+                };
                 if (!parseOnly) {
                     return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
                 }
@@ -1285,12 +1193,104 @@ RED.text.format = (function() {
         };
     })();
 
-    var custom = (function() {
+    var underscore = (function () {
+        return {
+            format: function (text, args, isRtl, isHtml, locale, parseOnly) {
+                var fArgs =
+                {
+                    guiDir: isRtl ? "rtl" : "ltr",
+                    dir: "ltr",
+                    points: "_"
+                };
+                if (!parseOnly) {
+                    return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
+                }
+                else {
+                    return stext.parseStructure(text, fArgs, !!isHtml, locale);
+                }
+            }
+        };
+    })();
+
+    var url = (function () {
+        return {
+            format: function (text, args, isRtl, isHtml, locale, parseOnly) {
+                var fArgs =
+                {
+                    guiDir: isRtl ? "rtl" : "ltr",
+                    dir: "ltr",
+                    points: ":?#/@.[]="
+                };
+                if (!parseOnly) {
+                    return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
+                }
+                else {
+                    return stext.parseStructure(text, fArgs, !!isHtml, locale);
+                }
+            }
+        };
+    })();
+
+    var word = (function () {
+        return {
+            format: function (text, args, isRtl, isHtml, locale, parseOnly) {
+                var fArgs =
+                {
+                    guiDir: isRtl ? "rtl" : "ltr",
+                    dir: args.dir ? args.dir : isRtl ? "rtl" : "ltr",
+                    points: " ,.!?;:",
+                };
+                if (!parseOnly) {
+                    return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
+                }
+                else {
+                    return stext.parseStructure(text, fArgs, !!isHtml, locale);
+                }
+            }
+        };
+    })();
+
+    var xpath = (function () {
+        return {
+            format: function (text, args, isRtl, isHtml, locale, parseOnly) {
+                var fArgs =
+                {
+                    guiDir: isRtl ? "rtl" : "ltr",
+                    dir: "ltr",
+                    points: " /[]<>=!:@.|()+-*",
+                    cases: [{
+                        handler: common,
+                        args: {
+                            bounds: [{
+                                startAfter: "\"",
+                                endBefore: "\""
+                            },
+                            {
+                                startAfter: "'",
+                                endBefore: "'"
+                            }
+                            ],
+                            points: ""
+                        }
+                    }
+                    ]
+                };
+                if (!parseOnly) {
+                    return stext.parseAndDisplayStructure(text, fArgs, !!isHtml, locale);
+                }
+                else {
+                    return stext.parseStructure(text, fArgs, !!isHtml, locale);
+                }
+            }
+        };
+    })();
+
+    var custom = (function () {
         return {
             format: function (text, args, isRtl, isHtml, locale, parseOnly) {
                 var hArgs = {};
                 var prop = "";
-                var sArgs = Array.isArray(args)? args[0] : args;
+                var sArgs = Array.isArray(args) ? args[0] : args;
                 for (prop in sArgs) {
                     if (sArgs.hasOwnProperty(prop)) {
                         hArgs[prop] = sArgs[prop];
@@ -1308,8 +1308,8 @@ RED.text.format = (function() {
         };
     })();
 
-    var message = (function() {
-        var params = {msgLang: "en", msgDir: "", phLang: "", phDir: "", phPacking: ["{","}"], phStt: {type: "none", args: {}}, guiDir: ""};
+    var message = (function () {
+        var params = { msgLang: "en", msgDir: "", phLang: "", phDir: "", phPacking: ["{", "}"], phStt: { type: "none", args: {} }, guiDir: "" };
         var parametersChecked = false;
 
         function getDirectionOfLanguage(lang) {
@@ -1323,20 +1323,20 @@ RED.text.format = (function() {
             if (obj.msgDir.length === 0) {
                 obj.msgDir = getDirectionOfLanguage(obj.msgLang);
             }
-            obj.msgDir = obj.msgDir !== "ltr" && obj.msgDir !== "rtl" && obj.msgDir != "auto"? "ltr" : obj.msgDir;
+            obj.msgDir = obj.msgDir !== "ltr" && obj.msgDir !== "rtl" && obj.msgDir != "auto" ? "ltr" : obj.msgDir;
             if (obj.guiDir.length === 0) {
                 obj.guiDir = obj.msgDir;
             }
-            obj.guiDir = obj.guiDir !== "rtl"? "ltr" : "rtl";
+            obj.guiDir = obj.guiDir !== "rtl" ? "ltr" : "rtl";
             if (obj.phDir.length === 0) {
-                obj.phDir = obj.phLang.length === 0? obj.msgDir : getDirectionOfLanguage(obj.phLang);
+                obj.phDir = obj.phLang.length === 0 ? obj.msgDir : getDirectionOfLanguage(obj.phLang);
             }
-            obj.phDir = obj.phDir !== "ltr" && obj.phDir !== "rtl" && obj.phDir != "auto"? "ltr" : obj.phDir;
+            obj.phDir = obj.phDir !== "ltr" && obj.phDir !== "rtl" && obj.phDir != "auto" ? "ltr" : obj.phDir;
             if (typeof (obj.phPacking) === "string") {
                 obj.phPacking = obj.phPacking.split("");
             }
             if (obj.phPacking.length < 2) {
-                obj.phPacking = ["{","}"];
+                obj.phPacking = ["{", "}"];
             }
         }
 
@@ -1361,7 +1361,7 @@ RED.text.format = (function() {
                 var spLength = params.phPacking[0].length;
                 var epLength = params.phPacking[1].length;
                 if (arguments.length > 0) {
-                    var last = arguments[arguments.length-1];
+                    var last = arguments[arguments.length - 1];
                     if (typeof (last) === "boolean") {
                         isHtml = last;
                         hasHtmlArg = true;
@@ -1376,51 +1376,51 @@ RED.text.format = (function() {
                 while ((m = re.exec(txt)) != null) {
                     var lastIndex = txt.indexOf(m[0]) + m[0].length;
                     if (lastIndex > m[0].length) {
-                        tSegments.push({text: txt.substring(0, lastIndex - m[0].length), ph: false});
+                        tSegments.push({ text: txt.substring(0, lastIndex - m[0].length), ph: false });
                     }
-                    tSegments.push({text: m[0], ph: true});
+                    tSegments.push({ text: m[0], ph: true });
                     offset += lastIndex;
                     txt = txt.substring(lastIndex, txt.length);
                 }
                 if (offset < text.length) {
-                    tSegments.push({text: text.substring(offset, text.length), ph: false});
+                    tSegments.push({ text: text.substring(offset, text.length), ph: false });
                 }
                 //Parameters
                 var tArgs = [];
-                for (var i = 1; i < arguments.length - (hasHtmlArg? 1 : 0); i++) {
+                for (var i = 1; i < arguments.length - (hasHtmlArg ? 1 : 0); i++) {
                     var arg = arguments[i];
                     var checkArr = arg;
                     var inLoop = false;
                     var indArr = 0;
                     if (Array.isArray(checkArr)) {
                         arg = checkArr[0];
-                        if (typeof(arg) === "undefined") {
+                        if (typeof (arg) === "undefined") {
                             continue;
                         }
                         inLoop = true;
                     }
                     do {
                         if (typeof (arg) === "string") {
-                            tArgs.push({text: arg, dir: params.phDir, stt: params.stt});
+                            tArgs.push({ text: arg, dir: params.phDir, stt: params.stt });
                         }
-                        else if(typeof (arg) === "boolean") {
+                        else if (typeof (arg) === "boolean") {
                             isHtml = arg;
                         }
-                        else if(typeof (arg) === "object") {
+                        else if (typeof (arg) === "object") {
                             tArgs.push(arg);
                             if (!arg.hasOwnProperty("text")) {
-                                tArgs[tArgs.length-1].text = "{???}";
+                                tArgs[tArgs.length - 1].text = "{???}";
                             }
                             if (!arg.hasOwnProperty("dir") || arg.dir.length === 0) {
-                                tArgs[tArgs.length-1].dir = params.phDir;
+                                tArgs[tArgs.length - 1].dir = params.phDir;
                             }
                             if (!arg.hasOwnProperty("stt") || (typeof (arg.stt) === "string" && arg.stt.length === 0) ||
                                 (typeof (arg.stt) === "object" && Object.keys(arg.stt).length === 0)) {
-                                tArgs[tArgs.length-1].stt = params.phStt;
+                                tArgs[tArgs.length - 1].stt = params.phStt;
                             }
                         }
                         else {
-                            tArgs.push({text: "" + arg, dir: params.phDir, stt: params.phStt});
+                            tArgs.push({ text: "" + arg, dir: params.phDir, stt: params.phStt });
                         }
                         if (inLoop) {
                             indArr++;
@@ -1431,19 +1431,19 @@ RED.text.format = (function() {
                                 arg = checkArr[indArr];
                             }
                         }
-                    } while(inLoop);
+                    } while (inLoop);
                 }
                 //Indexing
                 var segments = [];
                 for (i = 0; i < tSegments.length; i++) {
                     var t = tSegments[i];
                     if (!t.ph) {
-                        segments.push(new TextSegment({content: t.text, textDirection: params.msgDir}));
+                        segments.push(new TextSegment({ content: t.text, textDirection: params.msgDir }));
                     }
                     else {
                         var ind = parseInt(t.text.substring(spLength, t.text.length - epLength));
                         if (isNaN(ind) || ind >= tArgs.length) {
-                            segments.push(new TextSegment({content: t.text, textDirection: params.msgDir}));
+                            segments.push(new TextSegment({ content: t.text, textDirection: params.msgDir }));
                             continue;
                         }
                         var sttType = "none";
@@ -1454,24 +1454,24 @@ RED.text.format = (function() {
                             if (typeof (tArgs[ind].stt) === "string") {
                                 sttType = tArgs[ind].stt;
                             }
-                            else if(tArgs[ind].stt.hasOwnProperty("type")) {
+                            else if (tArgs[ind].stt.hasOwnProperty("type")) {
                                 sttType = tArgs[ind].stt.type;
                             }
                         }
                         if (sttType.toLowerCase() !== "none") {
-                            var sttSegs =  getHandler(sttType).format(tArgs[ind].text, tArgs[ind].stt.args || {},
+                            var sttSegs = getHandler(sttType).format(tArgs[ind].text, tArgs[ind].stt.args || {},
                                 params.msgDir === "rtl", false, params.msgLang, true);
                             for (var j = 0; j < sttSegs.length; j++) {
                                 segments.push(sttSegs[j]);
                             }
-                            segments.push(new TextSegment({isVisible: false}));
+                            segments.push(new TextSegment({ isVisible: false }));
                         }
                         else {
-                            segments.push(new TextSegment({content: tArgs[ind].text, textDirection: (tArgs[ind].dir? tArgs[ind].dir : params.phDir)}));
+                            segments.push(new TextSegment({ content: tArgs[ind].text, textDirection: (tArgs[ind].dir ? tArgs[ind].dir : params.phDir) }));
                         }
                     }
                 }
-                var result =  stext.displayStructure(segments, {guiDir: params.guiDir, dir: params.msgDir}, isHtml);
+                var result = stext.displayStructure(segments, { guiDir: params.guiDir, dir: params.msgDir }, isHtml);
                 return result;
             }
         };
@@ -1481,25 +1481,25 @@ RED.text.format = (function() {
 
     function getHandler(type) {
         switch (type) {
-            case "breadcrumb" :
+            case "breadcrumb":
                 return breadcrumb;
-            case "comma" :
+            case "comma":
                 return comma;
-            case "email" :
+            case "email":
                 return email;
-            case "filepath" :
+            case "filepath":
                 return filepath;
-            case "formula" :
+            case "formula":
                 return formula;
-            case "sql" :
+            case "sql":
                 return sql;
-            case "underscore" :
+            case "underscore":
                 return underscore;
-            case "url" :
+            case "url":
                 return url;
-            case "word" :
+            case "word":
                 return word;
-            case "xpath" :
+            case "xpath":
                 return xpath;
             default:
                 return custom;
@@ -1508,7 +1508,7 @@ RED.text.format = (function() {
 
     function isInputEventSupported(element) {
         var agent = window.navigator.userAgent;
-        if (agent.indexOf("MSIE") >=0 || agent.indexOf("Trident") >=0 || agent.indexOf("Edge") >=0) {
+        if (agent.indexOf("MSIE") >= 0 || agent.indexOf("Trident") >= 0 || agent.indexOf("Edge") >= 0) {
             return false;
         }
         var checked = document.createElement(element.tagName);
@@ -1532,14 +1532,14 @@ RED.text.format = (function() {
             event.initEvent('TF', true, true);
         }
         element.setAttribute("data-tf-type", type);
-        var sArgs = args === "undefined"? "{}" : JSON.stringify(Array.isArray(args)? args[0] : args);
+        var sArgs = args === "undefined" ? "{}" : JSON.stringify(Array.isArray(args) ? args[0] : args);
         element.setAttribute("data-tf-args", sArgs);
         var dir = "ltr";
         if (isRtl === "undefined") {
             if (element.dir) {
                 dir = element.dir;
             }
-            else if(element.style && element.style.direction) {
+            else if (element.style && element.style.direction) {
                 dir = element.style.direction;
             }
             isRtl = dir.toLowerCase() === "rtl";
@@ -1548,16 +1548,16 @@ RED.text.format = (function() {
         element.setAttribute("data-tf-locale", misc.getLocaleDetails(locale).lang);
         if (isInputEventSupported(element)) {
             var ehandler = element.oninput;
-            element.oninput = function(event) {
+            element.oninput = function (event) {
                 displayWithStructure(event.target);
             };
         }
         else {
-            element.onkeyup = function(e) {
+            element.onkeyup = function (e) {
                 displayWithStructure(e.target);
                 element.dispatchEvent(event);
             };
-            element.onmouseup = function(e) {
+            element.onmouseup = function (e) {
                 displayWithStructure(e.target);
                 element.dispatchEvent(event);
             };
@@ -1594,22 +1594,22 @@ RED.text.format = (function() {
         if (startNode.nodeType === 3) {
             textOffset += startOffset;
         }
-        tempRange.setStart(element,0);
+        tempRange.setStart(element, 0);
         tempRange.setEndBefore(startNode);
         var div = document.createElement('div');
         div.appendChild(tempRange.cloneContents());
         textOffset += div.textContent.length;
 
         element.innerHTML = getHandler(element.getAttribute("data-tf-type")).
-        format(txt, JSON.parse(element.getAttribute("data-tf-args")), (element.getAttribute("data-tf-dir") === "true"? true : false),
-            true, element.getAttribute("data-tf-locale"));
+            format(txt, JSON.parse(element.getAttribute("data-tf-args")), (element.getAttribute("data-tf-dir") === "true" ? true : false),
+                true, element.getAttribute("data-tf-locale"));
         var parent = element;
         var node = element;
         var newOffset = 0;
         var inEnd = false;
         selection.removeAllRanges();
-        range.setStart(element,0);
-        range.setEnd(element,0);
+        range.setStart(element, 0);
+        range.setEnd(element, 0);
         while (node) {
             if (node.nodeType === 3) {
                 if (newOffset + node.nodeValue.length >= textOffset) {
@@ -1621,7 +1621,7 @@ RED.text.format = (function() {
                     node = node.nextSibling;
                 }
             }
-            else if(node.hasChildNodes()) {
+            else if (node.hasChildNodes()) {
                 parent = node;
                 node = parent.firstChild;
                 continue;
@@ -1683,7 +1683,7 @@ RED.state = {
     IMPORT_DRAGGING: 8,
     QUICK_JOINING: 9
 }
-RED.nodes = (function() {
+RED.nodes = (function () {
 
     var node_defs = {};
     var nodes = [];
@@ -1691,7 +1691,7 @@ RED.nodes = (function() {
     var links = [];
     var defaultWorkspace;
     var workspaces = {};
-    var workspacesOrder =[];
+    var workspacesOrder = [];
     var subflows = {};
     var loadedFlowVersion = null;
 
@@ -1701,10 +1701,10 @@ RED.nodes = (function() {
 
     function setDirty(d) {
         dirty = d;
-        RED.events.emit("nodes:change",{dirty:dirty});
+        RED.events.emit("nodes:change", { dirty: dirty });
     }
 
-    var registry = (function() {
+    var registry = (function () {
         var moduleList = {};
         var nodeList = [];
         var nodeSets = {};
@@ -1712,54 +1712,54 @@ RED.nodes = (function() {
         var nodeDefinitions = {};
 
         var exports = {
-            getModule: function(module) {
+            getModule: function (module) {
                 return moduleList[module];
             },
-            getNodeSetForType: function(nodeType) {
+            getNodeSetForType: function (nodeType) {
                 return exports.getNodeSet(typeToId[nodeType]);
             },
-            getModuleList: function() {
+            getModuleList: function () {
                 return moduleList;
             },
-            getNodeList: function() {
+            getNodeList: function () {
                 return nodeList;
             },
-            getNodeTypes: function() {
+            getNodeTypes: function () {
                 return Object.keys(nodeDefinitions);
             },
-            setNodeList: function(list) {
+            setNodeList: function (list) {
                 nodeList = [];
-                for(var i=0;i<list.length;i++) {
+                for (var i = 0; i < list.length; i++) {
                     var ns = list[i];
                     exports.addNodeSet(ns);
                 }
             },
-            addNodeSet: function(ns) {
+            addNodeSet: function (ns) {
                 ns.added = false;
                 nodeSets[ns.id] = ns;
-                for (var j=0;j<ns.types.length;j++) {
+                for (var j = 0; j < ns.types.length; j++) {
                     typeToId[ns.types[j]] = ns.id;
                 }
                 nodeList.push(ns);
 
                 moduleList[ns.module] = moduleList[ns.module] || {
-                    name:ns.module,
-                    version:ns.version,
-                    local:ns.local,
-                    sets:{}
+                    name: ns.module,
+                    version: ns.version,
+                    local: ns.local,
+                    sets: {}
                 };
                 moduleList[ns.module].sets[ns.name] = ns;
-                RED.events.emit("registry:node-set-added",ns);
+                RED.events.emit("registry:node-set-added", ns);
             },
-            removeNodeSet: function(id) {
+            removeNodeSet: function (id) {
                 var ns = nodeSets[id];
-                for (var j=0;j<ns.types.length;j++) {
+                for (var j = 0; j < ns.types.length; j++) {
                     delete typeToId[ns.types[j]];
                 }
                 delete nodeSets[id];
-                for (var i=0;i<nodeList.length;i++) {
+                for (var i = 0; i < nodeList.length; i++) {
                     if (nodeList[i].id === id) {
-                        nodeList.splice(i,1);
+                        nodeList.splice(i, 1);
                         break;
                     }
                 }
@@ -1767,23 +1767,23 @@ RED.nodes = (function() {
                 if (Object.keys(moduleList[ns.module].sets).length === 0) {
                     delete moduleList[ns.module];
                 }
-                RED.events.emit("registry:node-set-removed",ns);
+                RED.events.emit("registry:node-set-removed", ns);
                 return ns;
             },
-            getNodeSet: function(id) {
+            getNodeSet: function (id) {
                 return nodeSets[id];
             },
-            enableNodeSet: function(id) {
+            enableNodeSet: function (id) {
                 var ns = nodeSets[id];
                 ns.enabled = true;
-                RED.events.emit("registry:node-set-enabled",ns);
+                RED.events.emit("registry:node-set-enabled", ns);
             },
-            disableNodeSet: function(id) {
+            disableNodeSet: function (id) {
                 var ns = nodeSets[id];
                 ns.enabled = false;
-                RED.events.emit("registry:node-set-disabled",ns);
+                RED.events.emit("registry:node-set-disabled", ns);
             },
-            registerNodeType: function(nt,def) {
+            registerNodeType: function (nt, def) {
                 nodeDefinitions[nt] = def;
                 if (def.category != "subflows") {
                     def.set = nodeSets[typeToId[nt]];
@@ -1796,27 +1796,27 @@ RED.nodes = (function() {
                     } else {
                         ns = def.set.id;
                     }
-                    def["_"] = function() {
+                    def["_"] = function () {
                         var args = Array.prototype.slice.call(arguments, 0);
                         if (args[0].indexOf(":") === -1) {
-                            args[0] = ns+":"+args[0];
+                            args[0] = ns + ":" + args[0];
                         }
-                        return RED._.apply(null,args);
+                        return RED._.apply(null, args);
                     }
 
                     // TODO: too tightly coupled into palette UI
                 }
-                RED.events.emit("registry:node-type-added",nt);
+                RED.events.emit("registry:node-type-added", nt);
             },
-            removeNodeType: function(nt) {
-                if (nt.substring(0,8) != "subflow:") {
+            removeNodeType: function (nt) {
+                if (nt.substring(0, 8) != "subflow:") {
                     // NON-NLS - internal debug message
-                    throw new Error("this api is subflow only. called with:",nt);
+                    throw new Error("this api is subflow only. called with:", nt);
                 }
                 delete nodeDefinitions[nt];
-                RED.events.emit("registry:node-type-removed",nt);
+                RED.events.emit("registry:node-type-removed", nt);
             },
-            getNodeType: function(nt) {
+            getNodeType: function (nt) {
                 return nodeDefinitions[nt];
             }
         };
@@ -1824,7 +1824,7 @@ RED.nodes = (function() {
     })();
 
     function getID() {
-        return ('A' + (1+Math.random()*4294967295).toString(16)).replace('.','');
+        return ('A' + (1 + Math.random() * 4294967295).toString(16)).replace('.', '');
     }
 
     function addNode(n) {
@@ -1837,7 +1837,7 @@ RED.nodes = (function() {
             n.ports = [];
             if (n.wires && (n.wires.length > n.outputs)) { n.outputs = n.wires.length; }
             if (n.outputs) {
-                for (var i=0;i<n.outputs;i++) {
+                for (var i = 0; i < n.outputs; i++) {
                     n.ports.push(i);
                 }
             }
@@ -1845,14 +1845,14 @@ RED.nodes = (function() {
             updateConfigNodeUsers(n);
             if (n._def.category == "subflows" && typeof n.i === "undefined") {
                 var nextId = 0;
-                RED.nodes.eachNode(function(node) {
-                    nextId = Math.max(nextId,node.i||0);
+                RED.nodes.eachNode(function (node) {
+                    nextId = Math.max(nextId, node.i || 0);
                 });
-                n.i = nextId+1;
+                n.i = nextId + 1;
             }
             nodes.push(n);
         }
-        RED.events.emit('nodes:add',n);
+        RED.events.emit('nodes:add', n);
     }
     function addLink(l) {
         links.push(l);
@@ -1878,14 +1878,14 @@ RED.nodes = (function() {
         if (id in configNodes) {
             node = configNodes[id];
             delete configNodes[id];
-            RED.events.emit('nodes:remove',node);
+            RED.events.emit('nodes:remove', node);
             RED.workspaces.refresh();
         } else {
             node = getNode(id);
             if (node) {
-                nodes.splice(nodes.indexOf(node),1);
-                removedLinks = links.filter(function(l) { return (l.source === node) || (l.target === node); });
-                removedLinks.forEach(function(l) {links.splice(links.indexOf(l), 1); });
+                nodes.splice(nodes.indexOf(node), 1);
+                removedLinks = links.filter(function (l) { return (l.source === node) || (l.target === node); });
+                removedLinks.forEach(function (l) { links.splice(links.indexOf(l), 1); });
                 var updatedConfigNode = false;
                 for (var d in node._def.defaults) {
                     if (node._def.defaults.hasOwnProperty(d)) {
@@ -1901,7 +1901,7 @@ RED.nodes = (function() {
                                         removedNodes.push(configNode);
                                     } else {
                                         var users = configNode.users;
-                                        users.splice(users.indexOf(node),1);
+                                        users.splice(users.indexOf(node), 1);
                                     }
                                 }
                             }
@@ -1911,19 +1911,19 @@ RED.nodes = (function() {
                 if (updatedConfigNode) {
                     RED.workspaces.refresh();
                 }
-                RED.events.emit('nodes:remove',node);
+                RED.events.emit('nodes:remove', node);
             }
         }
         if (node && node._def.onremove) {
             node._def.onremove.call(n);
         }
-        return {links:removedLinks,nodes:removedNodes};
+        return { links: removedLinks, nodes: removedNodes };
     }
 
     function removeLink(l) {
         var index = links.indexOf(l);
         if (index != -1) {
-            links.splice(index,1);
+            links.splice(index, 1);
         }
     }
 
@@ -1931,7 +1931,7 @@ RED.nodes = (function() {
         workspaces[ws.id] = ws;
         ws._def = {
             defaults: {
-                label: {value:""}
+                label: { value: "" }
             }
         };
 
@@ -1942,19 +1942,19 @@ RED.nodes = (function() {
     }
     function removeWorkspace(id) {
         delete workspaces[id];
-        workspacesOrder.splice(workspacesOrder.indexOf(id),1);
+        workspacesOrder.splice(workspacesOrder.indexOf(id), 1);
 
         var removedNodes = [];
         var removedLinks = [];
         var n;
         var node;
-        for (n=0;n<nodes.length;n++) {
+        for (n = 0; n < nodes.length; n++) {
             node = nodes[n];
             if (node.z == id) {
                 removedNodes.push(node);
             }
         }
-        for(n in configNodes) {
+        for (n in configNodes) {
             if (configNodes.hasOwnProperty(n)) {
                 node = configNodes[n];
                 if (node.z == id) {
@@ -1962,51 +1962,51 @@ RED.nodes = (function() {
                 }
             }
         }
-        for (n=0;n<removedNodes.length;n++) {
+        for (n = 0; n < removedNodes.length; n++) {
             var result = removeNode(removedNodes[n].id);
             removedLinks = removedLinks.concat(result.links);
         }
-        return {nodes:removedNodes,links:removedLinks};
+        return { nodes: removedNodes, links: removedLinks };
     }
 
     function addSubflow(sf, createNewIds) {
         if (createNewIds) {
-            var subflowNames = Object.keys(subflows).map(function(sfid) {
+            var subflowNames = Object.keys(subflows).map(function (sfid) {
                 return subflows[sfid].name;
             });
 
             subflowNames.sort();
             var copyNumber = 1;
             var subflowName = sf.name;
-            subflowNames.forEach(function(name) {
+            subflowNames.forEach(function (name) {
                 if (subflowName == name) {
                     copyNumber++;
-                    subflowName = sf.name+" ("+copyNumber+")";
+                    subflowName = sf.name + " (" + copyNumber + ")";
                 }
             });
             sf.name = subflowName;
         }
         sf._def = {
-            defaults:{},
-            icon:"subflow.png",
+            defaults: {},
+            icon: "subflow.png",
             category: "subflows",
             color: "#da9",
             inputs: sf.in.length,
             outputs: sf.out.length
         }
         subflows[sf.id] = sf;
-        RED.nodes.registerType("subflow:"+sf.id, {
-            defaults:{name:{value:""}},
+        RED.nodes.registerType("subflow:" + sf.id, {
+            defaults: { name: { value: "" } },
             info: sf.info,
-            icon:"subflow.png",
+            icon: "subflow.png",
             category: "subflows",
             inputs: sf.in.length,
             outputs: sf.out.length,
             color: "#da9",
-            label: function() { return this.name||RED.nodes.subflow(sf.id).name },
-            labelStyle: function() { return this.name?"node_label_italic":""; },
-            paletteLabel: function() { return RED.nodes.subflow(sf.id).name },
-            set:{
+            label: function () { return this.name || RED.nodes.subflow(sf.id).name },
+            labelStyle: function () { return this.name ? "node_label_italic" : ""; },
+            paletteLabel: function () { return RED.nodes.subflow(sf.id).name },
+            set: {
                 module: "node-red"
             }
         });
@@ -2018,11 +2018,11 @@ RED.nodes = (function() {
     }
     function removeSubflow(sf) {
         delete subflows[sf.id];
-        registry.removeNodeType("subflow:"+sf.id);
+        registry.removeNodeType("subflow:" + sf.id);
     }
 
-    function subflowContains(sfid,nodeid) {
-        for (var i=0;i<nodes.length;i++) {
+    function subflowContains(sfid, nodeid) {
+        for (var i = 0; i < nodes.length; i++) {
             var node = nodes[i];
             if (node.z === sfid) {
                 var m = /^subflow:(.+)$/.exec(node.type);
@@ -2030,7 +2030,7 @@ RED.nodes = (function() {
                     if (m[1] === nodeid) {
                         return true;
                     } else {
-                        var result = subflowContains(m[1],nodeid);
+                        var result = subflowContains(m[1], nodeid);
                         if (result) {
                             return true;
                         }
@@ -2046,14 +2046,14 @@ RED.nodes = (function() {
         visited[node.id] = true;
         var nns = [node];
         var stack = [node];
-        while(stack.length !== 0) {
+        while (stack.length !== 0) {
             var n = stack.shift();
-            var childLinks = links.filter(function(d) { return (d.source === n) || (d.target === n);});
-            for (var i=0;i<childLinks.length;i++) {
-                var child = (childLinks[i].source === n)?childLinks[i].target:childLinks[i].source;
+            var childLinks = links.filter(function (d) { return (d.source === n) || (d.target === n); });
+            for (var i = 0; i < childLinks.length; i++) {
+                var child = (childLinks[i].source === n) ? childLinks[i].target : childLinks[i].source;
                 var id = child.id;
                 if (!id) {
-                    id = child.direction+":"+child.i;
+                    id = child.direction + ":" + child.i;
                 }
                 if (!visited[id]) {
                     visited[id] = true;
@@ -2100,15 +2100,15 @@ RED.nodes = (function() {
                     node[d] = n[d];
                 }
             }
-            if(exportCreds && n.credentials) {
+            if (exportCreds && n.credentials) {
                 var credentialSet = {};
                 node.credentials = {};
                 for (var cred in n._def.credentials) {
                     if (n._def.credentials.hasOwnProperty(cred)) {
                         if (n._def.credentials[cred].type == 'password') {
                             if (!n.credentials._ ||
-                                n.credentials["has_"+cred] != n.credentials._["has_"+cred] ||
-                                (n.credentials["has_"+cred] && n.credentials[cred])) {
+                                n.credentials["has_" + cred] != n.credentials._["has_" + cred] ||
+                                (n.credentials["has_" + cred] && n.credentials[cred])) {
                                 credentialSet[cred] = n.credentials[cred];
                             }
                         } else if (n.credentials[cred] != null && (!n.credentials._ || n.credentials[cred] != n.credentials._[cred])) {
@@ -2125,11 +2125,11 @@ RED.nodes = (function() {
             node.x = n.x;
             node.y = n.y;
             node.wires = [];
-            for(var i=0;i<n.outputs;i++) {
+            for (var i = 0; i < n.outputs; i++) {
                 node.wires.push([]);
             }
-            var wires = links.filter(function(d){return d.source === n;});
-            for (var j=0;j<wires.length;j++) {
+            var wires = links.filter(function (d) { return d.source === n; });
+            for (var j = 0; j < wires.length; j++) {
                 var w = wires[j];
                 if (w.target.type != "subflow") {
                     node.wires[w.sourcePort].push(w.target.id);
@@ -2148,25 +2148,25 @@ RED.nodes = (function() {
         node.in = [];
         node.out = [];
 
-        n.in.forEach(function(p) {
-            var nIn = {x:p.x,y:p.y,wires:[]};
-            var wires = links.filter(function(d) { return d.source === p });
-            for (var i=0;i<wires.length;i++) {
+        n.in.forEach(function (p) {
+            var nIn = { x: p.x, y: p.y, wires: [] };
+            var wires = links.filter(function (d) { return d.source === p });
+            for (var i = 0; i < wires.length; i++) {
                 var w = wires[i];
                 if (w.target.type != "subflow") {
-                    nIn.wires.push({id:w.target.id})
+                    nIn.wires.push({ id: w.target.id })
                 }
             }
             node.in.push(nIn);
         });
-        n.out.forEach(function(p,c) {
-            var nOut = {x:p.x,y:p.y,wires:[]};
-            var wires = links.filter(function(d) { return d.target === p });
-            for (i=0;i<wires.length;i++) {
+        n.out.forEach(function (p, c) {
+            var nOut = { x: p.x, y: p.y, wires: [] };
+            var wires = links.filter(function (d) { return d.target === p });
+            for (i = 0; i < wires.length; i++) {
                 if (wires[i].source.type != "subflow") {
-                    nOut.wires.push({id:wires[i].source.id,port:wires[i].sourcePort})
+                    nOut.wires.push({ id: wires[i].source.id, port: wires[i].sourcePort })
                 } else {
-                    nOut.wires.push({id:n.id,port:0})
+                    nOut.wires.push({ id: n.id, port: 0 })
                 }
             }
             node.out.push(nOut);
@@ -2182,15 +2182,15 @@ RED.nodes = (function() {
         var nns = [];
         var exportedConfigNodes = {};
         var exportedSubflows = {};
-        for (var n=0;n<set.length;n++) {
+        for (var n = 0; n < set.length; n++) {
             var node = set[n];
-            if (node.type.substring(0,8) == "subflow:") {
+            if (node.type.substring(0, 8) == "subflow:") {
                 var subflowId = node.type.substring(8);
                 if (!exportedSubflows[subflowId]) {
                     exportedSubflows[subflowId] = true;
                     var subflow = getSubflow(subflowId);
                     var subflowSet = [subflow];
-                    RED.nodes.eachNode(function(n) {
+                    RED.nodes.eachNode(function (n) {
                         if (n.z == subflowId) {
                             subflowSet.push(n);
                         }
@@ -2231,7 +2231,7 @@ RED.nodes = (function() {
         }
         var nns = [];
         var i;
-        for (i=0;i<workspacesOrder.length;i++) {
+        for (i = 0; i < workspacesOrder.length; i++) {
             if (workspaces[workspacesOrder[i]].type == "tab") {
                 nns.push(convertWorkspace(workspaces[workspacesOrder[i]]));
             }
@@ -2246,25 +2246,25 @@ RED.nodes = (function() {
                 nns.push(convertNode(configNodes[i], exportCredentials));
             }
         }
-        for (i=0;i<nodes.length;i++) {
+        for (i = 0; i < nodes.length; i++) {
             var node = nodes[i];
             nns.push(convertNode(node, exportCredentials));
         }
         return nns;
     }
 
-    function checkForMatchingSubflow(subflow,subflowNodes) {
+    function checkForMatchingSubflow(subflow, subflowNodes) {
         var i;
         var match = null;
         try {
-            RED.nodes.eachSubflow(function(sf) {
+            RED.nodes.eachSubflow(function (sf) {
                 if (sf.name != subflow.name ||
                     sf.info != subflow.info ||
                     sf.in.length != subflow.in.length ||
                     sf.out.length != subflow.out.length) {
                     return;
                 }
-                var sfNodes = RED.nodes.filterNodes({z:sf.id});
+                var sfNodes = RED.nodes.filterNodes({ z: sf.id });
                 if (sfNodes.length != subflowNodes.length) {
                     return;
                 }
@@ -2275,10 +2275,10 @@ RED.nodes = (function() {
                 var exportableSubflowNodes = JSON.stringify(subflowNodeSet);
                 var exportableSFNodes = JSON.stringify(createExportableNodeSet(sfNodeSet));
                 var nodeMap = {};
-                for (i=0;i<sfNodes.length;i++) {
-                    exportableSubflowNodes = exportableSubflowNodes.replace(new RegExp("\""+subflowNodes[i].id+"\"","g"),'"'+sfNodes[i].id+'"');
+                for (i = 0; i < sfNodes.length; i++) {
+                    exportableSubflowNodes = exportableSubflowNodes.replace(new RegExp("\"" + subflowNodes[i].id + "\"", "g"), '"' + sfNodes[i].id + '"');
                 }
-                exportableSubflowNodes = exportableSubflowNodes.replace(new RegExp("\""+subflow.id+"\"","g"),'"'+sf.id+'"');
+                exportableSubflowNodes = exportableSubflowNodes.replace(new RegExp("\"" + subflow.id + "\"", "g"), '"' + sf.id + '"');
 
                 if (exportableSubflowNodes !== exportableSFNodes) {
                     return;
@@ -2287,12 +2287,12 @@ RED.nodes = (function() {
                 match = sf;
                 throw new Error();
             });
-        } catch(err) {
+        } catch (err) {
             console.log(err.stack);
         }
         return match;
     }
-    function compareNodes(nodeA,nodeB,idMustMatch) {
+    function compareNodes(nodeA, nodeB, idMustMatch) {
         if (idMustMatch && nodeA.id != nodeB.id) {
             return false;
         }
@@ -2321,7 +2321,7 @@ RED.nodes = (function() {
         return true;
     }
 
-    function importNodes(newNodesObj,createNewIds,createMissingWorkspace) {
+    function importNodes(newNodesObj, createNewIds, createMissingWorkspace) {
         var i;
         var n;
         var newNodes;
@@ -2332,8 +2332,8 @@ RED.nodes = (function() {
             }
             try {
                 newNodes = JSON.parse(newNodesObj);
-            } catch(err) {
-                var e = new Error(RED._("clipboard.invalidFlow",{message:err.message}));
+            } catch (err) {
+                var e = new Error(RED._("clipboard.invalidFlow", { message: err.message }));
                 e.code = "NODE_RED";
                 throw e;
             }
@@ -2348,15 +2348,15 @@ RED.nodes = (function() {
             initialLoad = JSON.parse(JSON.stringify(newNodes));
         }
         var unknownTypes = [];
-        for (i=0;i<newNodes.length;i++) {
+        for (i = 0; i < newNodes.length; i++) {
             n = newNodes[i];
             // TODO: remove workspace in next release+1
             if (n.type != "workspace" &&
                 n.type != "tab" &&
                 n.type != "subflow" &&
                 !registry.getNodeType(n.type) &&
-                n.type.substring(0,8) != "subflow:" &&
-                unknownTypes.indexOf(n.type)==-1) {
+                n.type.substring(0, 8) != "subflow:" &&
+                unknownTypes.indexOf(n.type) == -1) {
                 unknownTypes.push(n.type);
                 console.log("found unknownTypes: " + n.type);
             }
@@ -2367,15 +2367,15 @@ RED.nodes = (function() {
 
         }
         if (unknownTypes.length > 0) {
-            var typeList = "<ul><li>"+unknownTypes.join("</li><li>")+"</li></ul>";
-            var type = "type"+(unknownTypes.length > 1?"s":"");
-            RED.notify("<strong>"+RED._("clipboard.importUnrecognised",{count:unknownTypes.length})+"</strong>"+typeList,"error",false,10000);
+            var typeList = "<ul><li>" + unknownTypes.join("</li><li>") + "</li></ul>";
+            var type = "type" + (unknownTypes.length > 1 ? "s" : "");
+            RED.notify("<strong>" + RED._("clipboard.importUnrecognised", { count: unknownTypes.length }) + "</strong>" + typeList, "error", false, 10000);
         }
 
         var activeWorkspace = RED.workspaces.active();
         //TODO: check the z of the subflow instance and check _that_ if it exists
         var activeSubflow = getSubflow(activeWorkspace);
-        for (i=0;i<newNodes.length;i++) {
+        for (i = 0; i < newNodes.length; i++) {
             var m = /^subflow:(.+)$/.exec(newNodes[i].type);
             if (m) {
                 var subflowId = m[1];
@@ -2385,7 +2385,7 @@ RED.nodes = (function() {
                     if (subflowId === parent.id) {
                         err = new Error(RED._("notification.errors.cannotAddSubflowToItself"));
                     }
-                    if (subflowContains(subflowId,parent.id)) {
+                    if (subflowContains(subflowId, parent.id)) {
                         err = new Error(RED._("notification.errors.cannotAddCircularReference"));
                     }
                     if (err) {
@@ -2412,7 +2412,7 @@ RED.nodes = (function() {
         var d;
 
         // Find all tabs and subflow templates
-        for (i=0;i<newNodes.length;i++) {
+        for (i = 0; i < newNodes.length; i++) {
             n = newNodes[i];
             // TODO: remove workspace in next release+1
             if (n.type === "workspace" || n.type === "tab") {
@@ -2432,7 +2432,7 @@ RED.nodes = (function() {
                 RED.workspaces.add(n);
                 new_workspaces.push(n);
             } else if (n.type === "subflow") {
-                var matchingSubflow = checkForMatchingSubflow(n,nodeZmap[n.id]);
+                var matchingSubflow = checkForMatchingSubflow(n, nodeZmap[n.id]);
                 if (matchingSubflow) {
                     subflow_blacklist[n.id] = matchingSubflow;
                 } else {
@@ -2442,14 +2442,14 @@ RED.nodes = (function() {
                         n.id = nid;
                     }
                     // TODO: handle createNewIds - map old to new subflow ids
-                    n.in.forEach(function(input,i) {
+                    n.in.forEach(function (input, i) {
                         input.type = "subflow";
                         input.direction = "in";
                         input.z = n.id;
                         input.i = i;
                         input.id = getID();
                     });
-                    n.out.forEach(function(output,i) {
+                    n.out.forEach(function (output, i) {
                         output.type = "subflow";
                         output.direction = "out";
                         output.z = n.id;
@@ -2457,14 +2457,14 @@ RED.nodes = (function() {
                         output.id = getID();
                     });
                     new_subflows.push(n);
-                    addSubflow(n,createNewIds);
+                    addSubflow(n, createNewIds);
                 }
             }
         }
 
         // Add a tab if there isn't one there already
         if (defaultWorkspace == null) {
-            defaultWorkspace = { type:"tab", id:getID(), label:RED._('workspace.defaultName',{number:1})};
+            defaultWorkspace = { type: "tab", id: getID(), label: RED._('workspace.defaultName', { number: 1 }) };
             addWorkspace(defaultWorkspace);
             RED.workspaces.add(defaultWorkspace);
             new_workspaces.push(defaultWorkspace);
@@ -2472,7 +2472,7 @@ RED.nodes = (function() {
         }
 
         // Find all config nodes and add them
-        for (i=0;i<newNodes.length;i++) {
+        for (i = 0; i < newNodes.length; i++) {
             n = newNodes[i];
             def = registry.getNodeType(n.type);
             if (def && def.category == "config") {
@@ -2488,7 +2488,7 @@ RED.nodes = (function() {
                             if (!workspaces[n.z]) {
                                 if (createMissingWorkspace) {
                                     if (missingWorkspace === null) {
-                                        missingWorkspace = RED.workspaces.add(null,true);
+                                        missingWorkspace = RED.workspaces.add(null, true);
                                         new_workspaces.push(missingWorkspace);
                                     }
                                     n.z = missingWorkspace.id;
@@ -2505,7 +2505,7 @@ RED.nodes = (function() {
                             // Check the config nodes on n.z
                             for (var cn in configNodes) {
                                 if (configNodes.hasOwnProperty(cn)) {
-                                    if (configNodes[cn].z === n.z && compareNodes(configNodes[cn],n,false)) {
+                                    if (configNodes[cn].z === n.z && compareNodes(configNodes[cn], n, false)) {
                                         existingConfigNode = configNodes[cn];
                                         node_map[n.id] = configNodes[cn];
                                         break;
@@ -2518,7 +2518,7 @@ RED.nodes = (function() {
                 }
 
                 if (!existingConfigNode) { //} || !compareNodes(existingConfigNode,n,true) || existingConfigNode._def.exclusive || existingConfigNode.z !== n.z) {
-                    configNode = {id:n.id, z:n.z, type:n.type, users:[], _config:{}};
+                    configNode = { id: n.id, z: n.z, type: n.type, users: [], _config: {} };
                     for (d in def.defaults) {
                         if (def.defaults.hasOwnProperty(d)) {
                             configNode[d] = n[d];
@@ -2546,13 +2546,13 @@ RED.nodes = (function() {
         }
 
         // Find regular flow nodes and subflow instances
-        for (i=0;i<newNodes.length;i++) {
+        for (i = 0; i < newNodes.length; i++) {
             n = newNodes[i];
             // TODO: remove workspace in next release+1
             if (n.type !== "workspace" && n.type !== "tab" && n.type !== "subflow") {
                 def = registry.getNodeType(n.type);
                 if (!def || def.category != "config") {
-                    var node = {x:n.x,y:n.y,z:n.z,type:0,wires:n.wires,changed:false,_config:{}};
+                    var node = { x: n.x, y: n.y, z: n.z, type: 0, wires: n.wires, changed: false, _config: {} };
                     if (createNewIds) {
                         if (subflow_blacklist[n.z]) {
                             continue;
@@ -2563,7 +2563,7 @@ RED.nodes = (function() {
                             if (!workspaces[node.z]) {
                                 if (createMissingWorkspace) {
                                     if (missingWorkspace === null) {
-                                        missingWorkspace = RED.workspaces.add(null,true);
+                                        missingWorkspace = RED.workspaces.add(null, true);
                                         new_workspaces.push(missingWorkspace);
                                     }
                                     node.z = missingWorkspace.id;
@@ -2578,7 +2578,7 @@ RED.nodes = (function() {
                         if (node.z == null || (!workspaces[node.z] && !subflow_map[node.z])) {
                             if (createMissingWorkspace) {
                                 if (missingWorkspace === null) {
-                                    missingWorkspace = RED.workspaces.add(null,true);
+                                    missingWorkspace = RED.workspaces.add(null, true);
                                     new_workspaces.push(missingWorkspace);
                                 }
                                 node.z = missingWorkspace.id;
@@ -2589,12 +2589,12 @@ RED.nodes = (function() {
                     }
                     node.type = n.type;
                     node._def = def;
-                    if (n.type.substring(0,7) === "subflow") {
+                    if (n.type.substring(0, 7) === "subflow") {
                         var parentId = n.type.split(":")[1];
-                        var subflow = subflow_blacklist[parentId]||subflow_map[parentId]||getSubflow(parentId);
+                        var subflow = subflow_blacklist[parentId] || subflow_map[parentId] || getSubflow(parentId);
                         if (createNewIds) {
                             parentId = subflow.id;
-                            node.type = "subflow:"+parentId;
+                            node.type = "subflow:" + parentId;
                             node._def = registry.getNodeType(node.type);
                             delete node.i;
                         }
@@ -2605,23 +2605,23 @@ RED.nodes = (function() {
                         if (!node._def) {
                             if (node.x && node.y) {
                                 node._def = {
-                                    color:"#fee",
+                                    color: "#fee",
                                     defaults: {},
-                                    label: "unknown: "+n.type,
+                                    label: "unknown: " + n.type,
                                     labelStyle: "node_label_italic",
-                                    outputs: n.outputs||n.wires.length,
+                                    outputs: n.outputs || n.wires.length,
                                     set: registry.getNodeSet("node-red/unknown")
                                 }
                             } else {
                                 node._def = {
-                                    category:"config",
+                                    category: "config",
                                     set: registry.getNodeSet("node-red/unknown")
                                 };
                                 node.users = [];
                             }
                             var orig = {};
                             for (var p in n) {
-                                if (n.hasOwnProperty(p) && p!="x" && p!="y" && p!="z" && p!="id" && p!="wires") {
+                                if (n.hasOwnProperty(p) && p != "x" && p != "y" && p != "z" && p != "id" && p != "wires") {
                                     orig[p] = n[p];
                                 }
                             }
@@ -2630,8 +2630,8 @@ RED.nodes = (function() {
                             node.type = "unknown";
                         }
                         if (node._def.category != "config") {
-                            node.inputs = n.inputs||node._def.inputs;
-                            node.outputs = n.outputs||node._def.outputs;
+                            node.inputs = n.inputs || node._def.inputs;
+                            node.outputs = n.outputs || node._def.outputs;
                             for (d in node._def.defaults) {
                                 if (node._def.defaults.hasOwnProperty(d)) {
                                     node[d] = n[d];
@@ -2662,26 +2662,26 @@ RED.nodes = (function() {
         // TODO: make this a part of the node definition so it doesn't have to
         //       be hardcoded here
         var nodeTypeArrayReferences = {
-            "catch":"scope",
-            "status":"scope",
-            "link in":"links",
-            "link out":"links"
+            "catch": "scope",
+            "status": "scope",
+            "link in": "links",
+            "link out": "links"
         }
 
         // Remap all wires and config node references
-        for (i=0;i<new_nodes.length;i++) {
+        for (i = 0; i < new_nodes.length; i++) {
             n = new_nodes[i];
             if (n.wires) {
-                for (var w1=0;w1<n.wires.length;w1++) {
-                    var wires = (n.wires[w1] instanceof Array)?n.wires[w1]:[n.wires[w1]];
-                    for (var w2=0;w2<wires.length;w2++) {
+                for (var w1 = 0; w1 < n.wires.length; w1++) {
+                    var wires = (n.wires[w1] instanceof Array) ? n.wires[w1] : [n.wires[w1]];
+                    for (var w2 = 0; w2 < wires.length; w2++) {
                         if (node_map.hasOwnProperty(wires[w2])) {
                             if (n.z === node_map[wires[w2]].z) {
-                                var link = {source:n,sourcePort:w1,target:node_map[wires[w2]]};
+                                var link = { source: n, sourcePort: w1, target: node_map[wires[w2]] };
                                 addLink(link);
                                 new_links.push(link);
                             } else {
-                                console.log("Warning: dropping link that crosses tabs:",n.id,"->",node_map[wires[w2]].id);
+                                console.log("Warning: dropping link that crosses tabs:", n.id, "->", node_map[wires[w2]].id);
                             }
                         }
                     }
@@ -2697,7 +2697,7 @@ RED.nodes = (function() {
                             configNode.users.push(n);
                         }
                     } else if (nodeTypeArrayReferences.hasOwnProperty(n.type) && nodeTypeArrayReferences[n.type] === d3 && n[d3] !== undefined && n[d3] !== null) {
-                        for (var j = 0;j<n[d3].length;j++) {
+                        for (var j = 0; j < n[d3].length; j++) {
                             if (node_map[n[d3][j]]) {
                                 n[d3][j] = node_map[n[d3][j]].id;
                             }
@@ -2709,7 +2709,7 @@ RED.nodes = (function() {
             // If importing into a subflow, ensure an outbound-link doesn't
             // get added
             if (activeSubflow && /^link /.test(n.type) && n.links) {
-                n.links = n.links.filter(function(id) {
+                n.links = n.links.filter(function (id) {
                     var otherNode = RED.nodes.node(id);
                     return (otherNode && otherNode.z === activeWorkspace)
                 });
@@ -2719,23 +2719,23 @@ RED.nodes = (function() {
             // we can validate the node
             RED.editor.validateNode(n);
         }
-        for (i=0;i<new_subflows.length;i++) {
+        for (i = 0; i < new_subflows.length; i++) {
             n = new_subflows[i];
-            n.in.forEach(function(input) {
-                input.wires.forEach(function(wire) {
-                    var link = {source:input, sourcePort:0, target:node_map[wire.id]};
+            n.in.forEach(function (input) {
+                input.wires.forEach(function (wire) {
+                    var link = { source: input, sourcePort: 0, target: node_map[wire.id] };
                     addLink(link);
                     new_links.push(link);
                 });
                 delete input.wires;
             });
-            n.out.forEach(function(output) {
-                output.wires.forEach(function(wire) {
+            n.out.forEach(function (output) {
+                output.wires.forEach(function (wire) {
                     var link;
                     if (subflow_map[wire.id] && subflow_map[wire.id].id == n.id) {
-                        link = {source:n.in[wire.port], sourcePort:wire.port,target:output};
+                        link = { source: n.in[wire.port], sourcePort: wire.port, target: output };
                     } else {
-                        link = {source:node_map[wire.id]||subflow_map[wire.id], sourcePort:wire.port,target:output};
+                        link = { source: node_map[wire.id] || subflow_map[wire.id], sourcePort: wire.port, target: output };
                     }
                     addLink(link);
                     new_links.push(link);
@@ -2745,14 +2745,14 @@ RED.nodes = (function() {
         }
 
         RED.workspaces.refresh();
-        return [new_nodes,new_links,new_workspaces,new_subflows,missingWorkspace];
+        return [new_nodes, new_links, new_workspaces, new_subflows, missingWorkspace];
     }
 
     // TODO: supports filter.z|type
     function filterNodes(filter) {
         var result = [];
 
-        for (var n=0;n<nodes.length;n++) {
+        for (var n = 0; n < nodes.length; n++) {
             var node = nodes[n];
             if (filter.hasOwnProperty("z") && node.z !== filter.z) {
                 continue;
@@ -2767,7 +2767,7 @@ RED.nodes = (function() {
     function filterLinks(filter) {
         var result = [];
 
-        for (var n=0;n<links.length;n++) {
+        for (var n = 0; n < links.length; n++) {
             var link = links[n];
             if (filter.source) {
                 if (filter.source.hasOwnProperty("id") && link.source.id !== filter.source.id) {
@@ -2827,11 +2827,11 @@ RED.nodes = (function() {
         configNodes = {};
         workspacesOrder = [];
         var subflowIds = Object.keys(subflows);
-        subflowIds.forEach(function(id) {
+        subflowIds.forEach(function (id) {
             RED.subflow.removeSubflow(id)
         });
         var workspaceIds = Object.keys(workspaces);
-        workspaceIds.forEach(function(id) {
+        workspaceIds.forEach(function (id) {
             RED.workspaces.remove(workspaces[id]);
         });
         defaultWorkspace = null;
@@ -2854,7 +2854,7 @@ RED.nodes = (function() {
     }
 
     return {
-        registry:registry,
+        registry: registry,
         setNodeList: registry.setNodeList,
 
         getNodeSet: registry.getNodeSet,
@@ -2876,8 +2876,8 @@ RED.nodes = (function() {
 
         addWorkspace: addWorkspace,
         removeWorkspace: removeWorkspace,
-        getWorkspaceOrder: function() { return workspacesOrder },
-        setWorkspaceOrder: function(order) { workspacesOrder = order; },
+        getWorkspaceOrder: function () { return workspacesOrder },
+        setWorkspaceOrder: function (order) { workspacesOrder = order; },
         workspace: getWorkspace,
 
         addSubflow: addSubflow,
@@ -2885,32 +2885,32 @@ RED.nodes = (function() {
         subflow: getSubflow,
         subflowContains: subflowContains,
 
-        eachNode: function(cb) {
-            for (var n=0;n<nodes.length;n++) {
+        eachNode: function (cb) {
+            for (var n = 0; n < nodes.length; n++) {
                 cb(nodes[n]);
             }
         },
-        eachLink: function(cb) {
-            for (var l=0;l<links.length;l++) {
+        eachLink: function (cb) {
+            for (var l = 0; l < links.length; l++) {
                 cb(links[l]);
             }
         },
-        eachConfig: function(cb) {
+        eachConfig: function (cb) {
             for (var id in configNodes) {
                 if (configNodes.hasOwnProperty(id)) {
                     cb(configNodes[id]);
                 }
             }
         },
-        eachSubflow: function(cb) {
+        eachSubflow: function (cb) {
             for (var id in subflows) {
                 if (subflows.hasOwnProperty(id)) {
                     cb(subflows[id]);
                 }
             }
         },
-        eachWorkspace: function(cb) {
-            for (var i=0;i<workspacesOrder.length;i++) {
+        eachWorkspace: function (cb) {
+            for (var i = 0; i < workspacesOrder.length; i++) {
                 cb(workspaces[workspacesOrder[i]]);
             }
         },
@@ -2918,7 +2918,7 @@ RED.nodes = (function() {
         node: getNode,
 
         version: flowVersion,
-        originalFlow: function(flow) {
+        originalFlow: function (flow) {
             if (flow === undefined) {
                 return initialLoad;
             } else {
@@ -2936,7 +2936,7 @@ RED.nodes = (function() {
         createCompleteNodeSet: createCompleteNodeSet,
         updateConfigNodeUsers: updateConfigNodeUsers,
         id: getID,
-        dirty: function(d) {
+        dirty: function (d) {
             if (d == null) {
                 return dirty;
             } else {
@@ -2945,7 +2945,7 @@ RED.nodes = (function() {
         }
     };
 })();
-RED.history = (function() {
+RED.history = (function () {
     var undo_history = [];
 
     function undoEvent(ev) {
@@ -2957,13 +2957,13 @@ RED.history = (function() {
         if (ev) {
             if (ev.t == 'multi') {
                 len = ev.events.length;
-                for (i=len-1;i>=0;i--) {
+                for (i = len - 1; i >= 0; i--) {
                     undoEvent(ev.events[i]);
                 }
             } else if (ev.t == 'replace') {
                 RED.nodes.clear();
                 var imported = RED.nodes.import(ev.config);
-                imported[0].forEach(function(n) {
+                imported[0].forEach(function (n) {
                     if (ev.changed[n.id]) {
                         n.changed = true;
                     }
@@ -2972,7 +2972,7 @@ RED.history = (function() {
                 RED.nodes.version(ev.rev);
             } else if (ev.t == 'add') {
                 if (ev.nodes) {
-                    for (i=0;i<ev.nodes.length;i++) {
+                    for (i = 0; i < ev.nodes.length; i++) {
                         node = RED.nodes.node(ev.nodes[i]);
                         if (node.z) {
                             modifiedTabs[node.z] = true;
@@ -2981,25 +2981,25 @@ RED.history = (function() {
                     }
                 }
                 if (ev.links) {
-                    for (i=0;i<ev.links.length;i++) {
+                    for (i = 0; i < ev.links.length; i++) {
                         RED.nodes.removeLink(ev.links[i]);
                     }
                 }
                 if (ev.workspaces) {
-                    for (i=0;i<ev.workspaces.length;i++) {
+                    for (i = 0; i < ev.workspaces.length; i++) {
                         RED.nodes.removeWorkspace(ev.workspaces[i].id);
                         RED.workspaces.remove(ev.workspaces[i]);
                     }
                 }
                 if (ev.subflows) {
-                    for (i=0;i<ev.subflows.length;i++) {
+                    for (i = 0; i < ev.subflows.length; i++) {
                         RED.nodes.removeSubflow(ev.subflows[i]);
                         RED.workspaces.remove(ev.subflows[i]);
                     }
                 }
                 if (ev.subflow) {
                     if (ev.subflow.instances) {
-                        ev.subflow.instances.forEach(function(n) {
+                        ev.subflow.instances.forEach(function (n) {
                             var node = RED.nodes.node(n.id);
                             if (node) {
                                 node.changed = n.changed;
@@ -3015,14 +3015,14 @@ RED.history = (function() {
                     }
                 }
                 if (ev.removedLinks) {
-                    for (i=0;i<ev.removedLinks.length;i++) {
+                    for (i = 0; i < ev.removedLinks.length; i++) {
                         RED.nodes.addLink(ev.removedLinks[i]);
                     }
                 }
 
             } else if (ev.t == "delete") {
                 if (ev.workspaces) {
-                    for (i=0;i<ev.workspaces.length;i++) {
+                    for (i = 0; i < ev.workspaces.length; i++) {
                         RED.nodes.addWorkspace(ev.workspaces[i]);
                         RED.workspaces.add(ev.workspaces[i]);
                     }
@@ -3037,16 +3037,16 @@ RED.history = (function() {
                 }
                 if (ev.subflowOutputs && ev.subflowOutputs.length > 0) {
                     subflow = RED.nodes.subflow(ev.subflowOutputs[0].z);
-                    ev.subflowOutputs.sort(function(a,b) { return a.i-b.i});
-                    for (i=0;i<ev.subflowOutputs.length;i++) {
+                    ev.subflowOutputs.sort(function (a, b) { return a.i - b.i });
+                    for (i = 0; i < ev.subflowOutputs.length; i++) {
                         var output = ev.subflowOutputs[i];
-                        subflow.out.splice(output.i,0,output);
-                        for (var j=output.i+1;j<subflow.out.length;j++) {
+                        subflow.out.splice(output.i, 0, output);
+                        for (var j = output.i + 1; j < subflow.out.length; j++) {
                             subflow.out[j].i++;
                             subflow.out[j].dirty = true;
                         }
-                        RED.nodes.eachLink(function(l) {
-                            if (l.source.type == "subflow:"+subflow.id) {
+                        RED.nodes.eachLink(function (l) {
+                            if (l.source.type == "subflow:" + subflow.id) {
                                 if (l.sourcePort >= output.i) {
                                     l.sourcePort++;
                                 }
@@ -3055,7 +3055,7 @@ RED.history = (function() {
                     }
                 }
                 if (ev.subflow && ev.subflow.hasOwnProperty('instances')) {
-                    ev.subflow.instances.forEach(function(n) {
+                    ev.subflow.instances.forEach(function (n) {
                         var node = RED.nodes.node(n.id);
                         if (node) {
                             node.changed = n.changed;
@@ -3064,7 +3064,7 @@ RED.history = (function() {
                     });
                 }
                 if (subflow) {
-                    RED.nodes.filterNodes({type:"subflow:"+subflow.id}).forEach(function(n) {
+                    RED.nodes.filterNodes({ type: "subflow:" + subflow.id }).forEach(function (n) {
                         n.inputs = subflow.in.length;
                         n.outputs = subflow.out.length;
                         while (n.outputs > n.ports.length) {
@@ -3075,13 +3075,13 @@ RED.history = (function() {
                     });
                 }
                 if (ev.nodes) {
-                    for (i=0;i<ev.nodes.length;i++) {
+                    for (i = 0; i < ev.nodes.length; i++) {
                         RED.nodes.add(ev.nodes[i]);
                         modifiedTabs[ev.nodes[i].z] = true;
                     }
                 }
                 if (ev.links) {
-                    for (i=0;i<ev.links.length;i++) {
+                    for (i = 0; i < ev.links.length; i++) {
                         RED.nodes.addLink(ev.links[i]);
                     }
                 }
@@ -3102,7 +3102,7 @@ RED.history = (function() {
 
                 }
             } else if (ev.t == "move") {
-                for (i=0;i<ev.nodes.length;i++) {
+                for (i = 0; i < ev.nodes.length; i++) {
                     var n = ev.nodes[i];
                     n.n.x = n.ox;
                     n.n.y = n.oy;
@@ -3111,12 +3111,12 @@ RED.history = (function() {
                 }
                 // A move could have caused a link splice
                 if (ev.links) {
-                    for (i=0;i<ev.links.length;i++) {
+                    for (i = 0; i < ev.links.length; i++) {
                         RED.nodes.removeLink(ev.links[i]);
                     }
                 }
                 if (ev.removedLinks) {
-                    for (i=0;i<ev.removedLinks.length;i++) {
+                    for (i = 0; i < ev.removedLinks.length; i++) {
                         RED.nodes.addLink(ev.removedLinks[i]);
                     }
                 }
@@ -3127,7 +3127,7 @@ RED.history = (function() {
                             // This is a config node property
                             var currentConfigNode = RED.nodes.node(ev.node[i]);
                             if (currentConfigNode) {
-                                currentConfigNode.users.splice(currentConfigNode.users.indexOf(ev.node),1);
+                                currentConfigNode.users.splice(currentConfigNode.users.indexOf(ev.node), 1);
                             }
                             var newConfigNode = RED.nodes.node(ev.changes[i]);
                             if (newConfigNode) {
@@ -3153,7 +3153,7 @@ RED.history = (function() {
                         }
                     }
                     if (ev.subflow.hasOwnProperty('instances')) {
-                        ev.subflow.instances.forEach(function(n) {
+                        ev.subflow.instances.forEach(function (n) {
                             var node = RED.nodes.node(n.id);
                             if (node) {
                                 node.changed = n.changed;
@@ -3161,7 +3161,7 @@ RED.history = (function() {
                             }
                         });
                     }
-                    RED.nodes.filterNodes({type:"subflow:"+ev.node.id}).forEach(function(n) {
+                    RED.nodes.filterNodes({ type: "subflow:" + ev.node.id }).forEach(function (n) {
                         n.inputs = ev.node.in.length;
                         n.outputs = ev.node.out.length;
                         RED.editor.updateNodeProperties(n);
@@ -3176,11 +3176,11 @@ RED.history = (function() {
                             }
                         }
                     }
-                    RED.editor.updateNodeProperties(ev.node,outputMap);
+                    RED.editor.updateNodeProperties(ev.node, outputMap);
                     RED.editor.validateNode(ev.node);
                 }
                 if (ev.links) {
-                    for (i=0;i<ev.links.length;i++) {
+                    for (i = 0; i < ev.links.length; i++) {
                         RED.nodes.addLink(ev.links[i]);
                     }
                 }
@@ -3188,16 +3188,16 @@ RED.history = (function() {
                 ev.node.changed = ev.changed;
             } else if (ev.t == "createSubflow") {
                 if (ev.nodes) {
-                    RED.nodes.filterNodes({z:ev.subflow.subflow.id}).forEach(function(n) {
+                    RED.nodes.filterNodes({ z: ev.subflow.subflow.id }).forEach(function (n) {
                         n.z = ev.activeWorkspace;
                         n.dirty = true;
                     });
-                    for (i=0;i<ev.nodes.length;i++) {
+                    for (i = 0; i < ev.nodes.length; i++) {
                         RED.nodes.remove(ev.nodes[i]);
                     }
                 }
                 if (ev.links) {
-                    for (i=0;i<ev.links.length;i++) {
+                    for (i = 0; i < ev.links.length; i++) {
                         RED.nodes.removeLink(ev.links[i]);
                     }
                 }
@@ -3206,7 +3206,7 @@ RED.history = (function() {
                 RED.workspaces.remove(ev.subflow.subflow);
 
                 if (ev.removedLinks) {
-                    for (i=0;i<ev.removedLinks.length;i++) {
+                    for (i = 0; i < ev.removedLinks.length; i++) {
                         RED.nodes.addLink(ev.removedLinks[i]);
                     }
                 }
@@ -3215,7 +3215,7 @@ RED.history = (function() {
                     RED.workspaces.order(ev.order);
                 }
             }
-            Object.keys(modifiedTabs).forEach(function(id) {
+            Object.keys(modifiedTabs).forEach(function (id) {
                 var subflow = RED.nodes.subflow(id);
                 if (subflow) {
                     RED.editor.validateNode(subflow);
@@ -3233,89 +3233,91 @@ RED.history = (function() {
 
     return {
         //TODO: this function is a placeholder until there is a 'save' event that can be listened to
-        markAllDirty: function() {
-            for (var i=0;i<undo_history.length;i++) {
+        markAllDirty: function () {
+            for (var i = 0; i < undo_history.length; i++) {
                 undo_history[i].dirty = true;
             }
         },
-        list: function() {
+        list: function () {
             return undo_history
         },
-        depth: function() {
+        depth: function () {
             return undo_history.length;
         },
-        push: function(ev) {
+        push: function (ev) {
             undo_history.push(ev);
         },
-        pop: function() {
+        pop: function () {
             var ev = undo_history.pop();
             undoEvent(ev);
         },
-        peek: function() {
-            return undo_history[undo_history.length-1];
+        peek: function () {
+            return undo_history[undo_history.length - 1];
         }
     }
 
 })();
 RED.validators = {
-    number: function(){return function(v) { return v!=='' && !isNaN(v);}},
-    regex: function(re){return function(v) { return re.test(v);}},
-    typedInput: function(ptypeName,isConfig) { return function(v) {
-        var ptype = $("#node-"+(isConfig?"config-":"")+"input-"+ptypeName).val() || this[ptypeName];
-        if (ptype === 'json') {
-            try {
-                JSON.parse(v);
-                return true;
-            } catch(err) {
-                return false;
+    number: function () { return function (v) { return v !== '' && !isNaN(v); } },
+    regex: function (re) { return function (v) { return re.test(v); } },
+    typedInput: function (ptypeName, isConfig) {
+        return function (v) {
+            var ptype = $("#node-" + (isConfig ? "config-" : "") + "input-" + ptypeName).val() || this[ptypeName];
+            if (ptype === 'json') {
+                try {
+                    JSON.parse(v);
+                    return true;
+                } catch (err) {
+                    return false;
+                }
+            } else if (ptype === 'msg' || ptype === 'flow' || ptype === 'global') {
+                return RED.utils.validatePropertyExpression(v);
+            } else if (ptype === 'num') {
+                return /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(v);
             }
-        } else if (ptype === 'msg' || ptype === 'flow' || ptype === 'global' ) {
-            return RED.utils.validatePropertyExpression(v);
-        } else if (ptype === 'num') {
-            return /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/.test(v);
+            return true;
         }
-        return true;
-    }}
+    }
 };
-RED.utils = (function() {
+RED.utils = (function () {
 
     function formatString(str) {
-        return str.replace(/\r?\n/g,"&crarr;").replace(/\t/g,"&rarr;");
+        return str.replace(/\r?\n/g, "&crarr;").replace(/\t/g, "&rarr;");
     }
     function sanitize(m) {
-        return m.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+        return m.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
     function buildMessageSummaryValue(value) {
         var result;
         if (Array.isArray(value)) {
-            result = $('<span class="debug-message-object-value debug-message-type-meta"></span>').html('array['+value.length+']');
+            result = $('<span class="debug-message-object-value debug-message-type-meta"></span>').html('array[' + value.length + ']');
         } else if (value === null) {
             result = $('<span class="debug-message-object-value debug-message-type-null">null</span>');
         } else if (typeof value === 'object') {
             if (value.hasOwnProperty('type') && value.type === 'Buffer' && value.hasOwnProperty('data')) {
-                result = $('<span class="debug-message-object-value debug-message-type-meta"></span>').html('buffer['+value.data.length+']');
+                result = $('<span class="debug-message-object-value debug-message-type-meta"></span>').html('buffer[' + value.data.length + ']');
             } else if (value.hasOwnProperty('type') && value.type === 'array' && value.hasOwnProperty('data')) {
-                result = $('<span class="debug-message-object-value debug-message-type-meta"></span>').html('array['+value.length+']');
+                result = $('<span class="debug-message-object-value debug-message-type-meta"></span>').html('array[' + value.length + ']');
             } else {
                 result = $('<span class="debug-message-object-value debug-message-type-meta">object</span>');
             }
         } else if (typeof value === 'string') {
             var subvalue;
             if (value.length > 30) {
-                subvalue = sanitize(value.substring(0,30))+"&hellip;";
+                subvalue = sanitize(value.substring(0, 30)) + "&hellip;";
             } else {
                 subvalue = sanitize(value);
             }
-            result = $('<span class="debug-message-object-value debug-message-type-string"></span>').html('"'+formatString(subvalue)+'"');
+            result = $('<span class="debug-message-object-value debug-message-type-string"></span>').html('"' + formatString(subvalue) + '"');
         } else {
-            result = $('<span class="debug-message-object-value debug-message-type-other"></span>').text(""+value);
+            result = $('<span class="debug-message-object-value debug-message-type-other"></span>').text("" + value);
         }
         return result;
     }
-    function makeExpandable(el,onexpand) {
+    function makeExpandable(el, onexpand) {
         el.addClass("debug-message-expandable");
-        el.click(function(e) {
+        el.click(function (e) {
             var parent = $(this).parent();
             if (parent.hasClass('collapsed')) {
                 if (onexpand && !parent.hasClass('built')) {
@@ -3330,7 +3332,7 @@ RED.utils = (function() {
         });
     }
 
-    function buildMessageElement(obj,key,typeHint,hideKey) {
+    function buildMessageElement(obj, key, typeHint, hideKey) {
         var i;
         var e;
         var entryObj;
@@ -3358,36 +3360,36 @@ RED.utils = (function() {
         }
 
         if (obj === null || obj === undefined) {
-            $('<span class="debug-message-type-null">'+obj+'</span>').appendTo(entryObj);
+            $('<span class="debug-message-type-null">' + obj + '</span>').appendTo(entryObj);
         } else if (typeof obj === 'string') {
             if (/[\t\n\r]/.test(obj)) {
                 element.addClass('collapsed');
                 $('<i class="fa fa-caret-right debug-message-object-handle"></i> ').prependTo(header);
-                makeExpandable(header, function() {
-                    $('<span class="debug-message-type-meta debug-message-object-type-header"></span>').html(typeHint||'string').appendTo(header);
+                makeExpandable(header, function () {
+                    $('<span class="debug-message-type-meta debug-message-object-type-header"></span>').html(typeHint || 'string').appendTo(header);
                     var row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(element);
                     $('<pre class="debug-message-type-string"></pre>').text(obj).appendTo(row);
                 });
             }
-            e = $('<span class="debug-message-type-string debug-message-object-header"></span>').html('"'+formatString(sanitize(obj))+'"').appendTo(entryObj);
+            e = $('<span class="debug-message-type-string debug-message-object-header"></span>').html('"' + formatString(sanitize(obj)) + '"').appendTo(entryObj);
             if (/^#[0-9a-f]{6}$/i.test(obj)) {
-                $('<span class="debug-message-type-string-swatch"></span>').css('backgroundColor',obj).appendTo(e);
+                $('<span class="debug-message-type-string-swatch"></span>').css('backgroundColor', obj).appendTo(e);
             }
 
         } else if (typeof obj === 'number') {
-            e = $('<span class="debug-message-type-number"></span>').text(""+obj).appendTo(entryObj);
+            e = $('<span class="debug-message-type-number"></span>').text("" + obj).appendTo(entryObj);
             if (Number.isInteger(obj) && (obj >= 0)) { // if it's a +ve integer
                 e.addClass("debug-message-type-number-toggle");
-                e.click(function(evt) {
+                e.click(function (evt) {
                     var format = $(this).data('format') || "date";
                     if (format === 'dec') {
-                        $(this).text(""+obj).data('format','date');
-                    } else if ((format === 'date') && (obj.toString().length===13) && (obj<=2147483647000)) {
-                        $(this).text((new Date(obj)).toISOString()).data('format','hex');
-                    } else if ((format === 'date') && (obj.toString().length===10) && (obj<=2147483647)) {
-                        $(this).text((new Date(obj*1000)).toISOString()).data('format','hex');
+                        $(this).text("" + obj).data('format', 'date');
+                    } else if ((format === 'date') && (obj.toString().length === 13) && (obj <= 2147483647000)) {
+                        $(this).text((new Date(obj)).toISOString()).data('format', 'hex');
+                    } else if ((format === 'date') && (obj.toString().length === 10) && (obj <= 2147483647)) {
+                        $(this).text((new Date(obj * 1000)).toISOString()).data('format', 'hex');
                     } else {
-                        $(this).text("0x"+(obj).toString(16)).data('format','dec');
+                        $(this).text("0x" + (obj).toString(16)).data('format', 'dec');
                     }
                     evt.preventDefault();
                 });
@@ -3422,9 +3424,9 @@ RED.utils = (function() {
                 $('<i class="fa fa-caret-right debug-message-object-handle"></i> ').prependTo(header);
                 var arrayRows = $('<div class="debug-message-array-rows"></div>').appendTo(element);
                 element.addClass('debug-message-buffer-raw');
-                makeExpandable(header,function() {
+                makeExpandable(header, function () {
                     if (!key) {
-                        headerHead = $('<span class="debug-message-type-meta debug-message-object-type-header"></span>').html(typeHint||(type+'['+originalLength+']')).appendTo(header);
+                        headerHead = $('<span class="debug-message-type-meta debug-message-object-type-header"></span>').html(typeHint || (type + '[' + originalLength + ']')).appendTo(header);
                     }
                     if (type === 'buffer') {
                         var stringRow = $('<div class="debug-message-string-rows"></div>').appendTo(element);
@@ -3432,12 +3434,12 @@ RED.utils = (function() {
                         var stringEncoding = "";
                         try {
                             stringEncoding = String.fromCharCode.apply(null, new Uint16Array(data))
-                        } catch(err) {
+                        } catch (err) {
                             console.log(err);
                         }
                         $('<pre class="debug-message-type-string"></pre>').text(stringEncoding).appendTo(sr);
                         var bufferOpts = $('<span class="debug-message-buffer-opts"></span>').appendTo(headerHead);
-                        $('<a href="#"></a>').addClass('selected').html('raw').appendTo(bufferOpts).click(function(e) {
+                        $('<a href="#"></a>').addClass('selected').html('raw').appendTo(bufferOpts).click(function (e) {
                             if ($(this).text() === 'raw') {
                                 $(this).text('string');
                                 element.addClass('debug-message-buffer-string').removeClass('debug-message-buffer-raw');
@@ -3451,44 +3453,44 @@ RED.utils = (function() {
                     }
                     var row;
                     if (fullLength <= 10) {
-                        for (i=0;i<fullLength;i++) {
+                        for (i = 0; i < fullLength; i++) {
                             row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(arrayRows);
-                            buildMessageElement(data[i],""+i,false).appendTo(row);
+                            buildMessageElement(data[i], "" + i, false).appendTo(row);
                         }
                     } else {
-                        for (i=0;i<fullLength;i+=10) {
+                        for (i = 0; i < fullLength; i += 10) {
                             var minRange = i;
                             row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(arrayRows);
                             header = $('<span></span>').appendTo(row);
                             $('<i class="fa fa-caret-right debug-message-object-handle"></i> ').appendTo(header);
-                            makeExpandable(header, (function() {
+                            makeExpandable(header, (function () {
                                 var min = minRange;
-                                var max = Math.min(fullLength-1,(minRange+9));
+                                var max = Math.min(fullLength - 1, (minRange + 9));
                                 var parent = row;
-                                return function() {
-                                    for (var i=min;i<=max;i++) {
+                                return function () {
+                                    for (var i = min; i <= max; i++) {
                                         var row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(parent);
-                                        buildMessageElement(data[i],""+i,false).appendTo(row);
+                                        buildMessageElement(data[i], "" + i, false).appendTo(row);
                                     }
                                 }
                             })());
-                            $('<span class="debug-message-object-key"></span>').html("["+minRange+" &hellip; "+Math.min(fullLength-1,(minRange+9))+"]").appendTo(header);
+                            $('<span class="debug-message-object-key"></span>').html("[" + minRange + " &hellip; " + Math.min(fullLength - 1, (minRange + 9)) + "]").appendTo(header);
                         }
                         if (fullLength < originalLength) {
-                            $('<div class="debug-message-object-entry collapsed"><span class="debug-message-object-key">['+fullLength+' &hellip; '+originalLength+']</span></div>').appendTo(arrayRows);
+                            $('<div class="debug-message-object-entry collapsed"><span class="debug-message-object-key">[' + fullLength + ' &hellip; ' + originalLength + ']</span></div>').appendTo(arrayRows);
                         }
                     }
                 });
             }
             if (key) {
-                headerHead = $('<span class="debug-message-type-meta f"></span>').html(typeHint||(type+'['+originalLength+']')).appendTo(entryObj);
+                headerHead = $('<span class="debug-message-type-meta f"></span>').html(typeHint || (type + '[' + originalLength + ']')).appendTo(entryObj);
             } else {
                 headerHead = $('<span class="debug-message-object-header"></span>').appendTo(entryObj);
                 $('<span>[ </span>').appendTo(headerHead);
-                var arrayLength = Math.min(originalLength,10);
-                for (i=0;i<arrayLength;i++) {
+                var arrayLength = Math.min(originalLength, 10);
+                for (i = 0; i < arrayLength; i++) {
                     buildMessageSummaryValue(data[i]).appendTo(headerHead);
-                    if (i < arrayLength-1) {
+                    if (i < arrayLength - 1) {
                         $('<span>, </span>').appendTo(headerHead);
                     }
                 }
@@ -3506,13 +3508,13 @@ RED.utils = (function() {
             var keys = Object.keys(obj);
             if (key || keys.length > 0) {
                 $('<i class="fa fa-caret-right debug-message-object-handle"></i> ').prependTo(header);
-                makeExpandable(header, function() {
+                makeExpandable(header, function () {
                     if (!key) {
                         $('<span class="debug-message-type-meta debug-message-object-type-header"></span>').html('object').appendTo(header);
                     }
-                    for (i=0;i<keys.length;i++) {
+                    for (i = 0; i < keys.length; i++) {
                         var row = $('<div class="debug-message-object-entry collapsed"></div>').appendTo(element);
-                        buildMessageElement(obj[keys[i]],keys[i],false).appendTo(row);
+                        buildMessageElement(obj[keys[i]], keys[i], false).appendTo(row);
                     }
                     if (keys.length === 0) {
                         $('<div class="debug-message-object-entry debug-message-type-meta collapsed"></div>').text("empty").appendTo(element);
@@ -3524,12 +3526,12 @@ RED.utils = (function() {
             } else {
                 headerHead = $('<span class="debug-message-object-header"></span>').appendTo(entryObj);
                 $('<span>{ </span>').appendTo(headerHead);
-                var keysLength = Math.min(keys.length,5);
-                for (i=0;i<keysLength;i++) {
+                var keysLength = Math.min(keys.length, 5);
+                for (i = 0; i < keysLength; i++) {
                     $('<span class="debug-message-object-key"></span>').text(keys[i]).appendTo(headerHead);
                     $('<span>: </span>').appendTo(headerHead);
                     buildMessageSummaryValue(obj[keys[i]]).appendTo(headerHead);
-                    if (i < keysLength-1) {
+                    if (i < keysLength - 1) {
                         $('<span>, </span>').appendTo(headerHead);
                     }
                 }
@@ -3542,7 +3544,7 @@ RED.utils = (function() {
                 $('<span> }</span>').appendTo(headerHead);
             }
         } else {
-            $('<span class="debug-message-type-other"></span>').text(""+obj).appendTo(entryObj);
+            $('<span class="debug-message-type-other"></span>').text("" + obj).appendTo(entryObj);
         }
         return element;
     }
@@ -3560,7 +3562,7 @@ RED.utils = (function() {
         var inBox = false;
         var quoteChar;
         var v;
-        for (var i=0;i<length;i++) {
+        for (var i = 0; i < length; i++) {
             var c = str[i];
             if (!inString) {
                 if (c === "'" || c === '"') {
@@ -3569,56 +3571,56 @@ RED.utils = (function() {
                     }
                     inString = true;
                     quoteChar = c;
-                    start = i+1;
+                    start = i + 1;
                 } else if (c === '.') {
-                    if (i===0 || i===length-1) {
+                    if (i === 0 || i === length - 1) {
                         return false;
                     }
                     // Next char is first char of an identifier: a-z 0-9 $ _
-                    if (!/[a-z0-9\$\_]/i.test(str[i+1])) {
+                    if (!/[a-z0-9\$\_]/i.test(str[i + 1])) {
                         return false;
                     }
-                    start = i+1;
+                    start = i + 1;
                 } else if (c === '[') {
                     if (i === 0) {
                         return false;
                     }
-                    if (i===length-1) {
+                    if (i === length - 1) {
                         return false;
                     }
                     // Next char is either a quote or a number
-                    if (!/["'\d]/.test(str[i+1])) {
+                    if (!/["'\d]/.test(str[i + 1])) {
                         return false;
                     }
-                    start = i+1;
+                    start = i + 1;
                     inBox = true;
                 } else if (c === ']') {
                     if (!inBox) {
                         return false;
                     }
                     if (start != i) {
-                        v = str.substring(start,i);
+                        v = str.substring(start, i);
                         if (!/^\d+$/.test(v)) {
                             return false;
                         }
                     }
-                    start = i+1;
+                    start = i + 1;
                     inBox = false;
                 } else if (c === ' ') {
                     return false;
                 }
             } else {
                 if (c === quoteChar) {
-                    if (i-start === 0) {
+                    if (i - start === 0) {
                         return false;
                     }
                     // Next char must be a ]
-                    if (inBox && !/\]/.test(str[i+1])) {
+                    if (inBox && !/\]/.test(str[i + 1])) {
                         return false;
-                    } else if (!inBox && i+1!==length && !/[\[\.]/.test(str[i+1])) {
+                    } else if (!inBox && i + 1 !== length && !/[\[\.]/.test(str[i + 1])) {
                         return false;
                     }
-                    start = i+1;
+                    start = i + 1;
                     inString = false;
                 }
             }
@@ -3635,7 +3637,7 @@ RED.utils = (function() {
         validatePropertyExpression: validatePropertyExpression
     }
 })();
-(function($) {
+(function ($) {
 
     /**
      * options:
@@ -3663,14 +3665,14 @@ RED.utils = (function() {
      *   - sort(sort)
      *   - length()
      */
-    $.widget( "nodered.editableList", {
-        _create: function() {
+    $.widget("nodered.editableList", {
+        _create: function () {
             var that = this;
 
             this.element.addClass('red-ui-editableList-list');
             this.uiWidth = this.element.width();
             this.uiContainer = this.element
-                .wrap( "<div>" )
+                .wrap("<div>")
                 .parent();
             this.topContainer = this.uiContainer.wrap("<div>").parent();
 
@@ -3687,44 +3689,44 @@ RED.utils = (function() {
                         addLabel = 'add';
                     }
                 }
-                $('<a href="#" class="editor-button editor-button-small" style="margin-top: 4px;"><i class="fa fa-plus"></i> '+addLabel+'</a>')
+                $('<a href="#" class="editor-button editor-button-small" style="margin-top: 4px;"><i class="fa fa-plus"></i> ' + addLabel + '</a>')
                     .appendTo(this.topContainer)
-                    .click(function(evt) {
+                    .click(function (evt) {
                         evt.preventDefault();
                         that.addItem({});
                     });
             }
             if (this.element.css("position") === "absolute") {
-                ["top","left","bottom","right"].forEach(function(s) {
+                ["top", "left", "bottom", "right"].forEach(function (s) {
                     var v = that.element.css(s);
-                    if (s!=="auto" && s!=="") {
-                        that.topContainer.css(s,v);
-                        that.uiContainer.css(s,"0");
-                        that.element.css(s,'auto');
+                    if (s !== "auto" && s !== "") {
+                        that.topContainer.css(s, v);
+                        that.uiContainer.css(s, "0");
+                        that.element.css(s, 'auto');
                     }
                 })
-                this.element.css("position","static");
-                this.topContainer.css("position","absolute");
-                this.uiContainer.css("position","absolute");
+                this.element.css("position", "static");
+                this.topContainer.css("position", "absolute");
+                this.uiContainer.css("position", "absolute");
 
             }
             this.uiContainer.addClass("red-ui-editableList-container");
 
             this.uiHeight = this.element.height();
 
-            this.activeFilter = this.options.filter||null;
-            this.activeSort = this.options.sort||null;
+            this.activeFilter = this.options.filter || null;
+            this.activeSort = this.options.sort || null;
             this.scrollOnAdd = this.options.scrollOnAdd;
             if (this.scrollOnAdd === undefined) {
                 this.scrollOnAdd = true;
             }
             var minHeight = this.element.css("minHeight");
             if (minHeight !== '0px') {
-                this.uiContainer.css("minHeight",minHeight);
-                this.element.css("minHeight",0);
+                this.uiContainer.css("minHeight", minHeight);
+                this.element.css("minHeight", 0);
             }
             if (this.options.height !== 'auto') {
-                this.uiContainer.css("overflow-y","scroll");
+                this.uiContainer.css("overflow-y", "scroll");
                 if (!isNaN(this.options.height)) {
                     this.uiHeight = this.options.height;
                 }
@@ -3738,23 +3740,23 @@ RED.utils = (function() {
                 this.uiContainer.width(m[1]);
             }
             if (this.options.sortable) {
-                var handle = (typeof this.options.sortable === 'string')?
+                var handle = (typeof this.options.sortable === 'string') ?
                     this.options.sortable :
                     ".red-ui-editableList-item-handle";
                 var sortOptions = {
                     axis: "y",
-                    update: function( event, ui ) {
+                    update: function (event, ui) {
                         if (that.options.sortItems) {
                             that.options.sortItems(that.items());
                         }
                     },
-                    handle:handle,
+                    handle: handle,
                     cursor: "move",
                     tolerance: "pointer",
-                    forcePlaceholderSize:true,
+                    forcePlaceholderSize: true,
                     placeholder: "red-ui-editabelList-item-placeholder",
-                    start: function(e, ui){
-                        ui.placeholder.height(ui.item.height()-4);
+                    start: function (e, ui) {
+                        ui.placeholder.height(ui.item.height() - 4);
                     }
                 };
                 if (this.options.connectWith) {
@@ -3769,33 +3771,33 @@ RED.utils = (function() {
             // this.menu = this._createMenu(this.types, function(v) { that.type(v) });
             // this.type(this.options.default||this.types[0].value);
         },
-        _resize: function() {
+        _resize: function () {
             var currentFullHeight = this.topContainer.height();
             var innerHeight = this.uiContainer.height();
             var delta = currentFullHeight - innerHeight;
             if (this.uiHeight !== 0) {
-                this.uiContainer.height(this.uiHeight-delta);
+                this.uiContainer.height(this.uiHeight - delta);
             }
             if (this.options.resize) {
                 this.options.resize();
             }
             if (this.options.resizeItem) {
                 var that = this;
-                this.element.children().each(function(i) {
-                    that.options.resizeItem($(this).find(".red-ui-editableList-item-content"),i);
+                this.element.children().each(function (i) {
+                    that.options.resizeItem($(this).find(".red-ui-editableList-item-content"), i);
                 });
             }
         },
-        _destroy: function() {
+        _destroy: function () {
         },
-        _refreshFilter: function() {
+        _refreshFilter: function () {
             var that = this;
             var count = 0;
             if (!this.activeFilter) {
                 this.element.children().attr("style", "display: block !important");
             }
             var items = this.items();
-            items.each(function (i,el) {
+            items.each(function (i, el) {
                 var data = el.data('data');
                 try {
                     if (that.activeFilter(data)) {
@@ -3804,7 +3806,7 @@ RED.utils = (function() {
                     } else {
                         el.parent().hide();
                     }
-                } catch(err) {
+                } catch (err) {
                     console.log(err);
                     el.parent().attr("style", "display: block !important");
                     count++;
@@ -3812,27 +3814,27 @@ RED.utils = (function() {
             });
             return count;
         },
-        _refreshSort: function() {
+        _refreshSort: function () {
             if (this.activeSort) {
                 var items = this.element.children();
                 var that = this;
-                items.sort(function(A,B) {
-                    return that.activeSort($(A).find(".red-ui-editableList-item-content").data('data'),$(B).find(".red-ui-editableList-item-content").data('data'));
+                items.sort(function (A, B) {
+                    return that.activeSort($(A).find(".red-ui-editableList-item-content").data('data'), $(B).find(".red-ui-editableList-item-content").data('data'));
                 });
-                $.each(items,function(idx,li) {
+                $.each(items, function (idx, li) {
                     that.element.append(li);
                 })
             }
         },
-        width: function(desiredWidth) {
+        width: function (desiredWidth) {
             this.uiWidth = desiredWidth;
             this._resize();
         },
-        height: function(desiredHeight) {
+        height: function (desiredHeight) {
             this.uiHeight = desiredHeight;
             this._resize();
         },
-        addItem: function(data) {
+        addItem: function (data) {
             var that = this;
             data = data || {};
             var li = $('<li>');
@@ -3840,10 +3842,10 @@ RED.utils = (function() {
             if (this.activeSort) {
                 var items = this.items();
                 var skip = false;
-                items.each(function(i,el) {
+                items.each(function (i, el) {
                     if (added) { return }
                     var itemData = el.data('data');
-                    if (that.activeSort(data,itemData) < 0) {
+                    if (that.activeSort(data, itemData) < 0) {
                         li.insertBefore(el.closest("li"));
                         added = true;
                     }
@@ -3853,20 +3855,20 @@ RED.utils = (function() {
                 li.appendTo(this.element);
             }
             var row = $('<div/>').addClass("red-ui-editableList-item-content").appendTo(li);
-            row.data('data',data);
+            row.data('data', data);
             if (this.options.sortable === true) {
                 $('<i class="red-ui-editableList-item-handle fa fa-bars"></i>').appendTo(li);
                 li.addClass("red-ui-editableList-item-sortable");
             }
             if (this.options.removable) {
-                var deleteButton = $('<a/>',{href:"#",class:"red-ui-editableList-item-remove editor-button editor-button-small"}).appendTo(li);
-                $('<i/>',{class:"fa fa-remove"}).appendTo(deleteButton);
+                var deleteButton = $('<a/>', { href: "#", class: "red-ui-editableList-item-remove editor-button editor-button-small" }).appendTo(li);
+                $('<i/>', { class: "fa fa-remove" }).appendTo(deleteButton);
                 li.addClass("red-ui-editableList-item-removable");
-                deleteButton.click(function(evt) {
+                deleteButton.click(function (evt) {
                     evt.preventDefault();
                     var data = row.data('data');
                     li.addClass("red-ui-editableList-item-deleting")
-                    li.fadeOut(300, function() {
+                    li.fadeOut(300, function () {
                         $(this).remove();
                         if (that.options.removeItem) {
                             that.options.removeItem(data);
@@ -3875,28 +3877,28 @@ RED.utils = (function() {
                 });
             }
             if (this.options.addItem) {
-                var index = that.element.children().length-1;
-                setTimeout(function() {
-                    that.options.addItem(row,index,data);
+                var index = that.element.children().length - 1;
+                setTimeout(function () {
+                    that.options.addItem(row, index, data);
                     if (that.activeFilter) {
                         try {
                             if (!that.activeFilter(data)) {
                                 li.hide();
                             }
-                        } catch(err) {
+                        } catch (err) {
                         }
                     }
 
                     if (!that.activeSort && that.scrollOnAdd) {
-                        setTimeout(function() {
+                        setTimeout(function () {
                             that.uiContainer.scrollTop(that.element.height());
-                        },0);
+                        }, 0);
                     }
-                },0);
+                }, 0);
             }
         },
-        removeItem: function(data) {
-            var items = this.element.children().filter(function(f) {
+        removeItem: function (data) {
+            var items = this.element.children().filter(function (f) {
                 return data === $(this).find(".red-ui-editableList-item-content").data('data');
             });
             items.remove();
@@ -3904,25 +3906,25 @@ RED.utils = (function() {
                 this.options.removeItem(data);
             }
         },
-        items: function() {
-            return this.element.children().map(function(i) { return $(this).find(".red-ui-editableList-item-content"); });
+        items: function () {
+            return this.element.children().map(function (i) { return $(this).find(".red-ui-editableList-item-content"); });
         },
-        empty: function() {
+        empty: function () {
             this.element.empty();
         },
-        filter: function(filter) {
+        filter: function (filter) {
             if (filter !== undefined) {
                 this.activeFilter = filter;
             }
             return this._refreshFilter();
         },
-        sort: function(sort) {
+        sort: function (sort) {
             if (sort !== undefined) {
                 this.activeSort = sort;
             }
             return this._refreshSort();
         },
-        length: function() {
+        length: function () {
             return this.element.children().length;
         }
     });
@@ -3932,10 +3934,10 @@ RED.utils = (function() {
 // RED.popover is not needed
 
 
-(function($) {
+(function ($) {
 
-    $.widget( "nodered.searchBox", {
-        _create: function() {
+    $.widget("nodered.searchBox", {
+        _create: function () {
             var that = this;
 
             this.currentTimeout = null;
@@ -3946,40 +3948,40 @@ RED.utils = (function() {
 
             $('<i class="fa fa-search"></i>').prependTo(this.uiContainer);
             this.clearButton = $('<a href="#"><i class="fa fa-times"></i></a>').appendTo(this.uiContainer);
-            this.clearButton.on("click",function(e) {
+            this.clearButton.on("click", function (e) {
                 e.preventDefault();
                 that.element.val("");
-                that._change("",true);
+                that._change("", true);
                 that.element.focus();
             });
 
-            this.resultCount = $('<span>',{class:"red-ui-searchBox-resultCount hide"}).appendTo(this.uiContainer);
+            this.resultCount = $('<span>', { class: "red-ui-searchBox-resultCount hide" }).appendTo(this.uiContainer);
 
             this.element.val("");
-            this.element.on("keydown",function(evt) {
+            this.element.on("keydown", function (evt) {
                 if (evt.keyCode === 27) {
                     that.element.val("");
                 }
             })
-            this.element.on("keyup",function(evt) {
+            this.element.on("keyup", function (evt) {
                 that._change($(this).val());
             });
 
-            this.element.on("focus",function() {
-                $("body").one("mousedown",function() {
+            this.element.on("focus", function () {
+                $("body").one("mousedown", function () {
                     that.element.blur();
                 });
             });
 
         },
-        _change: function(val,instant) {
+        _change: function (val, instant) {
             var fireEvent = false;
             if (val === "") {
                 this.clearButton.hide();
                 fireEvent = true;
             } else {
                 this.clearButton.attr("style", "display: block !important");
-                fireEvent = (val.length >= (this.options.minimumLength||0));
+                fireEvent = (val.length >= (this.options.minimumLength || 0));
             }
             var current = this.element.val();
             fireEvent = fireEvent && current !== this.lastSent;
@@ -3987,16 +3989,16 @@ RED.utils = (function() {
                 if (!instant && this.options.delay > 0) {
                     clearTimeout(this.currentTimeout);
                     var that = this;
-                    this.currentTimeout = setTimeout(function() {
+                    this.currentTimeout = setTimeout(function () {
                         that.lastSent = that.element.val();
                         that._trigger("change");
-                    },this.options.delay);
+                    }, this.options.delay);
                 } else {
                     this._trigger("change");
                 }
             }
         },
-        value: function(val) {
+        value: function (val) {
             if (val === undefined) {
                 return this.element.val();
             } else {
@@ -4004,7 +4006,7 @@ RED.utils = (function() {
                 this._change(val);
             }
         },
-        count: function(val) {
+        count: function (val) {
             if (val === undefined || val === null || val === "") {
                 this.resultCount.text("").hide();
             } else {
@@ -4013,39 +4015,39 @@ RED.utils = (function() {
         }
     });
 })(jQuery);
-RED.tabs = (function() {
+RED.tabs = (function () {
     function createTabs(options) {
         var tabs = {};
         var currentTabWidth;
         var currentActiveTabWidth = 0;
 
         return {
-            addTab: function(tab) {
+            addTab: function (tab) {
                 tabs[tab.id] = tab;
                 if (options.onadd) {
                     options.onadd(tab);
                 }
             },
-            clear: function() { tabs = {}; },
-            removeTab: function() {},
-            activateTab: function(link) {
+            clear: function () { tabs = {}; },
+            removeTab: function () { },
+            activateTab: function (link) {
                 if (options.onchange) {
-                    options.onchange({id: link});
+                    options.onchange({ id: link });
                 }
             },
-            nextTab: function() {},
-            previousTab: function() {},
-            resize: function() {},
-            count: function() {
+            nextTab: function () { },
+            previousTab: function () { },
+            resize: function () { },
+            count: function () {
                 return 1;
             },
-            contains: function(id) {
+            contains: function (id) {
                 return id == RED.__currentFlow;
             },
-            renameTab: function(id,label) {
+            renameTab: function (id, label) {
                 tabs[id].label = label;
             },
-            order: function(order) {}
+            order: function (order) { }
 
         }
     }
@@ -4054,28 +4056,28 @@ RED.tabs = (function() {
         create: createTabs
     }
 })();
-(function($) {
+(function ($) {
     var allOptions = {
-        msg: {value:"msg",label:"msg.",validate:RED.utils.validatePropertyExpression},
-        flow: {value:"flow",label:"flow.",validate:RED.utils.validatePropertyExpression},
-        global: {value:"global",label:"global.",validate:RED.utils.validatePropertyExpression},
-        str: {value:"str",label:"string",icon:`${baseURL}flows/red/images/typedInput/az.png`},
-        num: {value:"num",label:"number",icon:`${baseURL}flows/red/images/typedInput/09.png`,validate:/^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/},
-        bool: {value:"bool",label:"boolean",icon:`${baseURL}flows/red/images/typedInput/bool.png`,options:["true","false"]},
-        json: {value:"json",label:"JSON",icon:`${baseURL}flows/red/images/typedInput/json.png`, validate: function(v) { try{JSON.parse(v);return true;}catch(e){return false;}}},
-        re: {value:"re",label:"regular expression",icon:`${baseURL}flows/red/images/typedInput/re.png`},
-        date: {value:"date",label:"timestamp",hasValue:false},
+        msg: { value: "msg", label: "msg.", validate: RED.utils.validatePropertyExpression },
+        flow: { value: "flow", label: "flow.", validate: RED.utils.validatePropertyExpression },
+        global: { value: "global", label: "global.", validate: RED.utils.validatePropertyExpression },
+        str: { value: "str", label: "string", icon: `${BASE_URL}flows/red/images/typedInput/az.png` },
+        num: { value: "num", label: "number", icon: `${BASE_URL}flows/red/images/typedInput/09.png`, validate: /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/ },
+        bool: { value: "bool", label: "boolean", icon: `${BASE_URL}flows/red/images/typedInput/bool.png`, options: ["true", "false"] },
+        json: { value: "json", label: "JSON", icon: `${BASE_URL}flows/red/images/typedInput/json.png`, validate: function (v) { try { JSON.parse(v); return true; } catch (e) { return false; } } },
+        re: { value: "re", label: "regular expression", icon: `${BASE_URL}flows/red/images/typedInput/re.png` },
+        date: { value: "date", label: "timestamp", hasValue: false },
         jsonata: {
             value: "jsonata",
             label: "expression",
-            icon: `${baseURL}flows/red/images/typedInput/expr.png`,
-            validate: function(v) { try{jsonata(v);return true;}catch(e){return false;}},
-            expand:function() {
+            icon: `${BASE_URL}flows/red/images/typedInput/expr.png`,
+            validate: function (v) { try { jsonata(v); return true; } catch (e) { return false; } },
+            expand: function () {
                 var that = this;
                 RED.editor.editExpression({
-                    value: this.value().replace(/\t/g,"\n"),
-                    complete: function(v) {
-                        that.value(v.replace(/\n/g,"\t"));
+                    value: this.value().replace(/\t/g, "\n"),
+                    complete: function (v) {
+                        that.value(v.replace(/\n/g, "\t"));
                     }
                 })
             }
@@ -4083,12 +4085,12 @@ RED.tabs = (function() {
     };
     var nlsd = false;
 
-    $.widget( "nodered.typedInput", {
-        _create: function() {
+    $.widget("nodered.typedInput", {
+        _create: function () {
             if (!nlsd && RED && RED._) {
                 for (var i in allOptions) {
                     if (allOptions.hasOwnProperty(i)) {
-                        allOptions[i].label = RED._("typedInput.type."+i,{defaultValue:allOptions[i].label});
+                        allOptions[i].label = RED._("typedInput.type." + i, { defaultValue: allOptions[i].label });
                     }
                 }
             }
@@ -4099,29 +4101,29 @@ RED.tabs = (function() {
             this.element.addClass('red-ui-typedInput');
             this.uiWidth = this.element.outerWidth();
             this.elementDiv = this.element.wrap("<div>").parent().addClass('red-ui-typedInput-input');
-            this.uiSelect = this.elementDiv.wrap( "<div>" ).parent();
+            this.uiSelect = this.elementDiv.wrap("<div>").parent();
             var attrStyle = this.element.attr('style');
             var m;
             if ((m = /width\s*:\s*(\d+(%|px))/i.exec(attrStyle)) !== null) {
-                this.element.css('width','100%');
+                this.element.css('width', '100%');
                 this.uiSelect.width(m[1]);
                 this.uiWidth = null;
             } else {
-                if(this.uiWidth>70){
+                if (this.uiWidth > 70) {
                     this.uiSelect.width(this.uiWidth);
                 }
                 else {
                     this.uiSelect.width(this.uiWidth + '%');
                 }
             }
-            ["Right","Left"].forEach(function(d) {
-                var m = that.element.css("margin"+d);
-                that.uiSelect.css("margin"+d,m);
-                that.element.css("margin"+d,0);
+            ["Right", "Left"].forEach(function (d) {
+                var m = that.element.css("margin" + d);
+                that.uiSelect.css("margin" + d, m);
+                that.element.css("margin" + d, 0);
             });
             this.uiSelect.addClass("red-ui-typedInput-container");
 
-            this.options.types = this.options.types||Object.keys(allOptions);
+            this.options.types = this.options.types || Object.keys(allOptions);
 
             this.selectTrigger = $('<button tabindex="0"></button>').prependTo(this.uiSelect);
             $('<i class="fa fa-sort-desc"></i>').appendTo(this.selectTrigger);
@@ -4136,69 +4138,69 @@ RED.tabs = (function() {
                     this.options.default = t;
                 }
             } else {
-                this.typeField = $("<input>",{type:'hidden'}).appendTo(this.uiSelect);
+                this.typeField = $("<input>", { type: 'hidden' }).appendTo(this.uiSelect);
             }
 
-            this.element.on('focus', function() {
+            this.element.on('focus', function () {
                 that.uiSelect.addClass('red-ui-typedInput-focus');
             });
-            this.element.on('blur', function() {
+            this.element.on('blur', function () {
                 that.uiSelect.removeClass('red-ui-typedInput-focus');
             });
-            this.element.on('change', function() {
+            this.element.on('change', function () {
                 that.validate();
             })
-            this.selectTrigger.click(function(event) {
+            this.selectTrigger.click(function (event) {
                 event.preventDefault();
                 that._showTypeMenu();
             });
-            this.selectTrigger.on('keydown',function(evt) {
+            this.selectTrigger.on('keydown', function (evt) {
                 if (evt.keyCode === 40) {
                     // Down
                     that._showTypeMenu();
                 }
-            }).on('focus', function() {
+            }).on('focus', function () {
                 that.uiSelect.addClass('red-ui-typedInput-focus');
             })
 
             // explicitly set optionSelectTrigger display to inline-block otherwise jQ sets it to 'inline'
             this.optionSelectTrigger = $('<button tabindex="0" class="red-ui-typedInput-option-trigger" style="display:inline-block"><span class="red-ui-typedInput-option-caret"><i class="fa fa-sort-desc"></i></span></button>').appendTo(this.uiSelect);
             this.optionSelectLabel = $('<span class="red-ui-typedInput-option-label"></span>').prependTo(this.optionSelectTrigger);
-            this.optionSelectTrigger.click(function(event) {
+            this.optionSelectTrigger.click(function (event) {
                 event.preventDefault();
                 that._showOptionSelectMenu();
-            }).on('keydown', function(evt) {
+            }).on('keydown', function (evt) {
                 if (evt.keyCode === 40) {
                     // Down
                     that._showOptionSelectMenu();
                 }
-            }).on('blur', function() {
+            }).on('blur', function () {
                 that.uiSelect.removeClass('red-ui-typedInput-focus');
-            }).on('focus', function() {
+            }).on('focus', function () {
                 that.uiSelect.addClass('red-ui-typedInput-focus');
             });
 
             this.optionExpandButton = $('<button tabindex="0" class="red-ui-typedInput-option-expand" style="display:inline-block"><i class="fa fa-ellipsis-h"></i></button>').appendTo(this.uiSelect);
 
 
-            this.type(this.options.default||this.typeList[0].value);
+            this.type(this.options.default || this.typeList[0].value);
         },
-        _showTypeMenu: function() {
+        _showTypeMenu: function () {
             if (this.typeList.length > 1) {
-                this._showMenu(this.menu,this.selectTrigger);
-                this.menu.find("[value='"+this.propertyType+"']").focus();
+                this._showMenu(this.menu, this.selectTrigger);
+                this.menu.find("[value='" + this.propertyType + "']").focus();
             } else {
                 this.element.focus();
             }
         },
-        _showOptionSelectMenu: function() {
+        _showOptionSelectMenu: function () {
             if (this.optionMenu) {
                 this.optionMenu.css({
-                    minWidth:this.optionSelectLabel.width()
+                    minWidth: this.optionSelectLabel.width()
                 });
 
-                this._showMenu(this.optionMenu,this.optionSelectLabel);
-                var selectedOption = this.optionMenu.find("[value='"+this.value()+"']");
+                this._showMenu(this.optionMenu, this.optionSelectLabel);
+                var selectedOption = this.optionMenu.find("[value='" + this.value() + "']");
                 if (selectedOption.length === 0) {
                     selectedOption = this.optionMenu.children(":first");
                 }
@@ -4206,44 +4208,44 @@ RED.tabs = (function() {
 
             }
         },
-        _hideMenu: function(menu) {
+        _hideMenu: function (menu) {
             $(document).off("mousedown.close-property-select");
             menu.hide();
             if (this.elementDiv.is(":visible")) {
                 this.element.focus();
-            } else if (this.optionSelectTrigger.is(":visible")){
+            } else if (this.optionSelectTrigger.is(":visible")) {
                 this.optionSelectTrigger.focus();
             } else {
                 this.selectTrigger.focus();
             }
         },
-        _createMenu: function(opts,callback) {
+        _createMenu: function (opts, callback) {
             var that = this;
             var menu = $("<div>").addClass("red-ui-typedInput-options");
-            opts.forEach(function(opt) {
+            opts.forEach(function (opt) {
                 if (typeof opt === 'string') {
-                    opt = {value:opt,label:opt};
+                    opt = { value: opt, label: opt };
                 }
-                var op = $('<a href="#"></a>').attr("value",opt.value).appendTo(menu);
+                var op = $('<a href="#"></a>').attr("value", opt.value).appendTo(menu);
                 if (opt.label) {
                     op.text(opt.label);
                 }
                 if (opt.icon) {
-                    $('<img>',{src:opt.icon,style:"margin-right: 4px; height: 18px;"}).prependTo(op);
+                    $('<img>', { src: opt.icon, style: "margin-right: 4px; height: 18px;" }).prependTo(op);
                 } else {
-                    op.css({paddingLeft: "18px"});
+                    op.css({ paddingLeft: "18px" });
                 }
 
-                op.click(function(event) {
+                op.click(function (event) {
                     event.preventDefault();
                     callback(opt.value);
                     that._hideMenu(menu);
                 });
             });
-            menu.css({display: "none",});
+            menu.css({ display: "none", });
             menu.appendTo($('.flows-wrapper'));
 
-            menu.on('keydown', function(evt) {
+            menu.on('keydown', function (evt) {
                 if (evt.keyCode === 40) {
                     // DOWN
                     $(this).children(":focus").next().focus();
@@ -4257,7 +4259,7 @@ RED.tabs = (function() {
 
             return menu;
         },
-        _showMenu: function(menu,relativeTo) {
+        _showMenu: function (menu, relativeTo) {
             if (this.disarmClick) {
                 this.disarmClick = false;
                 return
@@ -4266,19 +4268,19 @@ RED.tabs = (function() {
             var pos = relativeTo.offset();
             var height = relativeTo.height();
             var menuHeight = menu.height();
-            var top = (height+pos.top-3);
-            if (top+menuHeight > $(window).height()) {
-                top -= (top+menuHeight)-$(window).height()+5;
+            var top = (height + pos.top - 3);
+            if (top + menuHeight > $(window).height()) {
+                top -= (top + menuHeight) - $(window).height() + 5;
             }
             menu.css({
-                top: top+"px",
-                left: (2+pos.left)+"px",
+                top: top + "px",
+                left: (2 + pos.left) + "px",
             });
             menu.slideDown(100);
-            this._delay(function() {
+            this._delay(function () {
                 that.uiSelect.addClass('red-ui-typedInput-focus');
-                $(document).on("mousedown.close-property-select", function(event) {
-                    if(!$(event.target).closest(menu).length) {
+                $(document).on("mousedown.close-property-select", function (event) {
+                    if (!$(event.target).closest(menu).length) {
                         that._hideMenu(menu);
                     }
                     if ($(event.target).closest(relativeTo).length) {
@@ -4288,13 +4290,13 @@ RED.tabs = (function() {
                 })
             });
         },
-        _getLabelWidth: function(label) {
+        _getLabelWidth: function (label) {
             var labelWidth = label.outerWidth();
             if (labelWidth === 0) {
                 var container = $('<div class="red-ui-typedInput-container"></div>').css({
-                    position:"absolute",
-                    top:0,
-                    left:-1000
+                    position: "absolute",
+                    top: 0,
+                    left: -1000
                 }).appendTo($('.flows-wrapper'));
                 var newTrigger = label.clone().appendTo(container);
                 labelWidth = newTrigger.outerWidth();
@@ -4302,31 +4304,31 @@ RED.tabs = (function() {
             }
             return labelWidth;
         },
-        _resize: function() {
+        _resize: function () {
             if (this.typeMap[this.propertyType] && this.typeMap[this.propertyType].hasValue === false) {
                 this.selectTrigger.addClass("red-ui-typedInput-full-width");
             } else {
                 this.selectTrigger.removeClass("red-ui-typedInput-full-width");
                 var labelWidth = this._getLabelWidth(this.selectTrigger);
-                this.elementDiv.css('left',labelWidth+"px");
+                this.elementDiv.css('left', labelWidth + "px");
                 if (this.optionExpandButton.is(":visible")) {
-                    this.elementDiv.css('right',"22px");
+                    this.elementDiv.css('right', "22px");
                 } else {
-                    this.elementDiv.css('right','0');
+                    this.elementDiv.css('right', '0');
                 }
                 if (this.optionSelectTrigger) {
-                    this.optionSelectTrigger.css({'left':(labelWidth)+"px",'width':'calc( 100% - '+labelWidth+'px )'});
+                    this.optionSelectTrigger.css({ 'left': (labelWidth) + "px", 'width': 'calc( 100% - ' + labelWidth + 'px )' });
                 }
             }
         },
-        _destroy: function() {
+        _destroy: function () {
             this.menu.remove();
         },
-        types: function(types) {
+        types: function (types) {
             var that = this;
             var currentType = this.type();
             this.typeMap = {};
-            this.typeList = types.map(function(opt) {
+            this.typeList = types.map(function (opt) {
                 var result;
                 if (typeof opt === 'string') {
                     result = allOptions[opt];
@@ -4340,16 +4342,16 @@ RED.tabs = (function() {
             if (this.menu) {
                 this.menu.remove();
             }
-            this.menu = this._createMenu(this.typeList, function(v) { that.type(v) });
+            this.menu = this._createMenu(this.typeList, function (v) { that.type(v) });
             if (currentType && !this.typeMap.hasOwnProperty(currentType)) {
                 this.type(this.typeList[0].value);
             }
         },
-        width: function(desiredWidth) {
+        width: function (desiredWidth) {
             this.uiWidth = desiredWidth;
             this._resize();
         },
-        value: function(value) {
+        value: function (value) {
             if (!arguments.length) {
                 return this.element.val();
             } else {
@@ -4360,10 +4362,10 @@ RED.tabs = (function() {
                     this.optionSelectLabel.text(value);
                 }
                 this.element.val(value);
-                this.element.trigger('change',this.type(),value);
+                this.element.trigger('change', this.type(), value);
             }
         },
-        type: function(type) {
+        type: function (type) {
             if (!arguments.length) {
                 return this.propertyType;
             } else {
@@ -4378,7 +4380,7 @@ RED.tabs = (function() {
                         image = new Image();
                         image.name = opt.icon;
                         image.src = opt.icon;
-                        $('<img>',{src:opt.icon,style:"margin-right: 4px;height: 18px;"}).prependTo(this.selectLabel);
+                        $('<img>', { src: opt.icon, style: "margin-right: 4px;height: 18px;" }).prependTo(this.selectLabel);
                     } else {
                         this.selectLabel.text(opt.label);
                     }
@@ -4389,7 +4391,7 @@ RED.tabs = (function() {
                         if (this.optionSelectTrigger) {
                             this.optionSelectTrigger.attr("style", "display: block !important");
                             this.elementDiv.hide();
-                            this.optionMenu = this._createMenu(opt.options,function(v){
+                            this.optionMenu = this._createMenu(opt.options, function (v) {
                                 that.optionSelectLabel.text(v);
                                 that.value(v);
                             });
@@ -4422,25 +4424,25 @@ RED.tabs = (function() {
                         if (opt.expand && typeof opt.expand === 'function') {
                             this.optionExpandButton.attr("style", "display: block !important");
                             this.optionExpandButton.off('click');
-                            this.optionExpandButton.on('click',function(evt) {
+                            this.optionExpandButton.on('click', function (evt) {
                                 evt.preventDefault();
                                 opt.expand.call(that);
                             })
                         } else {
                             this.optionExpandButton.hide();
                         }
-                        this.element.trigger('change',this.propertyType,this.value());
+                        this.element.trigger('change', this.propertyType, this.value());
                     }
                     if (image) {
-                        image.onload = function() { that._resize(); }
-                        image.onerror = function() { that._resize(); }
+                        image.onload = function () { that._resize(); }
+                        image.onerror = function () { that._resize(); }
                     } else {
                         this._resize();
                     }
                 }
             }
         },
-        validate: function() {
+        validate: function () {
             var result;
             var value = this.value();
             var type = this.type();
@@ -4461,21 +4463,21 @@ RED.tabs = (function() {
             }
             return result;
         },
-        show: function() {
+        show: function () {
             this.uiSelect.show();
             this._resize();
         },
-        hide: function() {
+        hide: function () {
             this.uiSelect.hide();
         }
     });
 })(jQuery);
-RED.actions = (function() {
+RED.actions = (function () {
     var actions = {
 
     }
 
-    function addAction(name,handler) {
+    function addAction(name, handler) {
         actions[name] = handler;
     }
     function removeAction(name) {
@@ -4491,9 +4493,9 @@ RED.actions = (function() {
     }
     function listActions() {
         var result = [];
-        Object.keys(actions).forEach(function(action) {
+        Object.keys(actions).forEach(function (action) {
             var shortcut = RED.keyboard.getShortcut(action);
-            result.push({id:action,scope:shortcut?shortcut.scope:undefined,key:shortcut?shortcut.key:undefined})
+            result.push({ id: action, scope: shortcut ? shortcut.scope : undefined, key: shortcut ? shortcut.key : undefined })
         })
         return result;
     }
@@ -4512,7 +4514,7 @@ RED.actions = (function() {
 // handles conflict resolution with backend version of the flow
 // RED.diff is not needed | TODO: implement concurrent usage interface (multi-tenancy)
 
-RED.keyboard = (function() {
+RED.keyboard = (function () {
 
     var isMac = /Mac/i.test(window.navigator.platform);
 
@@ -4520,56 +4522,56 @@ RED.keyboard = (function() {
     var partialState;
 
     var keyMap = {
-        "left":37,
-        "up":38,
-        "right":39,
-        "down":40,
-        "escape":27,
+        "left": 37,
+        "up": 38,
+        "right": 39,
+        "down": 40,
+        "escape": 27,
         "enter": 13,
         "backspace": 8,
         "delete": 46,
         "space": 32,
-        ";":186,
-        "=":187,
-        ",":188,
-        "-":189,
-        ".":190,
-        "/":191,
-        "\\":220,
-        "'":222,
-        "?":191 // <- QWERTY specific
+        ";": 186,
+        "=": 187,
+        ",": 188,
+        "-": 189,
+        ".": 190,
+        "/": 191,
+        "\\": 220,
+        "'": 222,
+        "?": 191 // <- QWERTY specific
     }
     var metaKeyCodes = {
-        16:true,
-        17:true,
+        16: true,
+        17: true,
         18: true,
-        91:true,
+        91: true,
         93: true
     }
     var actionToKeyMap = {}
 
     // FF generates some different keycodes because reasons.
     var firefoxKeyCodeMap = {
-        59:186,
-        61:187,
-        173:189
+        59: 186,
+        61: 187,
+        173: 189
     }
 
     function init() {
 
         $.getJSON({
-            url: `${baseURL}flows/red/keymap.json`,
+            url: `${BASE_URL}flows/red/keymap.json`,
             type: 'GET',
             headers: {
                 "authorization": `Bearer ${util.getToken()}`,
             },
-            success: function(data) {
+            success: function (data) {
                 for (var scope in data) {
                     if (data.hasOwnProperty(scope)) {
                         var keys = data[scope];
                         for (var key in keys) {
                             if (keys.hasOwnProperty(key)) {
-                                addHandler(scope,key,keys[key]);
+                                addHandler(scope, key, keys[key]);
                             }
                         }
                     }
@@ -4585,8 +4587,8 @@ RED.keyboard = (function() {
         var modifiers = {};
         var keycode;
         var blank = 0;
-        for (var i=0;i<parts.length;i++) {
-            switch(parts[i]) {
+        for (var i = 0; i < parts.length; i++) {
+            switch (parts[i]) {
                 case "ctrl":
                 case "cmd":
                     modifiers.ctrl = true;
@@ -4613,11 +4615,11 @@ RED.keyboard = (function() {
                     break;
             }
         }
-        return [keycode,modifiers];
+        return [keycode, modifiers];
     }
 
     function resolveKeyEvent(evt) {
-        var slot = partialState||handlers;
+        var slot = partialState || handlers;
         if (evt.ctrlKey || evt.metaKey) {
             slot = slot.ctrl;
         }
@@ -4655,7 +4657,7 @@ RED.keyboard = (function() {
             return resolveKeyEvent(evt);
         }
     }
-    d3.select(window).on("keydown",function() {
+    d3.select(window).on("keydown", function () {
         if (metaKeyCodes[d3.event.keyCode]) {
             return;
         }
@@ -4670,7 +4672,7 @@ RED.keyboard = (function() {
         }
     });
 
-    function addHandler(scope,key,modifiers,ondown) {
+    function addHandler(scope, key, modifiers, ondown) {
         var mod = modifiers;
         var cbdown = ondown;
         if (typeof modifiers == "function" || typeof modifiers === "string") {
@@ -4678,38 +4680,38 @@ RED.keyboard = (function() {
             cbdown = modifiers;
         }
         var keys = [];
-        var i=0;
+        var i = 0;
         if (typeof key === 'string') {
             if (typeof cbdown === 'string') {
-                actionToKeyMap[cbdown] = {scope:scope,key:key};
+                actionToKeyMap[cbdown] = { scope: scope, key: key };
             }
             var parts = key.split(" ");
-            for (i=0;i<parts.length;i++) {
+            for (i = 0; i < parts.length; i++) {
                 var parsedKey = parseKeySpecifier(parts[i]);
                 if (parsedKey) {
                     keys.push(parsedKey);
                 } else {
-                    console.log("Unrecognised key specifier:",key)
+                    console.log("Unrecognised key specifier:", key)
                     return;
                 }
             }
         } else {
-            keys.push([key,mod])
+            keys.push([key, mod])
         }
         var slot = handlers;
-        for (i=0;i<keys.length;i++) {
+        for (i = 0; i < keys.length; i++) {
             key = keys[i][0];
             mod = keys[i][1];
             if (mod.ctrl) {
-                slot.ctrl = slot.ctrl||{};
+                slot.ctrl = slot.ctrl || {};
                 slot = slot.ctrl;
             }
             if (mod.shift) {
-                slot.shift = slot.shift||{};
+                slot.shift = slot.shift || {};
                 slot = slot.shift;
             }
             if (mod.alt) {
-                slot.alt = slot.alt||{};
+                slot.alt = slot.alt || {};
                 slot = slot.alt;
             }
             slot[key] = slot[key] || {};
@@ -4720,27 +4722,27 @@ RED.keyboard = (function() {
         slot.ondown = cbdown;
     }
 
-    function removeHandler(key,modifiers) {
+    function removeHandler(key, modifiers) {
         var mod = modifiers || {};
         var keys = [];
-        var i=0;
+        var i = 0;
         if (typeof key === 'string') {
             delete actionToKeyMap[key];
             var parts = key.split(" ");
-            for (i=0;i<parts.length;i++) {
+            for (i = 0; i < parts.length; i++) {
                 var parsedKey = parseKeySpecifier(parts[i]);
                 if (parsedKey) {
                     keys.push(parsedKey);
                 } else {
-                    console.log("Unrecognised key specifier:",key)
+                    console.log("Unrecognised key specifier:", key)
                     return;
                 }
             }
         } else {
-            keys.push([key,mod])
+            keys.push([key, mod])
         }
         var slot = handlers;
-        for (i=0;i<keys.length;i++) {
+        for (i = 0; i < keys.length; i++) {
             key = keys[i][0];
             mod = keys[i][1];
             if (mod.ctrl) {
@@ -4763,27 +4765,27 @@ RED.keyboard = (function() {
 
     var shortcutDialog = null;
 
-    var cmdCtrlKey = '<span class="help-key">'+(isMac?'&#8984;':'Ctrl')+'</span>';
+    var cmdCtrlKey = '<span class="help-key">' + (isMac ? '&#8984;' : 'Ctrl') + '</span>';
 
     function showKeyboardHelp() {
-        if (!RED.settings.theme("menu.menu-item-keyboard-shortcuts",true)) {
+        if (!RED.settings.theme("menu.menu-item-keyboard-shortcuts", true)) {
             return;
         }
         if (!shortcutDialog) {
-            shortcutDialog = $('<div id="keyboard-help-dialog" class="hide">'+
-                '<div class="keyboard-shortcut-entry keyboard-shortcut-list-header">'+
-                '<div class="keyboard-shortcut-entry-key">shortcut</div>'+
-                '<div class="keyboard-shortcut-entry-key">action</div>'+
-                '<div class="keyboard-shortcut-entry-scope">scope</div>'+
-                '</div>'+
-                '<ol id="keyboard-shortcut-list"></ol>'+
+            shortcutDialog = $('<div id="keyboard-help-dialog" class="hide">' +
+                '<div class="keyboard-shortcut-entry keyboard-shortcut-list-header">' +
+                '<div class="keyboard-shortcut-entry-key">shortcut</div>' +
+                '<div class="keyboard-shortcut-entry-key">action</div>' +
+                '<div class="keyboard-shortcut-entry-scope">scope</div>' +
+                '</div>' +
+                '<ol id="keyboard-shortcut-list"></ol>' +
                 '</div>')
                 .appendTo("body");
 
             var shortcutList = $('#keyboard-shortcut-list').editableList({
                 addButton: false,
                 scrollOnAdd: false,
-                addItem: function(container,i,object) {
+                addItem: function (container, i, object) {
                     var item = $('<div class="keyboard-shortcut-entry">').appendTo(container);
 
                     var key = $('<div class="keyboard-shortcut-entry-key">').appendTo(item);
@@ -4794,11 +4796,11 @@ RED.keyboard = (function() {
                         key.html(RED._('keyboard.unassigned'));
                     }
 
-                    var text = object.id.replace(/(^.+:([a-z]))|(-([a-z]))/g,function() {
+                    var text = object.id.replace(/(^.+:([a-z]))|(-([a-z]))/g, function () {
                         if (arguments[5] === 0) {
                             return arguments[2].toUpperCase();
                         } else {
-                            return " "+arguments[4].toUpperCase();
+                            return " " + arguments[4].toUpperCase();
                         }
                     });
                     var label = $('<div>').html(text).appendTo(item);
@@ -4810,11 +4812,11 @@ RED.keyboard = (function() {
                 },
             });
             var shortcuts = RED.actions.list();
-            shortcuts.sort(function(A,B) {
+            shortcuts.sort(function (A, B) {
                 return A.id.localeCompare(B.id);
             });
-            shortcuts.forEach(function(s) {
-                shortcutList.editableList('addItem',s);
+            shortcuts.forEach(function (s) {
+                shortcutList.editableList('addItem', s);
             })
 
             shortcutDialog.dialog({
@@ -4822,7 +4824,7 @@ RED.keyboard = (function() {
                 autoOpen: false,
                 width: "800",
                 height: "400",
-                title:RED._("keyboard.title"),
+                title: RED._("keyboard.title"),
                 resizable: false
             });
         }
@@ -4830,33 +4832,33 @@ RED.keyboard = (function() {
         shortcutDialog.dialog("open");
     }
     function formatKey(key) {
-        var formattedKey = isMac?key.replace(/ctrl-?/,"&#8984;"):key;
-        formattedKey = isMac?formattedKey.replace(/alt-?/,"&#8997;"):key;
-        formattedKey = formattedKey.replace(/shift-?/,"&#8679;")
-        formattedKey = formattedKey.replace(/left/,"&#x2190;")
-        formattedKey = formattedKey.replace(/up/,"&#x2191;")
-        formattedKey = formattedKey.replace(/right/,"&#x2192;")
-        formattedKey = formattedKey.replace(/down/,"&#x2193;")
-        return '<span class="help-key-block"><span class="help-key">'+formattedKey.split(" ").join('</span> <span class="help-key">')+'</span></span>';
+        var formattedKey = isMac ? key.replace(/ctrl-?/, "&#8984;") : key;
+        formattedKey = isMac ? formattedKey.replace(/alt-?/, "&#8997;") : key;
+        formattedKey = formattedKey.replace(/shift-?/, "&#8679;")
+        formattedKey = formattedKey.replace(/left/, "&#x2190;")
+        formattedKey = formattedKey.replace(/up/, "&#x2191;")
+        formattedKey = formattedKey.replace(/right/, "&#x2192;")
+        formattedKey = formattedKey.replace(/down/, "&#x2193;")
+        return '<span class="help-key-block"><span class="help-key">' + formattedKey.split(" ").join('</span> <span class="help-key">') + '</span></span>';
     }
 
     return {
         init: init,
         add: addHandler,
         remove: removeHandler,
-        getShortcut: function(actionName) {
+        getShortcut: function (actionName) {
             return actionToKeyMap[actionName];
         },
         formatKey: formatKey
     }
 
 })();
-RED.workspaces = (function() {
+RED.workspaces = (function () {
 
     var activeWorkspace = 0;
     var workspaceIndex = 0;
 
-    function addWorkspace(ws,skipHistoryEntry) {
+    function addWorkspace(ws, skipHistoryEntry) {
         if (ws) {
             workspace_tabs.addTab(ws);
             workspace_tabs.resize();
@@ -4864,14 +4866,14 @@ RED.workspaces = (function() {
             var tabId = RED.nodes.id();
             do {
                 workspaceIndex += 1;
-            } while($("#workspace-tabs a[title='"+RED._('workspace.defaultName',{number:workspaceIndex})+"']").size() !== 0);
+            } while ($("#workspace-tabs a[title='" + RED._('workspace.defaultName', { number: workspaceIndex }) + "']").size() !== 0);
 
-            ws = {type:"tab",id:tabId,label:RED._('workspace.defaultName',{number:workspaceIndex})};
+            ws = { type: "tab", id: tabId, label: RED._('workspace.defaultName', { number: workspaceIndex }) };
             RED.nodes.addWorkspace(ws);
             workspace_tabs.addTab(ws);
             workspace_tabs.activateTab(tabId);
             if (!skipHistoryEntry) {
-                RED.history.push({t:'add',workspaces:[ws],dirty:RED.nodes.dirty()});
+                RED.history.push({ t: 'add', workspaces: [ws], dirty: RED.nodes.dirty() });
                 RED.nodes.dirty(true);
             }
         }
@@ -4896,13 +4898,13 @@ RED.workspaces = (function() {
         var workspace = RED.nodes.workspace(id);
         RED.view.state(RED.state.EDITING);
         var trayOptions = {
-            title: RED._("workspace.editFlow",{name:workspace.label}),
+            title: RED._("workspace.editFlow", { name: workspace.label }),
             buttons: [
                 {
                     id: "node-dialog-delete",
-                    class: 'leftButton'+((workspace_tabs.count() == 1)?" disabled":""),
+                    class: 'leftButton' + ((workspace_tabs.count() == 1) ? " disabled" : ""),
                     text: RED._("common.label.delete"), //'<i class="fa fa-trash"></i>',
-                    click: function() {
+                    click: function () {
                         deleteWorkspace(workspace);
                         RED.tray.close();
                     }
@@ -4910,7 +4912,7 @@ RED.workspaces = (function() {
                 {
                     id: "node-dialog-cancel",
                     text: RED._("common.label.cancel"),
-                    click: function() {
+                    click: function () {
                         RED.tray.close();
                     }
                 },
@@ -4918,21 +4920,21 @@ RED.workspaces = (function() {
                     id: "node-dialog-ok",
                     class: "primary",
                     text: RED._("common.label.done"),
-                    click: function() {
-                        var label = $( "#node-input-name" ).val();
+                    click: function () {
+                        var label = $("#node-input-name").val();
                         if (workspace.label != label) {
                             var changes = {
-                                label:workspace.label
+                                label: workspace.label
                             }
                             var historyEvent = {
                                 t: "edit",
-                                changes:changes,
+                                changes: changes,
                                 node: workspace,
                                 dirty: RED.nodes.dirty()
                             }
                             workspace.changed = true;
                             RED.history.push(historyEvent);
-                            workspace_tabs.renameTab(workspace.id,label);
+                            workspace_tabs.renameTab(workspace.id, label);
                             RED.nodes.dirty(true);
                             // RED.sidebar.config.refresh();
                         }
@@ -4940,20 +4942,20 @@ RED.workspaces = (function() {
                     }
                 }
             ],
-            open: function(tray) {
+            open: function (tray) {
                 var trayBody = tray.find('.editor-tray-body');
                 var dialogForm = $('<form id="dialog-form" class="form-horizontal"></form>').appendTo(trayBody);
-                $('<div class="form-row">'+
-                    '<label for="node-input-name" data-i18n="[append]editor:common.label.name"><i class="fa fa-tag"></i> </label>'+
-                    '<input type="text" id="node-input-name">'+
+                $('<div class="form-row">' +
+                    '<label for="node-input-name" data-i18n="[append]editor:common.label.name"><i class="fa fa-tag"></i> </label>' +
+                    '<input type="text" id="node-input-name">' +
                     '</div>').appendTo(dialogForm);
                 $('<input type="text" style="display: none;" />').prependTo(dialogForm);
-                dialogForm.submit(function(e) { e.preventDefault();});
+                dialogForm.submit(function (e) { e.preventDefault(); });
                 $("#node-input-name").val(workspace.label);
                 RED.text.bidi.prepareInput($("#node-input-name"))
                 dialogForm.i18n();
             },
-            close: function() {
+            close: function () {
                 if (RED.view.state() != RED.state.IMPORT_DRAGGING) {
                     RED.view.state(RED.state.DEFAULT);
                 }
@@ -4964,46 +4966,46 @@ RED.workspaces = (function() {
 
 
     var workspace_tabs;
-    function createWorkspaceTabs(){
+    function createWorkspaceTabs() {
         workspace_tabs = RED.tabs.create({
             id: "workspace-tabs",
-            onchange: function(tab) {
+            onchange: function (tab) {
                 var event = {
                     old: activeWorkspace
                 }
                 activeWorkspace = tab.id;
                 event.workspace = activeWorkspace;
-                RED.events.emit("workspace:change",event);
-                RED.__currentFlow = 'flow/'+tab.id;
+                RED.events.emit("workspace:change", event);
+                RED.__currentFlow = 'flow/' + tab.id;
             },
-            ondblclick: function(tab) {
+            ondblclick: function (tab) {
                 if (tab.type != "subflow") {
                     showRenameWorkspaceDialog(tab.id);
                 } else {
                     RED.editor.editSubflow(RED.nodes.subflow(tab.id));
                 }
             },
-            onadd: function(tab) {
+            onadd: function (tab) {
                 // RED.menu.setDisabled("menu-item-workspace-delete",workspace_tabs.count() == 1);
             },
-            onremove: function(tab) {
+            onremove: function (tab) {
                 // RED.menu.setDisabled("menu-item-workspace-delete",workspace_tabs.count() == 1);
             },
-            onreorder: function(oldOrder, newOrder) {
-                RED.history.push({t:'reorder',order:oldOrder,dirty:RED.nodes.dirty()});
+            onreorder: function (oldOrder, newOrder) {
+                RED.history.push({ t: 'reorder', order: oldOrder, dirty: RED.nodes.dirty() });
                 RED.nodes.dirty(true);
                 setWorkspaceOrder(newOrder);
             },
             minimumActiveTabWidth: 150,
             scrollable: true,
-            addButton: function() {
+            addButton: function () {
                 addWorkspace();
             }
         });
     }
     function init() {
         createWorkspaceTabs();
-        RED.events.on("sidebar:resize",workspace_tabs.resize);
+        RED.events.on("sidebar:resize", workspace_tabs.resize);
         // RED.actions.add("core:show-next-tab",workspace_tabs.nextTab);
         // RED.actions.add("core:show-previous-tab",workspace_tabs.previousTab);
 
@@ -5011,7 +5013,7 @@ RED.workspaces = (function() {
         //     deleteWorkspace(RED.nodes.workspace(activeWorkspace));
         // });
 
-        $(window).resize(function() {
+        $(window).resize(function () {
             workspace_tabs.resize();
         });
 
@@ -5022,7 +5024,7 @@ RED.workspaces = (function() {
     }
 
     function editWorkspace(id) {
-        showRenameWorkspaceDialog(id||activeWorkspace);
+        showRenameWorkspaceDialog(id || activeWorkspace);
     }
 
     function removeWorkspace(ws) {
@@ -5036,7 +5038,7 @@ RED.workspaces = (function() {
     }
 
     function setWorkspaceOrder(order) {
-        RED.nodes.setWorkspaceOrder(order.filter(function(id) {
+        RED.nodes.setWorkspaceOrder(order.filter(function (id) {
             return RED.nodes.workspace(id) !== undefined;
         }));
         workspace_tabs.order(order);
@@ -5048,20 +5050,20 @@ RED.workspaces = (function() {
         remove: removeWorkspace,
         order: setWorkspaceOrder,
         edit: editWorkspace,
-        contains: function(id) {
+        contains: function (id) {
             return workspace_tabs.contains(id);
         },
-        count: function() {
+        count: function () {
             return workspace_tabs.count();
         },
-        active: function() {
+        active: function () {
             return activeWorkspace
         },
-        show: function(id) {
+        show: function (id) {
             if (!workspace_tabs.contains(id)) {
                 var sf = RED.nodes.subflow(id);
                 if (sf) {
-                    addWorkspace({type:"subflow",id:id,icon:`${baseURL}flows/red/images/subflow_tab.png`,label:sf.name, closeable: true});
+                    addWorkspace({ type: "subflow", id: id, icon: `${BASE_URL}flows/red/images/subflow_tab.png`, label: sf.name, closeable: true });
                 } else {
                     console.error("Invalid wk id: " + id);
                     return;
@@ -5070,24 +5072,24 @@ RED.workspaces = (function() {
 
             workspace_tabs.activateTab(id);
         },
-        refresh: function() {
-            RED.nodes.eachWorkspace(function(ws) {
-                workspace_tabs.renameTab(ws.id,ws.label);
+        refresh: function () {
+            RED.nodes.eachWorkspace(function (ws) {
+                workspace_tabs.renameTab(ws.id, ws.label);
 
             })
-            RED.nodes.eachSubflow(function(sf) {
+            RED.nodes.eachSubflow(function (sf) {
                 if (workspace_tabs.contains(sf.id)) {
-                    workspace_tabs.renameTab(sf.id,sf.name);
+                    workspace_tabs.renameTab(sf.id, sf.name);
                 }
             });
             // RED.sidebar.config.refresh();
         },
-        resize: function() {
+        resize: function () {
             workspace_tabs.resize();
         }
     }
 })();
-RED.view = (function() {
+RED.view = (function () {
     var space_width = 5000,
         space_height = 5000,
         lineCurveScale = 0.75,
@@ -5121,7 +5123,7 @@ RED.view = (function() {
         mousedown_port_type = null,
         mousedown_port_index = 0,
         mouseup_node = null,
-        mouse_offset = [0,0],
+        mouse_offset = [0, 0],
         mouse_position = null,
         mouse_mode = 0,
         moving_set = [],
@@ -5135,11 +5137,11 @@ RED.view = (function() {
     var clipboard = "";
 
     var status_colours = {
-        "red":    "#c00",
-        "green":  "#5a8",
+        "red": "#c00",
+        "green": "#5a8",
         "yellow": "#F9DF31",
-        "blue":   "#53A3F3",
-        "grey":   "#d3d3d3"
+        "blue": "#53A3F3",
+        "grey": "#d3d3d3"
     }
 
     var outer = null,
@@ -5153,14 +5155,14 @@ RED.view = (function() {
      *
      * @param cannotEdit When this param is true, the flow is just for viewer
      */
-    function domInit(cannotEdit=false) {
+    function domInit(cannotEdit = false) {
         outer = d3.select("#chart")
             .append("svg:svg")
             .attr("width", space_width)
             .attr("height", space_height)
-            .attr("pointer-events", cannotEdit ? "none": "all")
-            .style("cursor","crosshair")
-            .on("mousedown", function() {
+            .attr("pointer-events", cannotEdit ? "none" : "all")
+            .style("cursor", "crosshair")
+            .on("mousedown", function () {
                 focusView();
             });
         vis = outer
@@ -5170,50 +5172,50 @@ RED.view = (function() {
             .on("mousemove", canvasMouseMove)
             .on("mousedown", canvasMouseDown)
             .on("mouseup", canvasMouseUp)
-            .on("touchend", function() {
+            .on("touchend", function () {
                 clearTimeout(touchStartTime);
                 touchStartTime = null;
-                if  (RED.touch.radialMenu.active()) {
+                if (RED.touch.radialMenu.active()) {
                     return;
                 }
                 if (lasso) {
-                    outer_background.attr("fill","#fff");
+                    outer_background.attr("fill", "#fff");
                 }
                 canvasMouseUp.call(this);
             })
             .on("touchcancel", canvasMouseUp)
-            .on("touchstart", function() {
+            .on("touchstart", function () {
                 var touch0;
-                if (d3.event.touches.length>1) {
+                if (d3.event.touches.length > 1) {
                     clearTimeout(touchStartTime);
                     touchStartTime = null;
                     d3.event.preventDefault();
                     touch0 = d3.event.touches.item(0);
                     var touch1 = d3.event.touches.item(1);
-                    var a = touch0["pageY"]-touch1["pageY"];
-                    var b = touch0["pageX"]-touch1["pageX"];
+                    var a = touch0["pageY"] - touch1["pageY"];
+                    var b = touch0["pageX"] - touch1["pageX"];
 
                     var offset = $("#chart").offset();
-                    var scrollPos = [$("#chart").scrollLeft(),$("#chart").scrollTop()];
+                    var scrollPos = [$("#chart").scrollLeft(), $("#chart").scrollTop()];
                     startTouchCenter = [
-                        (touch1["pageX"]+(b/2)-offset.left+scrollPos[0])/scaleFactor,
-                        (touch1["pageY"]+(a/2)-offset.top+scrollPos[1])/scaleFactor
+                        (touch1["pageX"] + (b / 2) - offset.left + scrollPos[0]) / scaleFactor,
+                        (touch1["pageY"] + (a / 2) - offset.top + scrollPos[1]) / scaleFactor
                     ];
                     moveTouchCenter = [
-                        touch1["pageX"]+(b/2),
-                        touch1["pageY"]+(a/2)
+                        touch1["pageX"] + (b / 2),
+                        touch1["pageY"] + (a / 2)
                     ]
-                    startTouchDistance = Math.sqrt((a*a)+(b*b));
+                    startTouchDistance = Math.sqrt((a * a) + (b * b));
                 } else {
                     var obj = d3.select(document.body);
                     touch0 = d3.event.touches.item(0);
-                    var pos = [touch0.pageX,touch0.pageY];
-                    startTouchCenter = [touch0.pageX,touch0.pageY];
+                    var pos = [touch0.pageX, touch0.pageY];
+                    startTouchCenter = [touch0.pageX, touch0.pageY];
                     startTouchDistance = 0;
                     var point = d3.touches(this)[0];
-                    touchStartTime = setTimeout(function() {
+                    touchStartTime = setTimeout(function () {
                         touchStartTime = null;
-                        showTouchMenu(obj,pos);
+                        showTouchMenu(obj, pos);
                         //lasso = vis.append("rect")
                         //    .attr("ox",point[0])
                         //    .attr("oy",point[1])
@@ -5225,21 +5227,21 @@ RED.view = (function() {
                         //    .attr("height",0)
                         //    .attr("class","lasso");
                         //outer_background.attr("fill","#e3e3f3");
-                    },touchLongPressTimeout);
+                    }, touchLongPressTimeout);
                 }
             })
-            .on("touchmove", function(){
-                if  (RED.touch.radialMenu.active()) {
+            .on("touchmove", function () {
+                if (RED.touch.radialMenu.active()) {
                     d3.event.preventDefault();
                     return;
                 }
                 var touch0;
-                if (d3.event.touches.length<2) {
+                if (d3.event.touches.length < 2) {
                     if (touchStartTime) {
                         touch0 = d3.event.touches.item(0);
-                        var dx = (touch0.pageX-startTouchCenter[0]);
-                        var dy = (touch0.pageY-startTouchCenter[1]);
-                        var d = Math.abs(dx*dx+dy*dy);
+                        var dx = (touch0.pageX - startTouchCenter[0]);
+                        var dy = (touch0.pageY - startTouchCenter[1]);
+                        var d = Math.abs(dx * dx + dy * dy);
                         if (d > 64) {
                             clearTimeout(touchStartTime);
                             touchStartTime = null;
@@ -5251,30 +5253,30 @@ RED.view = (function() {
                 } else {
                     touch0 = d3.event.touches.item(0);
                     var touch1 = d3.event.touches.item(1);
-                    var a = touch0["pageY"]-touch1["pageY"];
-                    var b = touch0["pageX"]-touch1["pageX"];
+                    var a = touch0["pageY"] - touch1["pageY"];
+                    var b = touch0["pageX"] - touch1["pageX"];
                     var offset = $("#chart").offset();
-                    var scrollPos = [$("#chart").scrollLeft(),$("#chart").scrollTop()];
-                    var moveTouchDistance = Math.sqrt((a*a)+(b*b));
+                    var scrollPos = [$("#chart").scrollLeft(), $("#chart").scrollTop()];
+                    var moveTouchDistance = Math.sqrt((a * a) + (b * b));
                     var touchCenter = [
-                        touch1["pageX"]+(b/2),
-                        touch1["pageY"]+(a/2)
+                        touch1["pageX"] + (b / 2),
+                        touch1["pageY"] + (a / 2)
                     ];
 
                     if (!isNaN(moveTouchDistance)) {
                         oldScaleFactor = scaleFactor;
-                        scaleFactor = Math.min(2,Math.max(0.3, scaleFactor + (Math.floor(((moveTouchDistance*100)-(startTouchDistance*100)))/10000)));
+                        scaleFactor = Math.min(2, Math.max(0.3, scaleFactor + (Math.floor(((moveTouchDistance * 100) - (startTouchDistance * 100))) / 10000)));
 
                         var deltaTouchCenter = [                             // Try to pan whilst zooming - not 100%
-                            startTouchCenter[0]*(scaleFactor-oldScaleFactor),//-(touchCenter[0]-moveTouchCenter[0]),
-                            startTouchCenter[1]*(scaleFactor-oldScaleFactor) //-(touchCenter[1]-moveTouchCenter[1])
+                            startTouchCenter[0] * (scaleFactor - oldScaleFactor),//-(touchCenter[0]-moveTouchCenter[0]),
+                            startTouchCenter[1] * (scaleFactor - oldScaleFactor) //-(touchCenter[1]-moveTouchCenter[1])
                         ];
 
                         startTouchDistance = moveTouchDistance;
                         moveTouchCenter = touchCenter;
 
-                        $("#chart").scrollLeft(scrollPos[0]+deltaTouchCenter[0]);
-                        $("#chart").scrollTop(scrollPos[1]+deltaTouchCenter[1]);
+                        $("#chart").scrollLeft(scrollPos[0] + deltaTouchCenter[0]);
+                        $("#chart").scrollTop(scrollPos[1] + deltaTouchCenter[1]);
                         redraw();
                     }
                 }
@@ -5282,47 +5284,47 @@ RED.view = (function() {
         outer_background = vis.append("svg:rect")
             .attr("width", space_width)
             .attr("height", space_height)
-            .attr("fill","#fff");
+            .attr("fill", "#fff");
 
         grid = vis.append("g");
-        grid.selectAll("line.horizontal").data(gridScale.ticks(space_width/gridSize)).enter()
+        grid.selectAll("line.horizontal").data(gridScale.ticks(space_width / gridSize)).enter()
             .append("line")
             .attr(
                 {
-                    "class":"horizontal",
-                    "x1" : 0,
-                    "x2" : space_width,
-                    "y1" : function(d){ return gridScale(d);},
-                    "y2" : function(d){ return gridScale(d);},
-                    "fill" : "none",
-                    "shape-rendering" : "crispEdges",
-                    "stroke" : "#eee",
-                    "stroke-width" : "1px"
+                    "class": "horizontal",
+                    "x1": 0,
+                    "x2": space_width,
+                    "y1": function (d) { return gridScale(d); },
+                    "y2": function (d) { return gridScale(d); },
+                    "fill": "none",
+                    "shape-rendering": "crispEdges",
+                    "stroke": "#eee",
+                    "stroke-width": "1px"
                 });
-        grid.selectAll("line.vertical").data(gridScale.ticks(space_width/gridSize)).enter()
+        grid.selectAll("line.vertical").data(gridScale.ticks(space_width / gridSize)).enter()
             .append("line")
             .attr(
                 {
-                    "class":"vertical",
-                    "y1" : 0,
-                    "y2" : space_width,
-                    "x1" : function(d){ return gridScale(d);},
-                    "x2" : function(d){ return gridScale(d);},
-                    "fill" : "none",
-                    "shape-rendering" : "crispEdges",
-                    "stroke" : "#eee",
-                    "stroke-width" : "1px"
+                    "class": "vertical",
+                    "y1": 0,
+                    "y2": space_width,
+                    "x1": function (d) { return gridScale(d); },
+                    "x2": function (d) { return gridScale(d); },
+                    "fill": "none",
+                    "shape-rendering": "crispEdges",
+                    "stroke": "#eee",
+                    "stroke-width": "1px"
                 });
-        grid.style("visibility","hidden");
+        grid.style("visibility", "hidden");
 
         dragGroup = vis.append("g");
     }
 
-    var gridScale = d3.scale.linear().range([0,space_width]).domain([0,space_width]);
+    var gridScale = d3.scale.linear().range([0, space_width]).domain([0, space_width]);
     var drag_lines = [];
 
     function showDragLines(nodes) {
-        for (var i=0;i<nodes.length;i++) {
+        for (var i = 0; i < nodes.length; i++) {
             var node = nodes[i];
             node.el = dragGroup.append("svg:path").attr("class", "drag_line");
             drag_lines.push(node);
@@ -5330,7 +5332,7 @@ RED.view = (function() {
 
     }
     function hideDragLines() {
-        while(drag_lines.length) {
+        while (drag_lines.length) {
             var line = drag_lines.pop();
             if (line.el) {
                 line.el.remove();
@@ -5341,11 +5343,11 @@ RED.view = (function() {
     function updateActiveNodes() {
         var activeWorkspace = RED.workspaces.active();
 
-        activeNodes = RED.nodes.filterNodes({z:activeWorkspace});
+        activeNodes = RED.nodes.filterNodes({ z: activeWorkspace });
 
         activeLinks = RED.nodes.filterLinks({
-            source:{z:activeWorkspace},
-            target:{z:activeWorkspace}
+            source: { z: activeWorkspace },
+            target: { z: activeWorkspace }
         });
     }
 
@@ -5353,14 +5355,14 @@ RED.view = (function() {
      *
      * @param cannotEdit When this param is true, the flow is just for viewer
      */
-    function init(cannotEdit=false) {
+    function init(cannotEdit = false) {
         domInit(cannotEdit);
-        RED.events.on("workspace:change",function(event) {
+        RED.events.on("workspace:change", function (event) {
             var chart = $("#chart");
             if (event.old !== 0) {
                 workspaceScrollPositions[event.old] = {
-                    left:chart.scrollLeft(),
-                    top:chart.scrollTop()
+                    left: chart.scrollLeft(),
+                    top: chart.scrollTop()
                 };
             }
             var scrollStartLeft = chart.scrollLeft();
@@ -5382,7 +5384,7 @@ RED.view = (function() {
                 mouse_position[1] += scrollDeltaTop;
             }
             clearSelection();
-            RED.nodes.eachNode(function(n) {
+            RED.nodes.eachNode(function (n) {
                 n.dirty = true;
             });
             updateSelection();
@@ -5390,11 +5392,11 @@ RED.view = (function() {
             redraw();
         });
 
-        $("#btn-zoom-out").click(function() {zoomOut();});
-        $("#btn-zoom-zero").click(function() {zoomZero();});
-        $("#btn-zoom-in").click(function() {zoomIn();});
+        $("#btn-zoom-out").click(function () { zoomOut(); });
+        $("#btn-zoom-zero").click(function () { zoomZero(); });
+        $("#btn-zoom-in").click(function () { zoomIn(); });
         $("#chart").on("DOMMouseScroll mousewheel", function (evt) {
-            if ( evt.altKey ) {
+            if (evt.altKey) {
                 evt.preventDefault();
                 evt.stopPropagation();
                 var move = -(evt.originalEvent.detail) || evt.originalEvent.wheelDelta;
@@ -5405,8 +5407,8 @@ RED.view = (function() {
 
         // Handle nodes dragged from the palette
         $("#chart").droppable({
-            accept:".palette_node",
-            drop: function( event, ui ) {
+            accept: ".palette_node",
+            drop: function (event, ui) {
                 d3.event = event;
                 var selected_tool = ui.draggable[0].type;
                 var result = addNode(selected_tool);
@@ -5416,17 +5418,17 @@ RED.view = (function() {
                 var historyEvent = result.historyEvent;
                 var nn = result.node;
 
-                var helperOffset = d3.touches(ui.helper.get(0))[0]||d3.mouse(ui.helper.get(0));
-                var mousePos = d3.touches(this)[0]||d3.mouse(this);
+                var helperOffset = d3.touches(ui.helper.get(0))[0] || d3.mouse(ui.helper.get(0));
+                var mousePos = d3.touches(this)[0] || d3.mouse(this);
 
-                mousePos[1] += this.scrollTop + ((nn.h/2)-helperOffset[1]);
-                mousePos[0] += this.scrollLeft + ((nn.w/2)-helperOffset[0]);
+                mousePos[1] += this.scrollTop + ((nn.h / 2) - helperOffset[1]);
+                mousePos[0] += this.scrollLeft + ((nn.w / 2) - helperOffset[0]);
                 mousePos[1] /= scaleFactor;
                 mousePos[0] /= scaleFactor;
 
                 if (snapGrid) {
-                    mousePos[0] = gridSize*(Math.ceil(mousePos[0]/gridSize));
-                    mousePos[1] = gridSize*(Math.ceil(mousePos[1]/gridSize));
+                    mousePos[0] = gridSize * (Math.ceil(mousePos[0] / gridSize));
+                    mousePos[1] = gridSize * (Math.ceil(mousePos[1] / gridSize));
                 }
                 nn.x = mousePos[0];
                 nn.y = mousePos[1];
@@ -5436,18 +5438,18 @@ RED.view = (function() {
                     // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
                     RED.nodes.removeLink(spliceLink);
                     var link1 = {
-                        source:spliceLink.source,
-                        sourcePort:spliceLink.sourcePort,
+                        source: spliceLink.source,
+                        sourcePort: spliceLink.sourcePort,
                         target: nn
                     };
                     var link2 = {
-                        source:nn,
-                        sourcePort:0,
+                        source: nn,
+                        sourcePort: 0,
                         target: spliceLink.target
                     };
                     RED.nodes.addLink(link1);
                     RED.nodes.addLink(link2);
-                    historyEvent.links = [link1,link2];
+                    historyEvent.links = [link1, link2];
                     historyEvent.removedLinks = [spliceLink];
                 }
 
@@ -5458,7 +5460,7 @@ RED.view = (function() {
                 // auto select dropped node - so info shows (if visible)
                 clearSelection();
                 nn.selected = true;
-                moving_set.push({n:nn});
+                moving_set.push({ n: nn });
                 updateActiveNodes();
                 updateSelection();
                 redraw();
@@ -5469,32 +5471,32 @@ RED.view = (function() {
             }
         });
 
-        RED.actions.add("core:copy-selection-to-internal-clipboard",copySelection);
-        RED.actions.add("core:cut-selection-to-internal-clipboard",function(){copySelection();deleteSelection();});
-        RED.actions.add("core:paste-from-internal-clipboard",function(){importNodes(clipboard);});
-        RED.actions.add("core:delete-selection",deleteSelection);
-        RED.actions.add("core:edit-selected-node",editSelection);
-        RED.actions.add("core:undo",RED.history.pop);
-        RED.actions.add("core:select-all-nodes",selectAll);
-        RED.actions.add("core:zoom-in",zoomIn);
-        RED.actions.add("core:zoom-out",zoomOut);
-        RED.actions.add("core:zoom-reset",zoomZero);
+        RED.actions.add("core:copy-selection-to-internal-clipboard", copySelection);
+        RED.actions.add("core:cut-selection-to-internal-clipboard", function () { copySelection(); deleteSelection(); });
+        RED.actions.add("core:paste-from-internal-clipboard", function () { importNodes(clipboard); });
+        RED.actions.add("core:delete-selection", deleteSelection);
+        RED.actions.add("core:edit-selected-node", editSelection);
+        RED.actions.add("core:undo", RED.history.pop);
+        RED.actions.add("core:select-all-nodes", selectAll);
+        RED.actions.add("core:zoom-in", zoomIn);
+        RED.actions.add("core:zoom-out", zoomOut);
+        RED.actions.add("core:zoom-reset", zoomZero);
 
-        RED.actions.add("core:toggle-show-grid",function(state) {
+        RED.actions.add("core:toggle-show-grid", function (state) {
             if (state === undefined) {
                 RED.menu.toggleSelected("menu-item-view-show-grid");
             } else {
                 toggleShowGrid(state);
             }
         });
-        RED.actions.add("core:toggle-snap-grid",function(state) {
+        RED.actions.add("core:toggle-snap-grid", function (state) {
             if (state === undefined) {
                 RED.menu.toggleSelected("menu-item-view-snap-grid");
             } else {
                 toggleSnapGrid(state);
             }
         });
-        RED.actions.add("core:toggle-status",function(state) {
+        RED.actions.add("core:toggle-status", function (state) {
             if (state === undefined) {
                 RED.menu.toggleSelected("menu-item-status");
             } else {
@@ -5502,33 +5504,33 @@ RED.view = (function() {
             }
         });
 
-        RED.actions.add("core:move-selection-up", function() { moveSelection(0,-1);});
-        RED.actions.add("core:step-selection-up", function() { moveSelection(0,-20);});
-        RED.actions.add("core:move-selection-right", function() { moveSelection(1,0);});
-        RED.actions.add("core:step-selection-right", function() { moveSelection(20,0);});
-        RED.actions.add("core:move-selection-down", function() { moveSelection(0,1);});
-        RED.actions.add("core:step-selection-down", function() { moveSelection(0,20);});
-        RED.actions.add("core:move-selection-left", function() { moveSelection(-1,0);});
-        RED.actions.add("core:step-selection-left", function() { moveSelection(-20,0);});
+        RED.actions.add("core:move-selection-up", function () { moveSelection(0, -1); });
+        RED.actions.add("core:step-selection-up", function () { moveSelection(0, -20); });
+        RED.actions.add("core:move-selection-right", function () { moveSelection(1, 0); });
+        RED.actions.add("core:step-selection-right", function () { moveSelection(20, 0); });
+        RED.actions.add("core:move-selection-down", function () { moveSelection(0, 1); });
+        RED.actions.add("core:step-selection-down", function () { moveSelection(0, 20); });
+        RED.actions.add("core:move-selection-left", function () { moveSelection(-1, 0); });
+        RED.actions.add("core:step-selection-left", function () { moveSelection(-20, 0); });
     }
 
 
-    function addNode(type,x,y) {
+    function addNode(type, x, y) {
         var m = /^subflow:(.+)$/.exec(type);
 
         if (activeSubflow && m) {
             var subflowId = m[1];
             if (subflowId === activeSubflow.id) {
-                RED.notify(RED._("notification.error",{message: RED._("notification.errors.cannotAddSubflowToItself")}),"error");
+                RED.notify(RED._("notification.error", { message: RED._("notification.errors.cannotAddSubflowToItself") }), "error");
                 return;
             }
-            if (RED.nodes.subflowContains(m[1],activeSubflow.id)) {
-                RED.notify(RED._("notification.error",{message: RED._("notification.errors.cannotAddCircularReference")}),"error");
+            if (RED.nodes.subflowContains(m[1], activeSubflow.id)) {
+                RED.notify(RED._("notification.error", { message: RED._("notification.errors.cannotAddCircularReference") }), "error");
                 return;
             }
         }
 
-        var nn = { id:RED.nodes.id(),z:RED.workspaces.active()};
+        var nn = { id: RED.nodes.id(), z: RED.workspaces.active() };
 
         nn.type = type;
         nn._def = RED.nodes.getType(nn.type);
@@ -5548,8 +5550,8 @@ RED.view = (function() {
             if (nn._def.onadd) {
                 try {
                     nn._def.onadd.call(nn);
-                } catch(err) {
-                    console.log("onadd:",err);
+                } catch (err) {
+                    console.log("onadd:", err);
                 }
             }
         } else {
@@ -5561,18 +5563,18 @@ RED.view = (function() {
         nn.changed = true;
 
         nn.w = node_width;
-        nn.h = Math.max(node_height,(nn.outputs||0) * 15);
+        nn.h = Math.max(node_height, (nn.outputs || 0) * 15);
 
         var historyEvent = {
-            t:"add",
-            nodes:[nn.id],
-            dirty:RED.nodes.dirty()
+            t: "add",
+            nodes: [nn.id],
+            dirty: RED.nodes.dirty()
         }
         if (activeSubflow) {
             var subflowRefresh = RED.subflow.refresh(true);
             if (subflowRefresh) {
                 historyEvent.subflow = {
-                    id:activeSubflow.id,
+                    id: activeSubflow.id,
                     changed: activeSubflow.changed,
                     instances: subflowRefresh.instances
                 }
@@ -5606,13 +5608,13 @@ RED.view = (function() {
 
                 if (mouse_mode !== RED.state.QUICK_JOINING) {
                     mouse_mode = RED.state.QUICK_JOINING;
-                    $(window).on('keyup',disableQuickJoinEventHandler);
+                    $(window).on('keyup', disableQuickJoinEventHandler);
                 }
 
                 RED.typeSearch.show({
-                    x:d3.event.clientX-mainPos.left-node_width/2,
-                    y:d3.event.clientY-mainPos.top-node_height/2,
-                    add: function(type) {
+                    x: d3.event.clientX - mainPos.left - node_width / 2,
+                    y: d3.event.clientY - mainPos.top - node_height / 2,
+                    add: function (type) {
                         var result = addNode(type);
                         if (!result) {
                             return;
@@ -5624,7 +5626,7 @@ RED.view = (function() {
                         if (mouse_mode === RED.state.QUICK_JOINING) {
                             if (drag_lines.length > 0) {
                                 var drag_line = drag_lines[0];
-                                var src = null,dst,src_port;
+                                var src = null, dst, src_port;
 
                                 if (drag_line.portType === 0 && nn.inputs > 0) {
                                     src = drag_line.node;
@@ -5636,14 +5638,14 @@ RED.view = (function() {
                                     src_port = 0;
                                 }
                                 if (src !== null) {
-                                    var link = {source: src, sourcePort:src_port, target: dst};
+                                    var link = { source: src, sourcePort: src_port, target: dst };
                                     RED.nodes.addLink(link);
                                     historyEvent.links = [link];
                                     hideDragLines();
                                     if (drag_line.portType === 0 && nn.outputs > 0) {
-                                        showDragLines([{node:nn,port:0,portType:0}]);
+                                        showDragLines([{ node: nn, port: 0, portType: 0 }]);
                                     } else if (drag_line.portType === 1 && nn.inputs > 0) {
-                                        showDragLines([{node:nn,port:0,portType:1}]);
+                                        showDragLines([{ node: nn, port: 0, portType: 1 }]);
                                     } else {
                                         resetMouseVars();
                                     }
@@ -5653,9 +5655,9 @@ RED.view = (function() {
                                 }
                             } else {
                                 if (nn.outputs > 0) {
-                                    showDragLines([{node:nn,port:0,portType:0}]);
+                                    showDragLines([{ node: nn, port: 0, portType: 0 }]);
                                 } else if (nn.inputs > 0) {
-                                    showDragLines([{node:nn,port:0,portType:1}]);
+                                    showDragLines([{ node: nn, port: 0, portType: 1 }]);
                                 } else {
                                     resetMouseVars();
                                 }
@@ -5670,7 +5672,7 @@ RED.view = (function() {
                         // auto select dropped node - so info shows (if visible)
                         clearSelection();
                         nn.selected = true;
-                        moving_set.push({n:nn});
+                        moving_set.push({ n: nn });
                         updateActiveNodes();
                         updateSelection();
                         redraw();
@@ -5686,15 +5688,15 @@ RED.view = (function() {
             if (!touchStartTime) {
                 point = d3.mouse(this);
                 lasso = vis.append("rect")
-                    .attr("ox",point[0])
-                    .attr("oy",point[1])
-                    .attr("rx",1)
-                    .attr("ry",1)
-                    .attr("x",point[0])
-                    .attr("y",point[1])
-                    .attr("width",0)
-                    .attr("height",0)
-                    .attr("class","lasso");
+                    .attr("ox", point[0])
+                    .attr("oy", point[1])
+                    .attr("rx", 1)
+                    .attr("ry", 1)
+                    .attr("x", point[0])
+                    .attr("y", point[1])
+                    .attr("width", 0)
+                    .attr("height", 0)
+                    .attr("class", "lasso");
                 d3.event.preventDefault();
             }
         }
@@ -5703,7 +5705,7 @@ RED.view = (function() {
     function canvasMouseMove() {
         var i;
         var node;
-        mouse_position = d3.touches(this)[0]||d3.mouse(this);
+        mouse_position = d3.touches(this)[0] || d3.mouse(this);
         // Prevent touch scrolling...
         //if (d3.touches(this)[0]) {
         //    d3.event.preventDefault();
@@ -5723,22 +5725,22 @@ RED.view = (function() {
             var h;
             if (mouse_position[0] < ox) {
                 x = mouse_position[0];
-                w = ox-x;
+                w = ox - x;
             } else {
-                w = mouse_position[0]-x;
+                w = mouse_position[0] - x;
             }
             if (mouse_position[1] < oy) {
                 y = mouse_position[1];
-                h = oy-y;
+                h = oy - y;
             } else {
-                h = mouse_position[1]-y;
+                h = mouse_position[1] - y;
             }
             lasso
-                .attr("x",x)
-                .attr("y",y)
-                .attr("width",w)
-                .attr("height",h)
-            ;
+                .attr("x", x)
+                .attr("y", y)
+                .attr("width", w)
+                .attr("height", h)
+                ;
             return;
         }
 
@@ -5756,9 +5758,9 @@ RED.view = (function() {
                     var existingLinks = [];
                     if (selected_link &&
                         ((mousedown_port_type === 0 &&
-                                selected_link.source === mousedown_node &&
-                                selected_link.sourcePort === mousedown_port_index
-                            ) ||
+                            selected_link.source === mousedown_node &&
+                            selected_link.sourcePort === mousedown_port_index
+                        ) ||
                             (mousedown_port_type === 1 &&
                                 selected_link.target === mousedown_node
                             ))
@@ -5768,7 +5770,7 @@ RED.view = (function() {
                         var filter;
                         if (mousedown_port_type === 0) {
                             filter = {
-                                source:mousedown_node,
+                                source: mousedown_node,
                                 sourcePort: mousedown_port_index
                             }
                         } else {
@@ -5778,14 +5780,14 @@ RED.view = (function() {
                         }
                         existingLinks = RED.nodes.filterLinks(filter);
                     }
-                    for (i=0;i<existingLinks.length;i++) {
+                    for (i = 0; i < existingLinks.length; i++) {
                         var link = existingLinks[i];
                         RED.nodes.removeLink(link);
                         links.push({
-                            link:link,
-                            node: (mousedown_port_type===0)?link.target:link.source,
-                            port: (mousedown_port_type===0)?0:link.sourcePort,
-                            portType: (mousedown_port_type===0)?1:0
+                            link: link,
+                            node: (mousedown_port_type === 0) ? link.target : link.source,
+                            port: (mousedown_port_type === 0) ? 0 : link.sourcePort,
+                            portType: (mousedown_port_type === 0) ? 1 : 0
                         })
                     }
                     if (links.length === 0) {
@@ -5799,40 +5801,40 @@ RED.view = (function() {
                         mouse_mode = RED.state.JOINING;
                     }
                 } else if (mousedown_node) {
-                    showDragLines([{node:mousedown_node,port:mousedown_port_index,portType:mousedown_port_type}]);
+                    showDragLines([{ node: mousedown_node, port: mousedown_port_index, portType: mousedown_port_type }]);
                 }
                 selected_link = null;
             }
             mousePos = mouse_position;
-            for (i=0;i<drag_lines.length;i++) {
+            for (i = 0; i < drag_lines.length; i++) {
                 var drag_line = drag_lines[i];
-                var numOutputs = (drag_line.portType === 0)?(drag_line.node.outputs || 1):1;
+                var numOutputs = (drag_line.portType === 0) ? (drag_line.node.outputs || 1) : 1;
                 var sourcePort = drag_line.port;
-                var portY = -((numOutputs-1)/2)*13 +13*sourcePort;
+                var portY = -((numOutputs - 1) / 2) * 13 + 13 * sourcePort;
 
-                var sc = (drag_line.portType === 0)?1:-1;
+                var sc = (drag_line.portType === 0) ? 1 : -1;
 
-                var dy = mousePos[1]-(drag_line.node.y+portY);
-                var dx = mousePos[0]-(drag_line.node.x+sc*drag_line.node.w/2);
-                var delta = Math.sqrt(dy*dy+dx*dx);
+                var dy = mousePos[1] - (drag_line.node.y + portY);
+                var dx = mousePos[0] - (drag_line.node.x + sc * drag_line.node.w / 2);
+                var delta = Math.sqrt(dy * dy + dx * dx);
                 var scale = lineCurveScale;
                 var scaleY = 0;
 
                 if (delta < node_width) {
-                    scale = 0.75-0.75*((node_width-delta)/node_width);
+                    scale = 0.75 - 0.75 * ((node_width - delta) / node_width);
                 }
-                if (dx*sc < 0) {
-                    scale += 2*(Math.min(5*node_width,Math.abs(dx))/(5*node_width));
-                    if (Math.abs(dy) < 3*node_height) {
-                        scaleY = ((dy>0)?0.5:-0.5)*(((3*node_height)-Math.abs(dy))/(3*node_height))*(Math.min(node_width,Math.abs(dx))/(node_width)) ;
+                if (dx * sc < 0) {
+                    scale += 2 * (Math.min(5 * node_width, Math.abs(dx)) / (5 * node_width));
+                    if (Math.abs(dy) < 3 * node_height) {
+                        scaleY = ((dy > 0) ? 0.5 : -0.5) * (((3 * node_height) - Math.abs(dy)) / (3 * node_height)) * (Math.min(node_width, Math.abs(dx)) / (node_width));
                     }
                 }
 
                 drag_line.el.attr("d",
-                    "M "+(drag_line.node.x+sc*drag_line.node.w/2)+" "+(drag_line.node.y+portY)+
-                    " C "+(drag_line.node.x+sc*(drag_line.node.w/2+node_width*scale))+" "+(drag_line.node.y+portY+scaleY*node_height)+" "+
-                    (mousePos[0]-sc*(scale)*node_width)+" "+(mousePos[1]-scaleY*node_height)+" "+
-                    mousePos[0]+" "+mousePos[1]
+                    "M " + (drag_line.node.x + sc * drag_line.node.w / 2) + " " + (drag_line.node.y + portY) +
+                    " C " + (drag_line.node.x + sc * (drag_line.node.w / 2 + node_width * scale)) + " " + (drag_line.node.y + portY + scaleY * node_height) + " " +
+                    (mousePos[0] - sc * (scale) * node_width) + " " + (mousePos[1] - scaleY * node_height) + " " +
+                    mousePos[0] + " " + mousePos[1]
                 );
             }
             d3.event.preventDefault();
@@ -5841,7 +5843,7 @@ RED.view = (function() {
             if (isNaN(mousePos[0])) {
                 mousePos = d3.touches(document.body)[0];
             }
-            var d = (mouse_offset[0]-mousePos[0])*(mouse_offset[0]-mousePos[0]) + (mouse_offset[1]-mousePos[1])*(mouse_offset[1]-mousePos[1]);
+            var d = (mouse_offset[0] - mousePos[0]) * (mouse_offset[0] - mousePos[0]) + (mouse_offset[1] - mousePos[1]) * (mouse_offset[1] - mousePos[1]);
             if (d > 3) {
                 mouse_mode = RED.state.MOVING_ACTIVE;
                 clickElapsed = 0;
@@ -5861,41 +5863,41 @@ RED.view = (function() {
             var minY = 0;
             var maxX = space_width;
             var maxY = space_height;
-            for (var n = 0; n<moving_set.length; n++) {
+            for (var n = 0; n < moving_set.length; n++) {
                 node = moving_set[n];
                 if (d3.event.shiftKey) {
                     node.n.ox = node.n.x;
                     node.n.oy = node.n.y;
                 }
-                node.n.x = mousePos[0]+node.dx;
-                node.n.y = mousePos[1]+node.dy;
+                node.n.x = mousePos[0] + node.dx;
+                node.n.y = mousePos[1] + node.dy;
                 node.n.dirty = true;
-                minX = Math.min(node.n.x-node.n.w/2-5,minX);
-                minY = Math.min(node.n.y-node.n.h/2-5,minY);
-                maxX = Math.max(node.n.x+node.n.w/2+5,maxX);
-                maxY = Math.max(node.n.y+node.n.h/2+5,maxY);
+                minX = Math.min(node.n.x - node.n.w / 2 - 5, minX);
+                minY = Math.min(node.n.y - node.n.h / 2 - 5, minY);
+                maxX = Math.max(node.n.x + node.n.w / 2 + 5, maxX);
+                maxY = Math.max(node.n.y + node.n.h / 2 + 5, maxY);
             }
             if (minX !== 0 || minY !== 0) {
-                for (i = 0; i<moving_set.length; i++) {
+                for (i = 0; i < moving_set.length; i++) {
                     node = moving_set[i];
                     node.n.x -= minX;
                     node.n.y -= minY;
                 }
             }
             if (maxX !== space_width || maxY !== space_height) {
-                for (i = 0; i<moving_set.length; i++) {
+                for (i = 0; i < moving_set.length; i++) {
                     node = moving_set[i];
                     node.n.x -= (maxX - space_width);
                     node.n.y -= (maxY - space_height);
                 }
             }
             if (snapGrid != d3.event.shiftKey && moving_set.length > 0) {
-                var gridOffset = [0,0];
+                var gridOffset = [0, 0];
                 node = moving_set[0];
-                gridOffset[0] = node.n.x-(gridSize*Math.floor((node.n.x-node.n.w/2)/gridSize)+node.n.w/2);
-                gridOffset[1] = node.n.y-(gridSize*Math.floor(node.n.y/gridSize));
+                gridOffset[0] = node.n.x - (gridSize * Math.floor((node.n.x - node.n.w / 2) / gridSize) + node.n.w / 2);
+                gridOffset[1] = node.n.y - (gridSize * Math.floor(node.n.y / gridSize));
                 if (gridOffset[0] !== 0 || gridOffset[1] !== 0) {
-                    for (i = 0; i<moving_set.length; i++) {
+                    for (i = 0; i < moving_set.length; i++) {
                         node = moving_set[i];
                         node.n.x -= gridOffset[0];
                         node.n.y -= gridOffset[1];
@@ -5909,7 +5911,7 @@ RED.view = (function() {
                 node = moving_set[0];
                 if (spliceActive) {
                     if (!spliceTimer) {
-                        spliceTimer = setTimeout(function() {
+                        spliceTimer = setTimeout(function () {
                             var nodes = [];
                             var bestDistance = Infinity;
                             var bestLink = null;
@@ -5925,14 +5927,14 @@ RED.view = (function() {
                             } else {
                                 // Firefox doesn"t do getIntersectionList and that
                                 // makes us sad
-                                nodes = RED.view.getLinksAtPoint(mouseX,mouseY);
+                                nodes = RED.view.getLinksAtPoint(mouseX, mouseY);
                             }
-                            for (var i=0;i<nodes.length;i++) {
+                            for (var i = 0; i < nodes.length; i++) {
                                 if (d3.select(nodes[i]).classed("link_background")) {
                                     var length = nodes[i].getTotalLength();
-                                    for (var j=0;j<length;j+=10) {
+                                    for (var j = 0; j < length; j += 10) {
                                         var p = nodes[i].getPointAtLength(j);
-                                        var d2 = ((p.x-mouseX)*(p.x-mouseX))+((p.y-mouseY)*(p.y-mouseY));
+                                        var d2 = ((p.x - mouseX) * (p.x - mouseX)) + ((p.y - mouseY) * (p.y - mouseY));
                                         if (d2 < 200 && d2 < bestDistance) {
                                             bestDistance = d2;
                                             bestLink = nodes[i];
@@ -5941,16 +5943,16 @@ RED.view = (function() {
                                 }
                             }
                             if (activeSpliceLink && activeSpliceLink !== bestLink) {
-                                d3.select(activeSpliceLink.parentNode).classed("link_splice",false);
+                                d3.select(activeSpliceLink.parentNode).classed("link_splice", false);
                             }
                             if (bestLink) {
-                                d3.select(bestLink.parentNode).classed("link_splice",true)
+                                d3.select(bestLink.parentNode).classed("link_splice", true)
                             } else {
-                                d3.select(".link_splice").classed("link_splice",false);
+                                d3.select(".link_splice").classed("link_splice", false);
                             }
                             activeSpliceLink = bestLink;
                             spliceTimer = null;
-                        },100);
+                        }, 100);
                     }
                 }
             }
@@ -5970,15 +5972,15 @@ RED.view = (function() {
         }
         if (mousedown_node && mouse_mode == RED.state.JOINING) {
             var removedLinks = [];
-            for (i=0;i<drag_lines.length;i++) {
+            for (i = 0; i < drag_lines.length; i++) {
                 if (drag_lines[i].link) {
                     removedLinks.push(drag_lines[i].link)
                 }
             }
             historyEvent = {
-                t:"delete",
+                t: "delete",
                 links: removedLinks,
-                dirty:RED.nodes.dirty()
+                dirty: RED.nodes.dirty()
             };
             RED.history.push(historyEvent);
             hideDragLines();
@@ -5986,69 +5988,69 @@ RED.view = (function() {
         if (lasso) {
             var x = parseInt(lasso.attr("x"));
             var y = parseInt(lasso.attr("y"));
-            var x2 = x+parseInt(lasso.attr("width"));
-            var y2 = y+parseInt(lasso.attr("height"));
+            var x2 = x + parseInt(lasso.attr("width"));
+            var y2 = y + parseInt(lasso.attr("height"));
             if (!d3.event.ctrlKey) {
                 clearSelection();
             }
-            RED.nodes.eachNode(function(n) {
+            RED.nodes.eachNode(function (n) {
                 if (n.z == RED.workspaces.active() && !n.selected) {
                     n.selected = (n.x > x && n.x < x2 && n.y > y && n.y < y2);
                     if (n.selected) {
                         n.dirty = true;
-                        moving_set.push({n:n});
+                        moving_set.push({ n: n });
                     }
                 }
             });
             if (activeSubflow) {
-                activeSubflow.in.forEach(function(n) {
+                activeSubflow.in.forEach(function (n) {
                     n.selected = (n.x > x && n.x < x2 && n.y > y && n.y < y2);
                     if (n.selected) {
                         n.dirty = true;
-                        moving_set.push({n:n});
+                        moving_set.push({ n: n });
                     }
                 });
-                activeSubflow.out.forEach(function(n) {
+                activeSubflow.out.forEach(function (n) {
                     n.selected = (n.x > x && n.x < x2 && n.y > y && n.y < y2);
                     if (n.selected) {
                         n.dirty = true;
-                        moving_set.push({n:n});
+                        moving_set.push({ n: n });
                     }
                 });
             }
             updateSelection();
             lasso.remove();
             lasso = null;
-        } else if (mouse_mode == RED.state.DEFAULT && mousedown_link == null && !d3.event.ctrlKey&& !d3.event.metaKey ) {
+        } else if (mouse_mode == RED.state.DEFAULT && mousedown_link == null && !d3.event.ctrlKey && !d3.event.metaKey) {
             clearSelection();
             updateSelection();
         }
         if (mouse_mode == RED.state.MOVING_ACTIVE) {
             if (moving_set.length > 0) {
                 var ns = [];
-                for (var j=0;j<moving_set.length;j++) {
-                    ns.push({n:moving_set[j].n,ox:moving_set[j].ox,oy:moving_set[j].oy,changed:moving_set[j].n.changed});
+                for (var j = 0; j < moving_set.length; j++) {
+                    ns.push({ n: moving_set[j].n, ox: moving_set[j].ox, oy: moving_set[j].oy, changed: moving_set[j].n.changed });
                     moving_set[j].n.dirty = true;
                     moving_set[j].n.changed = true;
                 }
-                historyEvent = {t:"move",nodes:ns,dirty:RED.nodes.dirty()};
+                historyEvent = { t: "move", nodes: ns, dirty: RED.nodes.dirty() };
                 if (activeSpliceLink) {
                     // TODO: DRY - droppable/nodeMouseDown/canvasMouseUp
                     var spliceLink = d3.select(activeSpliceLink).data()[0];
                     RED.nodes.removeLink(spliceLink);
                     var link1 = {
-                        source:spliceLink.source,
-                        sourcePort:spliceLink.sourcePort,
+                        source: spliceLink.source,
+                        sourcePort: spliceLink.sourcePort,
                         target: moving_set[0].n
                     };
                     var link2 = {
-                        source:moving_set[0].n,
-                        sourcePort:0,
+                        source: moving_set[0].n,
+                        sourcePort: 0,
                         target: spliceLink.target
                     };
                     RED.nodes.addLink(link1);
                     RED.nodes.addLink(link2);
-                    historyEvent.links = [link1,link2];
+                    historyEvent.links = [link1, link2];
                     historyEvent.removedLinks = [spliceLink];
                     updateActiveNodes();
                 }
@@ -6057,7 +6059,7 @@ RED.view = (function() {
             }
         }
         if (mouse_mode == RED.state.MOVING || mouse_mode == RED.state.MOVING_ACTIVE) {
-            for (i=0;i<moving_set.length;i++) {
+            for (i = 0; i < moving_set.length; i++) {
                 delete moving_set[i].ox;
                 delete moving_set[i].oy;
             }
@@ -6089,28 +6091,28 @@ RED.view = (function() {
     }
 
     function selectAll() {
-        RED.nodes.eachNode(function(n) {
+        RED.nodes.eachNode(function (n) {
             if (n.z == RED.workspaces.active()) {
                 if (!n.selected) {
                     n.selected = true;
                     n.dirty = true;
-                    moving_set.push({n:n});
+                    moving_set.push({ n: n });
                 }
             }
         });
         if (activeSubflow) {
-            activeSubflow.in.forEach(function(n) {
+            activeSubflow.in.forEach(function (n) {
                 if (!n.selected) {
                     n.selected = true;
                     n.dirty = true;
-                    moving_set.push({n:n});
+                    moving_set.push({ n: n });
                 }
             });
-            activeSubflow.out.forEach(function(n) {
+            activeSubflow.out.forEach(function (n) {
                 if (!n.selected) {
                     n.selected = true;
                     n.dirty = true;
-                    moving_set.push({n:n});
+                    moving_set.push({ n: n });
                 }
             });
         }
@@ -6121,7 +6123,7 @@ RED.view = (function() {
     }
 
     function clearSelection() {
-        for (var i=0;i<moving_set.length;i++) {
+        for (var i = 0; i < moving_set.length; i++) {
             var n = moving_set[i];
             n.n.dirty = true;
             n.n.selected = false;
@@ -6134,55 +6136,55 @@ RED.view = (function() {
         var selection = {};
 
         if (moving_set.length > 0) {
-            selection.nodes = moving_set.map(function(n) { return n.n;});
+            selection.nodes = moving_set.map(function (n) { return n.n; });
         }
         if (selected_link != null) {
             selection.link = selected_link;
         }
         var activeWorkspace = RED.workspaces.active();
         activeLinks = RED.nodes.filterLinks({
-            source:{z:activeWorkspace},
-            target:{z:activeWorkspace}
+            source: { z: activeWorkspace },
+            target: { z: activeWorkspace }
         });
         var tabOrder = RED.nodes.getWorkspaceOrder();
         var currentLinks = activeLinks;
         var addedLinkLinks = {};
         activeFlowLinks = [];
-        for (var i=0;i<moving_set.length;i++) {
+        for (var i = 0; i < moving_set.length; i++) {
             if (moving_set[i].n.type === "link out" || moving_set[i].n.type === "link in") {
                 var linkNode = moving_set[i].n;
                 var offFlowLinks = {};
-                linkNode.links.forEach(function(id) {
+                linkNode.links.forEach(function (id) {
                     var target = RED.nodes.node(id);
                     if (target) {
                         if (linkNode.type === "link out") {
                             if (target.z === linkNode.z) {
-                                if (!addedLinkLinks[linkNode.id+":"+target.id]) {
+                                if (!addedLinkLinks[linkNode.id + ":" + target.id]) {
                                     activeLinks.push({
-                                        source:linkNode,
-                                        sourcePort:0,
+                                        source: linkNode,
+                                        sourcePort: 0,
                                         target: target,
                                         link: true
                                     });
-                                    addedLinkLinks[linkNode.id+":"+target.id] = true;
+                                    addedLinkLinks[linkNode.id + ":" + target.id] = true;
                                 }
                             } else {
-                                offFlowLinks[target.z] = offFlowLinks[target.z]||[];
+                                offFlowLinks[target.z] = offFlowLinks[target.z] || [];
                                 offFlowLinks[target.z].push(target);
                             }
                         } else {
                             if (target.z === linkNode.z) {
-                                if (!addedLinkLinks[target.id+":"+linkNode.id]) {
+                                if (!addedLinkLinks[target.id + ":" + linkNode.id]) {
                                     activeLinks.push({
-                                        source:target,
-                                        sourcePort:0,
+                                        source: target,
+                                        sourcePort: 0,
                                         target: linkNode,
                                         link: true
                                     });
-                                    addedLinkLinks[target.id+":"+linkNode.id] = true;
+                                    addedLinkLinks[target.id + ":" + linkNode.id] = true;
                                 }
                             } else {
-                                offFlowLinks[target.z] = offFlowLinks[target.z]||[];
+                                offFlowLinks[target.z] = offFlowLinks[target.z] || [];
                                 offFlowLinks[target.z].push(target);
                             }
                         }
@@ -6194,7 +6196,7 @@ RED.view = (function() {
                 // });
                 if (offFlows.length > 0) {
                     activeFlowLinks.push({
-                        refresh: Math.floor(Math.random()*10000),
+                        refresh: Math.floor(Math.random() * 10000),
                         node: linkNode,
                         links: offFlowLinks//offFlows.map(function(i) { return {id:i,links:offFlowLinks[i]};})
                     });
@@ -6203,37 +6205,37 @@ RED.view = (function() {
         }
 
 
-        RED.events.emit("view:selection-changed",selection);
+        RED.events.emit("view:selection-changed", selection);
     }
 
     function endKeyboardMove() {
         endMoveSet = false;
         if (moving_set.length > 0) {
             var ns = [];
-            for (var i=0;i<moving_set.length;i++) {
-                ns.push({n:moving_set[i].n,ox:moving_set[i].ox,oy:moving_set[i].oy,changed:moving_set[i].n.changed});
+            for (var i = 0; i < moving_set.length; i++) {
+                ns.push({ n: moving_set[i].n, ox: moving_set[i].ox, oy: moving_set[i].oy, changed: moving_set[i].n.changed });
                 moving_set[i].n.changed = true;
                 moving_set[i].n.dirty = true;
                 delete moving_set[i].ox;
                 delete moving_set[i].oy;
             }
             redraw();
-            RED.history.push({t:"move",nodes:ns,dirty:RED.nodes.dirty()});
+            RED.history.push({ t: "move", nodes: ns, dirty: RED.nodes.dirty() });
             RED.nodes.dirty(true);
         }
     }
     var endMoveSet = false;
-    function moveSelection(dx,dy) {
+    function moveSelection(dx, dy) {
         if (moving_set.length > 0) {
             if (!endMoveSet) {
-                $(document).one('keyup',endKeyboardMove);
+                $(document).one('keyup', endKeyboardMove);
                 endMoveSet = true;
             }
             var minX = 0;
             var minY = 0;
             var node;
 
-            for (var i=0;i<moving_set.length;i++) {
+            for (var i = 0; i < moving_set.length; i++) {
                 node = moving_set[i];
                 node.n.changed = true;
                 node.n.dirty = true;
@@ -6244,12 +6246,12 @@ RED.view = (function() {
                 node.n.x += dx;
                 node.n.y += dy;
                 node.n.dirty = true;
-                minX = Math.min(node.n.x-node.n.w/2-5,minX);
-                minY = Math.min(node.n.y-node.n.h/2-5,minY);
+                minX = Math.min(node.n.x - node.n.w / 2 - 5, minX);
+                minY = Math.min(node.n.y - node.n.h / 2 - 5, minY);
             }
 
             if (minX !== 0 || minY !== 0) {
-                for (var n = 0; n<moving_set.length; n++) {
+                for (var n = 0; n < moving_set.length; n++) {
                     node = moving_set[n];
                     node.n.x -= minX;
                     node.n.y -= minY;
@@ -6282,7 +6284,7 @@ RED.view = (function() {
             var startDirty = RED.nodes.dirty();
             var startChanged = false;
             if (moving_set.length > 0) {
-                for (var i=0;i<moving_set.length;i++) {
+                for (var i = 0; i < moving_set.length; i++) {
                     var node = moving_set[i].n;
                     node.selected = false;
                     if (node.type != "subflow") {
@@ -6330,15 +6332,15 @@ RED.view = (function() {
                 RED.nodes.dirty(true);
             }
             var historyEvent = {
-                t:"delete",
-                nodes:removedNodes,
-                links:removedLinks,
-                subflowOutputs:removedSubflowOutputs,
-                subflowInputs:removedSubflowInputs,
+                t: "delete",
+                nodes: removedNodes,
+                links: removedLinks,
+                subflowOutputs: removedSubflowOutputs,
+                subflowInputs: removedSubflowInputs,
                 subflow: {
                     instances: null
                 },
-                dirty:startDirty
+                dirty: startDirty
             };
             RED.history.push(historyEvent);
 
@@ -6352,7 +6354,7 @@ RED.view = (function() {
     function copySelection() {
         if (moving_set.length > 0) {
             var nns = [];
-            for (var n=0;n<moving_set.length;n++) {
+            for (var n = 0; n < moving_set.length; n++) {
                 var node = moving_set[n].n;
                 // The only time a node.type == subflow can be selected is the
                 // input/output "proxy" nodes. They cannot be copied.
@@ -6372,7 +6374,7 @@ RED.view = (function() {
                 }
             }
             clipboard = JSON.stringify(nns);
-            RED.notify(RED._("clipboard.nodeCopied",{count:nns.length}));
+            RED.notify(RED._("clipboard.nodeCopied", { count: nns.length }));
         }
     }
 
@@ -6382,11 +6384,11 @@ RED.view = (function() {
         sp.className = className;
         sp.style.position = "absolute";
         sp.style.top = "-1000px";
-        sp.textContent = (str||"");
+        sp.textContent = (str || "");
         document.body.appendChild(sp);
         var w = sp.offsetWidth;
         document.body.removeChild(sp);
-        return offset+w;
+        return offset + w;
     }
 
     function resetMouseVars() {
@@ -6397,7 +6399,7 @@ RED.view = (function() {
         mousedown_port_type = 0;
         activeSpliceLink = null;
         spliceActive = false;
-        d3.select(".link_splice").classed("link_splice",false);
+        d3.select(".link_splice").classed("link_splice", false);
         if (spliceTimer) {
             clearTimeout(spliceTimer);
             spliceTimer = null;
@@ -6410,11 +6412,11 @@ RED.view = (function() {
             resetMouseVars();
             hideDragLines();
             redraw();
-            $(window).off('keyup',disableQuickJoinEventHandler);
+            $(window).off('keyup', disableQuickJoinEventHandler);
         }
     }
 
-    function portMouseDown(d,portType,portIndex) {
+    function portMouseDown(d, portType, portIndex) {
         //console.log(d,portType,portIndex);
         // disable zoom
         //vis.call(d3.behavior.zoom().on("zoom"), null);
@@ -6426,32 +6428,32 @@ RED.view = (function() {
             document.body.style.cursor = "crosshair";
             if (d3.event.ctrlKey || d3.event.metaKey) {
                 mouse_mode = RED.state.QUICK_JOINING;
-                showDragLines([{node:mousedown_node,port:mousedown_port_index,portType:mousedown_port_type}]);
-                $(window).on('keyup',disableQuickJoinEventHandler);
+                showDragLines([{ node: mousedown_node, port: mousedown_port_index, portType: mousedown_port_type }]);
+                $(window).on('keyup', disableQuickJoinEventHandler);
             }
         }
         d3.event.stopPropagation();
         d3.event.preventDefault();
     }
 
-    function portMouseUp(d,portType,portIndex) {
+    function portMouseUp(d, portType, portIndex) {
         var i;
         if (mouse_mode === RED.state.QUICK_JOINING) {
-            if (drag_lines[0].node===d) {
+            if (drag_lines[0].node === d) {
                 return
             }
         }
         document.body.style.cursor = "";
         if (mouse_mode == RED.state.JOINING || mouse_mode == RED.state.QUICK_JOINING) {
             if (typeof TouchEvent != "undefined" && d3.event instanceof TouchEvent) {
-                RED.nodes.eachNode(function(n) {
+                RED.nodes.eachNode(function (n) {
                     if (n.z == RED.workspaces.active()) {
-                        var hw = n.w/2;
-                        var hh = n.h/2;
-                        if (n.x-hw<mouse_position[0] && n.x+hw> mouse_position[0] &&
-                            n.y-hh<mouse_position[1] && n.y+hh>mouse_position[1]) {
+                        var hw = n.w / 2;
+                        var hh = n.h / 2;
+                        if (n.x - hw < mouse_position[0] && n.x + hw > mouse_position[0] &&
+                            n.y - hh < mouse_position[1] && n.y + hh > mouse_position[1]) {
                             mouseup_node = n;
-                            portType = mouseup_node.inputs>0?1:0;
+                            portType = mouseup_node.inputs > 0 ? 1 : 0;
                             portIndex = 0;
                         }
                     }
@@ -6462,15 +6464,15 @@ RED.view = (function() {
             var addedLinks = [];
             var removedLinks = [];
 
-            for (i=0;i<drag_lines.length;i++) {
+            for (i = 0; i < drag_lines.length; i++) {
                 if (drag_lines[i].link) {
                     removedLinks.push(drag_lines[i].link)
                 }
             }
-            for (i=0;i<drag_lines.length;i++) {
+            for (i = 0; i < drag_lines.length; i++) {
                 if (portType != drag_lines[i].portType && mouseup_node !== drag_lines[i].node) {
                     var drag_line = drag_lines[i];
-                    var src,dst,src_port;
+                    var src, dst, src_port;
                     if (drag_line.portType === 0) {
                         src = drag_line.node;
                         src_port = drag_line.port;
@@ -6480,9 +6482,9 @@ RED.view = (function() {
                         dst = drag_line.node;
                         src_port = portIndex;
                     }
-                    var existingLink = RED.nodes.filterLinks({source:src,target:dst,sourcePort: src_port}).length !== 0;
+                    var existingLink = RED.nodes.filterLinks({ source: src, target: dst, sourcePort: src_port }).length !== 0;
                     if (!existingLink) {
-                        var link = {source: src, sourcePort:src_port, target: dst};
+                        var link = { source: src, sourcePort: src_port, target: dst };
                         RED.nodes.addLink(link);
                         addedLinks.push(link);
                     }
@@ -6490,16 +6492,16 @@ RED.view = (function() {
             }
             if (addedLinks.length > 0 || removedLinks.length > 0) {
                 var historyEvent = {
-                    t:"add",
-                    links:addedLinks,
+                    t: "add",
+                    links: addedLinks,
                     removedLinks: removedLinks,
-                    dirty:RED.nodes.dirty()
+                    dirty: RED.nodes.dirty()
                 };
                 if (activeSubflow) {
                     var subflowRefresh = RED.subflow.refresh(true);
                     if (subflowRefresh) {
                         historyEvent.subflow = {
-                            id:activeSubflow.id,
+                            id: activeSubflow.id,
                             changed: activeSubflow.changed,
                             instances: subflowRefresh.instances
                         }
@@ -6513,9 +6515,9 @@ RED.view = (function() {
                 if (addedLinks.length > 0) {
                     hideDragLines();
                     if (portType === 1 && d.outputs > 0) {
-                        showDragLines([{node:d,port:0,portType:0}]);
+                        showDragLines([{ node: d, port: 0, portType: 0 }]);
                     } else if (portType === 0 && d.inputs > 0) {
-                        showDragLines([{node:d,port:0,portType:1}]);
+                        showDragLines([{ node: d, port: 0, portType: 1 }]);
                     } else {
                         resetMouseVars();
                     }
@@ -6543,7 +6545,7 @@ RED.view = (function() {
             d3.event.stopPropagation();
             return;
         }
-        var direction = d._def? (d.inputs > 0 ? 1: 0) : (d.direction == "in" ? 0: 1)
+        var direction = d._def ? (d.inputs > 0 ? 1 : 0) : (d.direction == "in" ? 0 : 1)
         portMouseUp(d, direction, 0);
     }
 
@@ -6560,19 +6562,19 @@ RED.view = (function() {
                 var spliceLink = d3.select(activeSpliceLink).data()[0];
                 RED.nodes.removeLink(spliceLink);
                 var link1 = {
-                    source:spliceLink.source,
-                    sourcePort:spliceLink.sourcePort,
+                    source: spliceLink.source,
+                    sourcePort: spliceLink.sourcePort,
                     target: moving_set[0].n
                 };
                 var link2 = {
-                    source:moving_set[0].n,
-                    sourcePort:0,
+                    source: moving_set[0].n,
+                    sourcePort: 0,
                     target: spliceLink.target
                 };
                 RED.nodes.addLink(link1);
                 RED.nodes.addLink(link2);
                 var historyEvent = RED.history.peek();
-                historyEvent.links = [link1,link2];
+                historyEvent.links = [link1, link2];
                 historyEvent.removedLinks = [spliceLink];
                 updateActiveNodes();
             }
@@ -6589,7 +6591,7 @@ RED.view = (function() {
         }
         mousedown_node = d;
         var now = Date.now();
-        clickElapsed = now-clickTime;
+        clickElapsed = now - clickTime;
         clickTime = now;
 
         dblClickPrimed = (lastClickNode == mousedown_node);
@@ -6597,11 +6599,11 @@ RED.view = (function() {
 
         var i;
 
-        if (d.selected && (d3.event.ctrlKey||d3.event.metaKey)) {
+        if (d.selected && (d3.event.ctrlKey || d3.event.metaKey)) {
             mousedown_node.selected = false;
-            for (i=0;i<moving_set.length;i+=1) {
+            for (i = 0; i < moving_set.length; i += 1) {
                 if (moving_set[i].n === mousedown_node) {
-                    moving_set.splice(i,1);
+                    moving_set.splice(i, 1);
                     break;
                 }
             }
@@ -6609,29 +6611,29 @@ RED.view = (function() {
             if (d3.event.shiftKey) {
                 clearSelection();
                 var cnodes = RED.nodes.getAllFlowNodes(mousedown_node);
-                for (var n=0;n<cnodes.length;n++) {
+                for (var n = 0; n < cnodes.length; n++) {
                     cnodes[n].selected = true;
                     cnodes[n].dirty = true;
-                    moving_set.push({n:cnodes[n]});
+                    moving_set.push({ n: cnodes[n] });
                 }
             } else if (!d.selected) {
                 if (!d3.event.ctrlKey && !d3.event.metaKey) {
                     clearSelection();
                 }
                 mousedown_node.selected = true;
-                moving_set.push({n:mousedown_node});
+                moving_set.push({ n: mousedown_node });
             }
             selected_link = null;
             if (d3.event.button != 2) {
                 mouse_mode = RED.state.MOVING;
-                var mouse = d3.touches(this)[0]||d3.mouse(this);
-                mouse[0] += d.x-d.w/2;
-                mouse[1] += d.y-d.h/2;
-                for (i=0;i<moving_set.length;i++) {
+                var mouse = d3.touches(this)[0] || d3.mouse(this);
+                mouse[0] += d.x - d.w / 2;
+                mouse[1] += d.y - d.h / 2;
+                for (i = 0; i < moving_set.length; i++) {
                     moving_set[i].ox = moving_set[i].n.x;
                     moving_set[i].oy = moving_set[i].n.y;
-                    moving_set[i].dx = moving_set[i].n.x-mouse[0];
-                    moving_set[i].dy = moving_set[i].n.y-mouse[1];
+                    moving_set[i].dx = moving_set[i].n.x - mouse[0];
+                    moving_set[i].dy = moving_set[i].n.y - mouse[1];
                 }
                 mouse_offset = d3.mouse(document.body);
                 if (isNaN(mouse_offset[0])) {
@@ -6655,38 +6657,38 @@ RED.view = (function() {
             if (d._def.button.onclick) {
                 try {
                     d._def.button.onclick.call(d);
-                } catch(err) {
-                    console.log("Definition error: "+d.type+".onclick",err);
+                } catch (err) {
+                    console.log("Definition error: " + d.type + ".onclick", err);
                 }
             }
             if (d.dirty) {
                 redraw();
             }
         } else if (d.changed) {
-            RED.notify(RED._("notification.warning", {message:RED._("notification.warnings.undeployedChanges")}),"warning");
+            RED.notify(RED._("notification.warning", { message: RED._("notification.warnings.undeployedChanges") }), "warning");
         } else {
-            RED.notify(RED._("notification.warning", {message:RED._("notification.warnings.nodeActionDisabled")}),"warning");
+            RED.notify(RED._("notification.warning", { message: RED._("notification.warnings.nodeActionDisabled") }), "warning");
         }
         d3.event.preventDefault();
     }
 
-    function showTouchMenu(obj,pos) {
+    function showTouchMenu(obj, pos) {
         var mdn = mousedown_node;
         var options = [];
-        options.push({name:"delete",disabled:(moving_set.length===0 && selected_link === null),onselect:function() {deleteSelection();}});
-        options.push({name:"cut",disabled:(moving_set.length===0),onselect:function() {copySelection();deleteSelection();}});
-        options.push({name:"copy",disabled:(moving_set.length===0),onselect:function() {copySelection();}});
-        options.push({name:"paste",disabled:(clipboard.length===0),onselect:function() {importNodes(clipboard,false,true);}});
-        options.push({name:"edit",disabled:(moving_set.length != 1),onselect:function() { RED.editor.edit(mdn);}});
-        options.push({name:"select",onselect:function() {selectAll();}});
-        options.push({name:"undo",disabled:(RED.history.depth() === 0),onselect:function() {RED.history.pop();}});
+        options.push({ name: "delete", disabled: (moving_set.length === 0 && selected_link === null), onselect: function () { deleteSelection(); } });
+        options.push({ name: "cut", disabled: (moving_set.length === 0), onselect: function () { copySelection(); deleteSelection(); } });
+        options.push({ name: "copy", disabled: (moving_set.length === 0), onselect: function () { copySelection(); } });
+        options.push({ name: "paste", disabled: (clipboard.length === 0), onselect: function () { importNodes(clipboard, false, true); } });
+        options.push({ name: "edit", disabled: (moving_set.length != 1), onselect: function () { RED.editor.edit(mdn); } });
+        options.push({ name: "select", onselect: function () { selectAll(); } });
+        options.push({ name: "undo", disabled: (RED.history.depth() === 0), onselect: function () { RED.history.pop(); } });
 
-        RED.touch.radialMenu.show(obj,pos,options);
+        RED.touch.radialMenu.show(obj, pos, options);
         resetMouseVars();
     }
     function redraw() {
-        vis.attr("transform","scale("+scaleFactor+")");
-        outer.attr("width", space_width*scaleFactor).attr("height", space_height*scaleFactor);
+        vis.attr("transform", "scale(" + scaleFactor + ")");
+        outer.attr("width", space_width * scaleFactor).attr("height", space_height * scaleFactor);
 
         // Don't bother redrawing nodes if we're drawing links
         if (mouse_mode != RED.state.JOINING) {
@@ -6694,107 +6696,107 @@ RED.view = (function() {
             var dirtyNodes = {};
 
             if (activeSubflow) {
-                var subflowOutputs = vis.selectAll(".subflowoutput").data(activeSubflow.out,function(d,i){ return d.id;});
+                var subflowOutputs = vis.selectAll(".subflowoutput").data(activeSubflow.out, function (d, i) { return d.id; });
                 subflowOutputs.exit().remove();
-                var outGroup = subflowOutputs.enter().insert("svg:g").attr("class","node subflowoutput").attr("transform",function(d) { return "translate("+(d.x-20)+","+(d.y-20)+")"});
-                outGroup.each(function(d,i) {
-                    d.w=40;
-                    d.h=40;
+                var outGroup = subflowOutputs.enter().insert("svg:g").attr("class", "node subflowoutput").attr("transform", function (d) { return "translate(" + (d.x - 20) + "," + (d.y - 20) + ")" });
+                outGroup.each(function (d, i) {
+                    d.w = 40;
+                    d.h = 40;
                 });
-                outGroup.append("rect").attr("class","subflowport").attr("rx",8).attr("ry",8).attr("width",40).attr("height",40)
+                outGroup.append("rect").attr("class", "subflowport").attr("rx", 8).attr("ry", 8).attr("width", 40).attr("height", 40)
                     // TODO: This is exactly the same set of handlers used for regular nodes - DRY
-                    .on("mouseup",nodeMouseUp)
-                    .on("mousedown",nodeMouseDown)
-                    .on("touchstart",function(d) {
+                    .on("mouseup", nodeMouseUp)
+                    .on("mousedown", nodeMouseDown)
+                    .on("touchstart", function (d) {
                         var obj = d3.select(this);
                         var touch0 = d3.event.touches.item(0);
-                        var pos = [touch0.pageX,touch0.pageY];
-                        startTouchCenter = [touch0.pageX,touch0.pageY];
+                        var pos = [touch0.pageX, touch0.pageY];
+                        startTouchCenter = [touch0.pageX, touch0.pageY];
                         startTouchDistance = 0;
-                        touchStartTime = setTimeout(function() {
-                            showTouchMenu(obj,pos);
-                        },touchLongPressTimeout);
-                        nodeMouseDown.call(this,d)
+                        touchStartTime = setTimeout(function () {
+                            showTouchMenu(obj, pos);
+                        }, touchLongPressTimeout);
+                        nodeMouseDown.call(this, d)
                     })
-                    .on("touchend", function(d) {
+                    .on("touchend", function (d) {
                         clearTimeout(touchStartTime);
                         touchStartTime = null;
-                        if  (RED.touch.radialMenu.active()) {
+                        if (RED.touch.radialMenu.active()) {
                             d3.event.stopPropagation();
                             return;
                         }
-                        nodeMouseUp.call(this,d);
+                        nodeMouseUp.call(this, d);
                     });
 
-                outGroup.append("rect").attr("class","port").attr("rx",3).attr("ry",3).attr("width",10).attr("height",10).attr("x",-5).attr("y",15)
-                    .on("mousedown", function(d,i){portMouseDown(d,1,0);} )
-                    .on("touchstart", function(d,i){portMouseDown(d,1,0);} )
-                    .on("mouseup", function(d,i){portMouseUp(d,1,0);})
-                    .on("touchend",function(d,i){portMouseUp(d,1,0);} )
-                    .on("mouseover",function(d,i) { var port = d3.select(this); port.classed("port_hovered",(mouse_mode!=RED.state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== 1)));})
-                    .on("mouseout",function(d,i) { var port = d3.select(this); port.classed("port_hovered",false);});
+                outGroup.append("rect").attr("class", "port").attr("rx", 3).attr("ry", 3).attr("width", 10).attr("height", 10).attr("x", -5).attr("y", 15)
+                    .on("mousedown", function (d, i) { portMouseDown(d, 1, 0); })
+                    .on("touchstart", function (d, i) { portMouseDown(d, 1, 0); })
+                    .on("mouseup", function (d, i) { portMouseUp(d, 1, 0); })
+                    .on("touchend", function (d, i) { portMouseUp(d, 1, 0); })
+                    .on("mouseover", function (d, i) { var port = d3.select(this); port.classed("port_hovered", (mouse_mode != RED.state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== 1))); })
+                    .on("mouseout", function (d, i) { var port = d3.select(this); port.classed("port_hovered", false); });
 
-                outGroup.append("svg:text").attr("class","port_label").attr("x",20).attr("y",8).style("font-size","10px").text("output");
-                outGroup.append("svg:text").attr("class","port_label port_index").attr("x",20).attr("y",24).text(function(d,i){ return i+1});
+                outGroup.append("svg:text").attr("class", "port_label").attr("x", 20).attr("y", 8).style("font-size", "10px").text("output");
+                outGroup.append("svg:text").attr("class", "port_label port_index").attr("x", 20).attr("y", 24).text(function (d, i) { return i + 1 });
 
-                var subflowInputs = vis.selectAll(".subflowinput").data(activeSubflow.in,function(d,i){ return d.id;});
+                var subflowInputs = vis.selectAll(".subflowinput").data(activeSubflow.in, function (d, i) { return d.id; });
                 subflowInputs.exit().remove();
-                var inGroup = subflowInputs.enter().insert("svg:g").attr("class","node subflowinput").attr("transform",function(d) { return "translate("+(d.x-20)+","+(d.y-20)+")"});
-                inGroup.each(function(d,i) {
-                    d.w=40;
-                    d.h=40;
+                var inGroup = subflowInputs.enter().insert("svg:g").attr("class", "node subflowinput").attr("transform", function (d) { return "translate(" + (d.x - 20) + "," + (d.y - 20) + ")" });
+                inGroup.each(function (d, i) {
+                    d.w = 40;
+                    d.h = 40;
                 });
-                inGroup.append("rect").attr("class","subflowport").attr("rx",8).attr("ry",8).attr("width",40).attr("height",40)
+                inGroup.append("rect").attr("class", "subflowport").attr("rx", 8).attr("ry", 8).attr("width", 40).attr("height", 40)
                     // TODO: This is exactly the same set of handlers used for regular nodes - DRY
-                    .on("mouseup",nodeMouseUp)
-                    .on("mousedown",nodeMouseDown)
-                    .on("touchstart",function(d) {
+                    .on("mouseup", nodeMouseUp)
+                    .on("mousedown", nodeMouseDown)
+                    .on("touchstart", function (d) {
                         var obj = d3.select(this);
                         var touch0 = d3.event.touches.item(0);
-                        var pos = [touch0.pageX,touch0.pageY];
-                        startTouchCenter = [touch0.pageX,touch0.pageY];
+                        var pos = [touch0.pageX, touch0.pageY];
+                        startTouchCenter = [touch0.pageX, touch0.pageY];
                         startTouchDistance = 0;
-                        touchStartTime = setTimeout(function() {
-                            showTouchMenu(obj,pos);
-                        },touchLongPressTimeout);
-                        nodeMouseDown.call(this,d)
+                        touchStartTime = setTimeout(function () {
+                            showTouchMenu(obj, pos);
+                        }, touchLongPressTimeout);
+                        nodeMouseDown.call(this, d)
                     })
-                    .on("touchend", function(d) {
+                    .on("touchend", function (d) {
                         clearTimeout(touchStartTime);
                         touchStartTime = null;
-                        if  (RED.touch.radialMenu.active()) {
+                        if (RED.touch.radialMenu.active()) {
                             d3.event.stopPropagation();
                             return;
                         }
-                        nodeMouseUp.call(this,d);
+                        nodeMouseUp.call(this, d);
                     });
 
-                inGroup.append("rect").attr("class","port").attr("rx",3).attr("ry",3).attr("width",10).attr("height",10).attr("x",35).attr("y",15)
-                    .on("mousedown", function(d,i){portMouseDown(d,0,i);} )
-                    .on("touchstart", function(d,i){portMouseDown(d,0,i);} )
-                    .on("mouseup", function(d,i){portMouseUp(d,0,i);})
-                    .on("touchend",function(d,i){portMouseUp(d,0,i);} )
-                    .on("mouseover",function(d,i) { var port = d3.select(this); port.classed("port_hovered",(mouse_mode!=RED.state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== 0) ));})
-                    .on("mouseout",function(d,i) { var port = d3.select(this); port.classed("port_hovered",false);});
-                inGroup.append("svg:text").attr("class","port_label").attr("x",18).attr("y",20).style("font-size","10px").text("input");
+                inGroup.append("rect").attr("class", "port").attr("rx", 3).attr("ry", 3).attr("width", 10).attr("height", 10).attr("x", 35).attr("y", 15)
+                    .on("mousedown", function (d, i) { portMouseDown(d, 0, i); })
+                    .on("touchstart", function (d, i) { portMouseDown(d, 0, i); })
+                    .on("mouseup", function (d, i) { portMouseUp(d, 0, i); })
+                    .on("touchend", function (d, i) { portMouseUp(d, 0, i); })
+                    .on("mouseover", function (d, i) { var port = d3.select(this); port.classed("port_hovered", (mouse_mode != RED.state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== 0))); })
+                    .on("mouseout", function (d, i) { var port = d3.select(this); port.classed("port_hovered", false); });
+                inGroup.append("svg:text").attr("class", "port_label").attr("x", 18).attr("y", 20).style("font-size", "10px").text("input");
 
 
 
-                subflowOutputs.each(function(d,i) {
+                subflowOutputs.each(function (d, i) {
                     if (d.dirty) {
                         var output = d3.select(this);
-                        output.selectAll(".subflowport").classed("node_selected",function(d) { return d.selected; })
-                        output.selectAll(".port_index").text(function(d){ return d.i+1});
-                        output.attr("transform", function(d) { return "translate(" + (d.x-d.w/2) + "," + (d.y-d.h/2) + ")"; });
+                        output.selectAll(".subflowport").classed("node_selected", function (d) { return d.selected; })
+                        output.selectAll(".port_index").text(function (d) { return d.i + 1 });
+                        output.attr("transform", function (d) { return "translate(" + (d.x - d.w / 2) + "," + (d.y - d.h / 2) + ")"; });
                         dirtyNodes[d.id] = d;
                         d.dirty = false;
                     }
                 });
-                subflowInputs.each(function(d,i) {
+                subflowInputs.each(function (d, i) {
                     if (d.dirty) {
                         var input = d3.select(this);
-                        input.selectAll(".subflowport").classed("node_selected",function(d) { return d.selected; })
-                        input.attr("transform", function(d) { return "translate(" + (d.x-d.w/2) + "," + (d.y-d.h/2) + ")"; });
+                        input.selectAll(".subflowport").classed("node_selected", function (d) { return d.selected; })
+                        input.attr("transform", function (d) { return "translate(" + (d.x - d.w / 2) + "," + (d.y - d.h / 2) + ")"; });
                         dirtyNodes[d.id] = d;
                         d.dirty = false;
                     }
@@ -6804,114 +6806,116 @@ RED.view = (function() {
                 vis.selectAll(".subflowinput").remove();
             }
 
-            var node = vis.selectAll(".nodegroup").data(activeNodes,function(d){return d.id});
+            var node = vis.selectAll(".nodegroup").data(activeNodes, function (d) { return d.id });
             node.exit().remove();
 
             var nodeEnter = node.enter().insert("svg:g")
                 .attr("class", "node nodegroup")
-                .classed("node_subflow",function(d) { return activeSubflow != null; })
-                .classed("node_link",function(d) { return d.type === "link in" || d.type === "link out" });
+                .classed("node_subflow", function (d) { return activeSubflow != null; })
+                .classed("node_link", function (d) { return d.type === "link in" || d.type === "link out" });
 
-            nodeEnter.each(function(d,i) {
+            nodeEnter.each(function (d, i) {
                 var node = d3.select(this);
                 var isLink = d.type === "link in" || d.type === "link out";
-                node.attr("id",d.id);
+                node.attr("id", d.id);
                 var l = d._def.label;
                 try {
-                    l = (typeof l === "function" ? l.call(d) : l)||"";
-                } catch(err) {
-                    console.log("Definition error: "+d.type+".label",err);
+                    l = (typeof l === "function" ? l.call(d) : l) || "";
+                } catch (err) {
+                    console.log("Definition error: " + d.type + ".label", err);
                     l = d.type;
                 }
 
                 if (isLink) {
                     d.w = node_height;
                 } else {
-                    d.w = Math.max(node_width,gridSize*(Math.ceil((calculateTextWidth(l, "node_label", 50)+(d._def.inputs>0?7:0))/gridSize)) );
+                    d.w = Math.max(node_width, gridSize * (Math.ceil((calculateTextWidth(l, "node_label", 50) + (d._def.inputs > 0 ? 7 : 0)) / gridSize)));
                 }
-                d.h = Math.max(node_height,(d.outputs||0) * 15);
+                d.h = Math.max(node_height, (d.outputs || 0) * 15);
 
                 if (d._def.badge) {
-                    var badge = node.append("svg:g").attr("class","node_badge_group");
-                    var badgeRect = badge.append("rect").attr("class","node_badge").attr("rx",5).attr("ry",5).attr("width",40).attr("height",15);
-                    badge.append("svg:text").attr("class","node_badge_label").attr("x",35).attr("y",11).attr("text-anchor","end").text(d._def.badge());
+                    var badge = node.append("svg:g").attr("class", "node_badge_group");
+                    var badgeRect = badge.append("rect").attr("class", "node_badge").attr("rx", 5).attr("ry", 5).attr("width", 40).attr("height", 15);
+                    badge.append("svg:text").attr("class", "node_badge_label").attr("x", 35).attr("y", 11).attr("text-anchor", "end").text(d._def.badge());
                     if (d._def.onbadgeclick) {
-                        badgeRect.attr("cursor","pointer")
-                            .on("click",function(d) { d._def.onbadgeclick.call(d);d3.event.preventDefault();});
+                        badgeRect.attr("cursor", "pointer")
+                            .on("click", function (d) { d._def.onbadgeclick.call(d); d3.event.preventDefault(); });
                     }
                 }
 
                 if (d._def.button) {
                     var nodeButtonGroup = node.append("svg:g")
-                        .attr("transform",function(d) { return "translate("+((d._def.align == "right") ? 94 : -25)+",2)"; })
-                        .attr("class",function(d) { return "node_button "+((d._def.align == "right") ? "node_right_button" : "node_left_button"); });
+                        .attr("transform", function (d) { return "translate(" + ((d._def.align == "right") ? 94 : -25) + ",2)"; })
+                        .attr("class", function (d) { return "node_button " + ((d._def.align == "right") ? "node_right_button" : "node_left_button"); });
                     nodeButtonGroup.append("rect")
-                        .attr("rx",5)
-                        .attr("ry",5)
-                        .attr("width",32)
-                        .attr("height",node_height-4)
-                        .attr("fill","#eee");//function(d) { return d._def.color;})
+                        .attr("rx", 5)
+                        .attr("ry", 5)
+                        .attr("width", 32)
+                        .attr("height", node_height - 4)
+                        .attr("fill", "#eee");//function(d) { return d._def.color;})
                     nodeButtonGroup.append("rect")
-                        .attr("class","node_button_button")
-                        .attr("x",function(d) { return d._def.align == "right"? 11:5})
-                        .attr("y",4)
-                        .attr("rx",4)
-                        .attr("ry",4)
-                        .attr("width",16)
-                        .attr("height",node_height-12)
-                        .attr("fill",function(d) { return d._def.color;})
-                        .attr("cursor","pointer")
-                        .on("mousedown",function(d) {if (!lasso && !d.changed) {focusView();d3.select(this).attr("fill-opacity",0.2);d3.event.preventDefault(); d3.event.stopPropagation();}})
-                        .on("mouseup",function(d) {if (!lasso && !d.changed) { d3.select(this).attr("fill-opacity",0.4);d3.event.preventDefault();d3.event.stopPropagation();}})
-                        .on("mouseover",function(d) {if (!lasso && !d.changed) { d3.select(this).attr("fill-opacity",0.4);}})
-                        .on("mouseout",function(d) {if (!lasso  && !d.changed) {
-                            var op = 1;
-                            if (d._def.button.toggle) {
-                                op = d[d._def.button.toggle]?1:0.2;
+                        .attr("class", "node_button_button")
+                        .attr("x", function (d) { return d._def.align == "right" ? 11 : 5 })
+                        .attr("y", 4)
+                        .attr("rx", 4)
+                        .attr("ry", 4)
+                        .attr("width", 16)
+                        .attr("height", node_height - 12)
+                        .attr("fill", function (d) { return d._def.color; })
+                        .attr("cursor", "pointer")
+                        .on("mousedown", function (d) { if (!lasso && !d.changed) { focusView(); d3.select(this).attr("fill-opacity", 0.2); d3.event.preventDefault(); d3.event.stopPropagation(); } })
+                        .on("mouseup", function (d) { if (!lasso && !d.changed) { d3.select(this).attr("fill-opacity", 0.4); d3.event.preventDefault(); d3.event.stopPropagation(); } })
+                        .on("mouseover", function (d) { if (!lasso && !d.changed) { d3.select(this).attr("fill-opacity", 0.4); } })
+                        .on("mouseout", function (d) {
+                            if (!lasso && !d.changed) {
+                                var op = 1;
+                                if (d._def.button.toggle) {
+                                    op = d[d._def.button.toggle] ? 1 : 0.2;
+                                }
+                                d3.select(this).attr("fill-opacity", op);
                             }
-                            d3.select(this).attr("fill-opacity",op);
-                        }})
-                        .on("click",nodeButtonClicked)
-                        .on("touchstart",nodeButtonClicked)
+                        })
+                        .on("click", nodeButtonClicked)
+                        .on("touchstart", nodeButtonClicked)
                 }
 
                 var mainRect = node.append("rect")
                     .attr("class", "node")
-                    .classed("node_unknown",function(d) { return d.type == "unknown"; })
+                    .classed("node_unknown", function (d) { return d.type == "unknown"; })
                     .attr("rx", 5)
                     .attr("ry", 5)
-                    .attr("fill",function(d) { return d._def.color;})
-                    .on("mouseup",nodeMouseUp)
-                    .on("mousedown",nodeMouseDown)
-                    .on("touchstart",function(d) {
+                    .attr("fill", function (d) { return d._def.color; })
+                    .on("mouseup", nodeMouseUp)
+                    .on("mousedown", nodeMouseDown)
+                    .on("touchstart", function (d) {
                         var obj = d3.select(this);
                         var touch0 = d3.event.touches.item(0);
-                        var pos = [touch0.pageX,touch0.pageY];
-                        startTouchCenter = [touch0.pageX,touch0.pageY];
+                        var pos = [touch0.pageX, touch0.pageY];
+                        startTouchCenter = [touch0.pageX, touch0.pageY];
                         startTouchDistance = 0;
-                        touchStartTime = setTimeout(function() {
-                            showTouchMenu(obj,pos);
-                        },touchLongPressTimeout);
-                        nodeMouseDown.call(this,d)
+                        touchStartTime = setTimeout(function () {
+                            showTouchMenu(obj, pos);
+                        }, touchLongPressTimeout);
+                        nodeMouseDown.call(this, d)
                     })
-                    .on("touchend", function(d) {
+                    .on("touchend", function (d) {
                         clearTimeout(touchStartTime);
                         touchStartTime = null;
-                        if  (RED.touch.radialMenu.active()) {
+                        if (RED.touch.radialMenu.active()) {
                             d3.event.stopPropagation();
                             return;
                         }
-                        nodeMouseUp.call(this,d);
+                        nodeMouseUp.call(this, d);
                     })
-                    .on("mouseover",function(d) {
+                    .on("mouseover", function (d) {
                         if (mouse_mode === 0) {
                             var node = d3.select(this);
-                            node.classed("node_hovered",true);
+                            node.classed("node_hovered", true);
                         }
                     })
-                    .on("mouseout",function(d) {
+                    .on("mouseout", function (d) {
                         var node = d3.select(this);
-                        node.classed("node_hovered",false);
+                        node.classed("node_hovered", false);
                     });
 
                 //node.append("rect").attr("class", "node-gradient-top").attr("rx", 6).attr("ry", 6).attr("height",30).attr("stroke","none").attr("fill","url(#gradient-top)").style("pointer-events","none");
@@ -6920,35 +6924,35 @@ RED.view = (function() {
                 if (d._def.icon) {
 
                     var icon_group = node.append("g")
-                        .attr("class","node_icon_group")
-                        .attr("x",0).attr("y",0);
+                        .attr("class", "node_icon_group")
+                        .attr("x", 0).attr("y", 0);
 
                     var icon_shade = icon_group.append("rect")
-                        .attr("x",0).attr("y",0)
-                        .attr("class","node_icon_shade")
-                        .attr("width","30")
-                        .attr("stroke","none")
-                        .attr("fill","#000")
-                        .attr("fill-opacity","0.05")
-                        .attr("height",function(d){return Math.min(50,d.h-4);});
+                        .attr("x", 0).attr("y", 0)
+                        .attr("class", "node_icon_shade")
+                        .attr("width", "30")
+                        .attr("stroke", "none")
+                        .attr("fill", "#000")
+                        .attr("fill-opacity", "0.05")
+                        .attr("height", function (d) { return Math.min(50, d.h - 4); });
 
                     var icon = icon_group.append("image")
-                        .attr("xlink:href",`${baseURL}flows/icons/${+d._def.icon}`)
-                        .attr("class","node_icon")
-                        .attr("x",0)
-                        .attr("width","30")
-                        .attr("height","30");
+                        .attr("xlink:href", `${BASE_URL}flows/icons/${+d._def.icon}`)
+                        .attr("class", "node_icon")
+                        .attr("x", 0)
+                        .attr("width", "30")
+                        .attr("height", "30");
 
                     var icon_shade_border = icon_group.append("path")
-                        .attr("d",function(d) { return "M 30 1 l 0 "+(d.h-2)})
-                        .attr("class","node_icon_shade_border")
-                        .attr("stroke-opacity","0.1")
-                        .attr("stroke","#000")
-                        .attr("stroke-width","1");
+                        .attr("d", function (d) { return "M 30 1 l 0 " + (d.h - 2) })
+                        .attr("class", "node_icon_shade_border")
+                        .attr("stroke-opacity", "0.1")
+                        .attr("stroke", "#000")
+                        .attr("stroke-width", "1");
 
                     if ("right" == d._def.align) {
-                        icon_group.attr("class","node_icon_group node_icon_group_"+d._def.align);
-                        icon_shade_border.attr("d",function(d) { return "M 0 1 l 0 "+(d.h-2)})
+                        icon_group.attr("class", "node_icon_group node_icon_group_" + d._def.align);
+                        icon_shade_border.attr("d", function (d) { return "M 0 1 l 0 " + (d.h - 2) })
                         //icon.attr("class","node_icon node_icon_"+d._def.align);
                         //icon.attr("class","node_icon_shade node_icon_shade_"+d._def.align);
                         //icon.attr("class","node_icon_shade_border node_icon_shade_border_"+d._def.align);
@@ -6964,11 +6968,11 @@ RED.view = (function() {
                     //}
 
                     var img = new Image();
-                    img.src = `${baseURL}flows/icons/${d._def.icon}`;
-                    img.onload = function() {
-                        icon.attr("width",Math.min(img.width,30));
-                        icon.attr("height",Math.min(img.height,30));
-                        icon.attr("x",15-Math.min(img.width,30)/2);
+                    img.src = `${BASE_URL}flows/icons/${d._def.icon}`;
+                    img.onload = function () {
+                        icon.attr("width", Math.min(img.width, 30));
+                        icon.attr("height", Math.min(img.height, 30));
+                        icon.attr("x", 15 - Math.min(img.width, 30) / 2);
                         //if ("right" == d._def.align) {
                         //    icon.attr("x",function(d){return d.w-img.width-1-(d.outputs>0?5:0);});
                         //    icon_shade.attr("x",function(d){return d.w-30});
@@ -6977,35 +6981,35 @@ RED.view = (function() {
                     }
 
                     //icon.style("pointer-events","none");
-                    icon_group.style("pointer-events","none");
+                    icon_group.style("pointer-events", "none");
                 }
                 if (!isLink) {
-                    var text = node.append("svg:text").attr("class","node_label").attr("x", 38).attr("dy", ".35em").attr("text-anchor","start");
+                    var text = node.append("svg:text").attr("class", "node_label").attr("x", 38).attr("dy", ".35em").attr("text-anchor", "start");
                     if (d._def.align) {
-                        text.attr("class","node_label node_label_"+d._def.align);
+                        text.attr("class", "node_label node_label_" + d._def.align);
                         if (d._def.align === "right") {
-                            text.attr("text-anchor","end");
+                            text.attr("text-anchor", "end");
                         }
                     }
 
-                    var status = node.append("svg:g").attr("class","node_status_group").style("display","none");
+                    var status = node.append("svg:g").attr("class", "node_status_group").style("display", "none");
 
-                    var statusRect = status.append("rect").attr("class","node_status")
-                        .attr("x",6).attr("y",1).attr("width",9).attr("height",9)
-                        .attr("rx",2).attr("ry",2).attr("stroke-width","3");
+                    var statusRect = status.append("rect").attr("class", "node_status")
+                        .attr("x", 6).attr("y", 1).attr("width", 9).attr("height", 9)
+                        .attr("rx", 2).attr("ry", 2).attr("stroke-width", "3");
 
                     var statusLabel = status.append("svg:text")
-                        .attr("class","node_status_label")
-                        .attr("x",20).attr("y",9);
+                        .attr("class", "node_status_label")
+                        .attr("x", 20).attr("y", 9);
                 }
                 //node.append("circle").attr({"class":"centerDot","cx":0,"cy":0,"r":5});
 
                 //node.append("path").attr("class","node_error").attr("d","M 3,-3 l 10,0 l -5,-8 z");
-                node.append("image").attr("class","node_error hidden").attr("xlink:href",`${baseURL}flows/icons/node-error.png`).attr("x",0).attr("y",-6).attr("width",10).attr("height",9);
-                node.append("image").attr("class","node_changed hidden").attr("xlink:href",`${baseURL}flows/icons/node-changed.png`).attr("x",12).attr("y",-6).attr("width",10).attr("height",10);
+                node.append("image").attr("class", "node_error hidden").attr("xlink:href", `${BASE_URL}flows/icons/node-error.png`).attr("x", 0).attr("y", -6).attr("width", 10).attr("height", 9);
+                node.append("image").attr("class", "node_changed hidden").attr("xlink:href", `${BASE_URL}flows/icons/node-changed.png`).attr("x", 12).attr("y", -6).attr("width", 10).attr("height", 10);
             });
 
-            node.each(function(d,i) {
+            node.each(function (d, i) {
                 if (d.dirty) {
                     var isLink = d.type === "link in" || d.type === "link out";
                     dirtyNodes[d.id] = d;
@@ -7013,33 +7017,33 @@ RED.view = (function() {
                     if (!isLink && d.resize) {
                         var l = d._def.label;
                         try {
-                            l = (typeof l === "function" ? l.call(d) : l)||"";
-                        } catch(err) {
-                            console.log("Definition error: "+d.type+".label",err);
+                            l = (typeof l === "function" ? l.call(d) : l) || "";
+                        } catch (err) {
+                            console.log("Definition error: " + d.type + ".label", err);
                             l = d.type;
                         }
                         var ow = d.w;
-                        d.w = Math.max(node_width,gridSize*(Math.ceil((calculateTextWidth(l, "node_label", 50)+(d._def.inputs>0?7:0))/gridSize)) );
-                        d.h = Math.max(node_height,(d.outputs||0) * 15);
-                        d.x += (d.w-ow)/2;
+                        d.w = Math.max(node_width, gridSize * (Math.ceil((calculateTextWidth(l, "node_label", 50) + (d._def.inputs > 0 ? 7 : 0)) / gridSize)));
+                        d.h = Math.max(node_height, (d.outputs || 0) * 15);
+                        d.x += (d.w - ow) / 2;
                         d.resize = false;
                     }
                     var thisNode = d3.select(this);
                     //thisNode.selectAll(".centerDot").attr({"cx":function(d) { return d.w/2;},"cy":function(d){return d.h/2}});
-                    thisNode.attr("transform", function(d) { return "translate(" + (d.x-d.w/2) + "," + (d.y-d.h/2) + ")"; });
+                    thisNode.attr("transform", function (d) { return "translate(" + (d.x - d.w / 2) + "," + (d.y - d.h / 2) + ")"; });
 
                     if (mouse_mode != RED.state.MOVING_ACTIVE) {
                         thisNode.selectAll(".node")
-                            .attr("width",function(d){return d.w})
-                            .attr("height",function(d){return d.h})
-                            .classed("node_selected",function(d) { return d.selected; })
-                            .classed("node_highlighted",function(d) { return d.highlighted; })
-                        ;
+                            .attr("width", function (d) { return d.w })
+                            .attr("height", function (d) { return d.h })
+                            .classed("node_selected", function (d) { return d.selected; })
+                            .classed("node_highlighted", function (d) { return d.highlighted; })
+                            ;
                         //thisNode.selectAll(".node-gradient-top").attr("width",function(d){return d.w});
                         //thisNode.selectAll(".node-gradient-bottom").attr("width",function(d){return d.w}).attr("y",function(d){return d.h-30});
 
-                        thisNode.selectAll(".node_icon_group_right").attr("transform", function(d){return "translate("+(d.w-30)+",0)"});
-                        thisNode.selectAll(".node_label_right").attr("x", function(d){return d.w-38});
+                        thisNode.selectAll(".node_icon_group_right").attr("transform", function (d) { return "translate(" + (d.w - 30) + ",0)" });
+                        thisNode.selectAll(".node_label_right").attr("x", function (d) { return d.w - 38 });
                         //thisNode.selectAll(".node_icon_right").attr("x",function(d){return d.w-d3.select(this).attr("width")-1-(d.outputs>0?5:0);});
                         //thisNode.selectAll(".node_icon_shade_right").attr("x",function(d){return d.w-30;});
                         //thisNode.selectAll(".node_icon_shade_border_right").attr("d",function(d){return "M "+(d.w-30)+" 1 l 0 "+(d.h-2)});
@@ -7049,70 +7053,70 @@ RED.view = (function() {
                             inputPorts.remove();
                             //nodeLabel.attr("x",30);
                         } else if (d.inputs === 1 && inputPorts.empty()) {
-                            var inputGroup = thisNode.append("g").attr("class","port_input");
-                            inputGroup.append("rect").attr("class","port").attr("rx",3).attr("ry",3).attr("width",10).attr("height",10)
-                                .on("mousedown",function(d){portMouseDown(d,1,0);})
-                                .on("touchstart",function(d){portMouseDown(d,1,0);})
-                                .on("mouseup",function(d){portMouseUp(d,1,0);} )
-                                .on("touchend",function(d){portMouseUp(d,1,0);} )
-                                .on("mouseover",function(d) { var port = d3.select(this); port.classed("port_hovered",(mouse_mode!=RED.state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== 1) ));})
-                                .on("mouseout",function(d) { var port = d3.select(this); port.classed("port_hovered",false);})
+                            var inputGroup = thisNode.append("g").attr("class", "port_input");
+                            inputGroup.append("rect").attr("class", "port").attr("rx", 3).attr("ry", 3).attr("width", 10).attr("height", 10)
+                                .on("mousedown", function (d) { portMouseDown(d, 1, 0); })
+                                .on("touchstart", function (d) { portMouseDown(d, 1, 0); })
+                                .on("mouseup", function (d) { portMouseUp(d, 1, 0); })
+                                .on("touchend", function (d) { portMouseUp(d, 1, 0); })
+                                .on("mouseover", function (d) { var port = d3.select(this); port.classed("port_hovered", (mouse_mode != RED.state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== 1))); })
+                                .on("mouseout", function (d) { var port = d3.select(this); port.classed("port_hovered", false); })
                         }
 
                         var numOutputs = d.outputs;
-                        var y = (d.h/2)-((numOutputs-1)/2)*13;
+                        var y = (d.h / 2) - ((numOutputs - 1) / 2) * 13;
                         d.ports = d.ports || d3.range(numOutputs);
                         d._ports = thisNode.selectAll(".port_output").data(d.ports);
-                        var output_group = d._ports.enter().append("g").attr("class","port_output");
+                        var output_group = d._ports.enter().append("g").attr("class", "port_output");
 
-                        output_group.append("rect").attr("class","port").attr("rx",3).attr("ry",3).attr("width",10).attr("height",10)
-                            .on("mousedown",(function(){var node = d; return function(d,i){portMouseDown(node,0,i);}})() )
-                            .on("touchstart",(function(){var node = d; return function(d,i){portMouseDown(node,0,i);}})() )
-                            .on("mouseup",(function(){var node = d; return function(d,i){portMouseUp(node,0,i);}})() )
-                            .on("touchend",(function(){var node = d; return function(d,i){portMouseUp(node,0,i);}})() )
-                            .on("mouseover",function(d,i) { var port = d3.select(this); port.classed("port_hovered",(mouse_mode!=RED.state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== 0) ));})
-                            .on("mouseout",function(d,i) { var port = d3.select(this); port.classed("port_hovered",false);});
+                        output_group.append("rect").attr("class", "port").attr("rx", 3).attr("ry", 3).attr("width", 10).attr("height", 10)
+                            .on("mousedown", (function () { var node = d; return function (d, i) { portMouseDown(node, 0, i); } })())
+                            .on("touchstart", (function () { var node = d; return function (d, i) { portMouseDown(node, 0, i); } })())
+                            .on("mouseup", (function () { var node = d; return function (d, i) { portMouseUp(node, 0, i); } })())
+                            .on("touchend", (function () { var node = d; return function (d, i) { portMouseUp(node, 0, i); } })())
+                            .on("mouseover", function (d, i) { var port = d3.select(this); port.classed("port_hovered", (mouse_mode != RED.state.JOINING || (drag_lines.length > 0 && drag_lines[0].portType !== 0))); })
+                            .on("mouseout", function (d, i) { var port = d3.select(this); port.classed("port_hovered", false); });
 
                         d._ports.exit().remove();
                         if (d._ports) {
                             numOutputs = d.outputs || 1;
-                            y = (d.h/2)-((numOutputs-1)/2)*13;
+                            y = (d.h / 2) - ((numOutputs - 1) / 2) * 13;
                             var x = d.w - 5;
-                            d._ports.each(function(d,i) {
+                            d._ports.each(function (d, i) {
                                 var port = d3.select(this);
                                 //port.attr("y",(y+13*i)-5).attr("x",x);
-                                port.attr("transform", function(d) { return "translate("+x+","+((y+13*i)-5)+")";});
+                                port.attr("transform", function (d) { return "translate(" + x + "," + ((y + 13 * i) - 5) + ")"; });
                             });
                         }
-                        thisNode.selectAll("text.node_label").text(function(d,i){
+                        thisNode.selectAll("text.node_label").text(function (d, i) {
                             var l = "";
                             if (d._def.label) {
                                 l = d._def.label;
                                 try {
-                                    l = (typeof l === "function" ? l.call(d) : l)||"";
+                                    l = (typeof l === "function" ? l.call(d) : l) || "";
                                     l = RED.text.bidi.enforceTextDirectionWithUCC(l);
-                                } catch(err) {
-                                    console.log("Definition error: "+d.type+".label",err);
+                                } catch (err) {
+                                    console.log("Definition error: " + d.type + ".label", err);
                                     l = d.type;
                                 }
                             }
                             return l;
                         })
-                            .attr("y", function(d){return (d.h/2)-1;})
-                            .attr("class",function(d){
+                            .attr("y", function (d) { return (d.h / 2) - 1; })
+                            .attr("class", function (d) {
                                 var s = "";
                                 if (d._def.labelStyle) {
                                     s = d._def.labelStyle;
                                     try {
-                                        s = (typeof s === "function" ? s.call(d) : s)||"";
-                                    } catch(err) {
-                                        console.log("Definition error: "+d.type+".labelStyle",err);
+                                        s = (typeof s === "function" ? s.call(d) : s) || "";
+                                    } catch (err) {
+                                        console.log("Definition error: " + d.type + ".labelStyle", err);
                                         s = "";
                                     }
-                                    s = " "+s;
+                                    s = " " + s;
                                 }
-                                return "node_label"+
-                                    (d._def.align?" node_label_"+d._def.align:"")+s;
+                                return "node_label" +
+                                    (d._def.align ? " node_label_" + d._def.align : "") + s;
                             });
 
                         if (d._def.icon) {
@@ -7122,61 +7126,61 @@ RED.view = (function() {
                             if (typeof d._def.icon == "function") {
                                 try {
                                     icon_url = d._def.icon.call(d);
-                                } catch(err) {
-                                    console.log("icon",err);
+                                } catch (err) {
+                                    console.log("icon", err);
                                     icon_url = "arrow-in.png";
                                 }
                             } else {
                                 icon_url = d._def.icon;
                             }
-                            if (`${baseURL}flows/icons/${icon_url}` !== current_url) {
-                                icon.attr("xlink:href",`${baseURL}flows/icons/${icon_url}`);
+                            if (`${BASE_URL}flows/icons/${icon_url}` !== current_url) {
+                                icon.attr("xlink:href", `${BASE_URL}flows/icons/${icon_url}`);
                                 var img = new Image();
-                                img.src = `${baseURL}flows/icons/${d._def.icon}`;
-                                img.onload = function() {
-                                    icon.attr("width",Math.min(img.width,30));
-                                    icon.attr("height",Math.min(img.height,30));
-                                    icon.attr("x",15-Math.min(img.width,30)/2);
+                                img.src = `${BASE_URL}flows/icons/${d._def.icon}`;
+                                img.onload = function () {
+                                    icon.attr("width", Math.min(img.width, 30));
+                                    icon.attr("height", Math.min(img.height, 30));
+                                    icon.attr("x", 15 - Math.min(img.width, 30) / 2);
                                 }
                             }
                         }
 
 
-                        thisNode.selectAll(".node_tools").attr("x",function(d){return d.w-35;}).attr("y",function(d){return d.h-20;});
+                        thisNode.selectAll(".node_tools").attr("x", function (d) { return d.w - 35; }).attr("y", function (d) { return d.h - 20; });
 
                         thisNode.selectAll(".node_changed")
-                            .attr("x",function(d){return d.w-10})
-                            .classed("hidden",function(d) { return !d.changed; });
+                            .attr("x", function (d) { return d.w - 10 })
+                            .classed("hidden", function (d) { return !d.changed; });
 
                         thisNode.selectAll(".node_error")
-                            .attr("x",function(d){return d.w-10-(d.changed?13:0)})
-                            .classed("hidden",function(d) { return d.valid; });
+                            .attr("x", function (d) { return d.w - 10 - (d.changed ? 13 : 0) })
+                            .classed("hidden", function (d) { return d.valid; });
 
-                        thisNode.selectAll(".port_input").each(function(d,i) {
+                        thisNode.selectAll(".port_input").each(function (d, i) {
                             var port = d3.select(this);
-                            port.attr("transform",function(d){return "translate(-5,"+((d.h/2)-5)+")";})
+                            port.attr("transform", function (d) { return "translate(-5," + ((d.h / 2) - 5) + ")"; })
                         });
 
-                        thisNode.selectAll(".node_icon").attr("y",function(d){return (d.h-d3.select(this).attr("height"))/2;});
-                        thisNode.selectAll(".node_icon_shade").attr("height",function(d){return d.h;});
-                        thisNode.selectAll(".node_icon_shade_border").attr("d",function(d){ return "M "+(("right" == d._def.align) ?0:30)+" 1 l 0 "+(d.h-2)});
+                        thisNode.selectAll(".node_icon").attr("y", function (d) { return (d.h - d3.select(this).attr("height")) / 2; });
+                        thisNode.selectAll(".node_icon_shade").attr("height", function (d) { return d.h; });
+                        thisNode.selectAll(".node_icon_shade_border").attr("d", function (d) { return "M " + (("right" == d._def.align) ? 0 : 30) + " 1 l 0 " + (d.h - 2) });
 
-                        thisNode.selectAll(".node_button").attr("opacity",function(d) {
-                            return (activeSubflow||d.changed)?0.4:1
+                        thisNode.selectAll(".node_button").attr("opacity", function (d) {
+                            return (activeSubflow || d.changed) ? 0.4 : 1
                         });
-                        thisNode.selectAll(".node_button_button").attr("cursor",function(d) {
-                            return (activeSubflow||d.changed)?"":"pointer";
+                        thisNode.selectAll(".node_button_button").attr("cursor", function (d) {
+                            return (activeSubflow || d.changed) ? "" : "pointer";
                         });
-                        thisNode.selectAll(".node_right_button").attr("transform",function(d){
-                            var x = d.w-6;
+                        thisNode.selectAll(".node_right_button").attr("transform", function (d) {
+                            var x = d.w - 6;
                             if (d._def.button.toggle && !d[d._def.button.toggle]) {
                                 x = x - 8;
                             }
-                            return "translate("+x+",2)";
+                            return "translate(" + x + ",2)";
                         });
-                        thisNode.selectAll(".node_right_button rect").attr("fill-opacity",function(d){
+                        thisNode.selectAll(".node_right_button rect").attr("fill-opacity", function (d) {
                             if (d._def.button.toggle) {
-                                return d[d._def.button.toggle]?1:0.2;
+                                return d[d._def.button.toggle] ? 1 : 0.2;
                             }
                             return 1;
                         });
@@ -7185,14 +7189,14 @@ RED.view = (function() {
                         //         return typeof d._def.button.color  === "function" ? d._def.button.color.call(d):(d._def.button.color != null ? d._def.button.color : d._def.color)
                         //});
 
-                        thisNode.selectAll(".node_badge_group").attr("transform",function(d){return "translate("+(d.w-40)+","+(d.h+3)+")";});
-                        thisNode.selectAll("text.node_badge_label").text(function(d,i) {
+                        thisNode.selectAll(".node_badge_group").attr("transform", function (d) { return "translate(" + (d.w - 40) + "," + (d.h + 3) + ")"; });
+                        thisNode.selectAll("text.node_badge_label").text(function (d, i) {
                             if (d._def.badge) {
                                 if (typeof d._def.badge == "function") {
                                     try {
                                         return d._def.badge.call(d);
-                                    } catch(err) {
-                                        console.log("Definition error: "+d.type+".badge",err);
+                                    } catch (err) {
+                                        console.log("Definition error: " + d.type + ".badge", err);
                                         return "";
                                     }
                                 } else {
@@ -7204,12 +7208,12 @@ RED.view = (function() {
                     }
 
                     if (!showStatus || !d.status) {
-                        thisNode.selectAll(".node_status_group").style("display","none");
+                        thisNode.selectAll(".node_status_group").style("display", "none");
                     } else {
-                        thisNode.selectAll(".node_status_group").style("display","inline").attr("transform","translate(3,"+(d.h+3)+")");
+                        thisNode.selectAll(".node_status_group").style("display", "inline").attr("transform", "translate(3," + (d.h + 3) + ")");
                         var fill = status_colours[d.status.fill]; // Only allow our colours for now
                         if (d.status.shape == null && fill == null) {
-                            thisNode.selectAll(".node_status").style("display","none");
+                            thisNode.selectAll(".node_status").style("display", "none");
                         } else {
                             var style;
                             if (d.status.shape == null || d.status.shape == "dot") {
@@ -7218,7 +7222,7 @@ RED.view = (function() {
                                     fill: fill,
                                     stroke: fill
                                 };
-                            } else if (d.status.shape == "ring" ){
+                            } else if (d.status.shape == "ring") {
                                 style = {
                                     display: "inline",
                                     fill: "#fff",
@@ -7240,17 +7244,17 @@ RED.view = (function() {
 
             var link = vis.selectAll(".link").data(
                 activeLinks,
-                function(d) {
-                    return d.source.id+":"+d.sourcePort+":"+d.target.id+":"+d.target.i;
+                function (d) {
+                    return d.source.id + ":" + d.sourcePort + ":" + d.target.id + ":" + d.target.i;
                 }
             );
-            var linkEnter = link.enter().insert("g",".node").attr("class","link");
+            var linkEnter = link.enter().insert("g", ".node").attr("class", "link");
 
-            linkEnter.each(function(d,i) {
+            linkEnter.each(function (d, i) {
                 var l = d3.select(this);
                 d.added = true;
-                l.append("svg:path").attr("class","link_background link_path")
-                    .on("mousedown",function(d) {
+                l.append("svg:path").attr("class", "link_background link_path")
+                    .on("mousedown", function (d) {
                         mousedown_link = d;
                         clearSelection();
                         selected_link = mousedown_link;
@@ -7259,7 +7263,7 @@ RED.view = (function() {
                         focusView();
                         d3.event.stopPropagation();
                     })
-                    .on("touchstart",function(d) {
+                    .on("touchstart", function (d) {
                         mousedown_link = d;
                         clearSelection();
                         selected_link = mousedown_link;
@@ -7270,71 +7274,71 @@ RED.view = (function() {
 
                         var obj = d3.select(document.body);
                         var touch0 = d3.event.touches.item(0);
-                        var pos = [touch0.pageX,touch0.pageY];
-                        touchStartTime = setTimeout(function() {
+                        var pos = [touch0.pageX, touch0.pageY];
+                        touchStartTime = setTimeout(function () {
                             touchStartTime = null;
-                            showTouchMenu(obj,pos);
-                        },touchLongPressTimeout);
+                            showTouchMenu(obj, pos);
+                        }, touchLongPressTimeout);
                     })
-                l.append("svg:path").attr("class","link_outline link_path");
-                l.append("svg:path").attr("class","link_line link_path")
-                    .classed("link_link", function(d) { return d.link })
-                    .classed("link_subflow", function(d) { return !d.link && activeSubflow });
+                l.append("svg:path").attr("class", "link_outline link_path");
+                l.append("svg:path").attr("class", "link_line link_path")
+                    .classed("link_link", function (d) { return d.link })
+                    .classed("link_subflow", function (d) { return !d.link && activeSubflow });
             });
 
             link.exit().remove();
             var links = vis.selectAll(".link_path");
-            links.each(function(d) {
+            links.each(function (d) {
                 var link = d3.select(this);
-                if (d.added || d===selected_link || d.selected || dirtyNodes[d.source.id] || dirtyNodes[d.target.id]) {
-                    link.attr("d",function(d){
+                if (d.added || d === selected_link || d.selected || dirtyNodes[d.source.id] || dirtyNodes[d.target.id]) {
+                    link.attr("d", function (d) {
                         var numOutputs = d.source.outputs || 1;
                         var sourcePort = d.sourcePort || 0;
-                        var y = -((numOutputs-1)/2)*13 +13*sourcePort;
+                        var y = -((numOutputs - 1) / 2) * 13 + 13 * sourcePort;
 
-                        var dy = d.target.y-(d.source.y+y);
-                        var dx = (d.target.x-d.target.w/2)-(d.source.x+d.source.w/2);
-                        var delta = Math.sqrt(dy*dy+dx*dx);
+                        var dy = d.target.y - (d.source.y + y);
+                        var dx = (d.target.x - d.target.w / 2) - (d.source.x + d.source.w / 2);
+                        var delta = Math.sqrt(dy * dy + dx * dx);
                         var scale = lineCurveScale;
                         var scaleY = 0;
                         if (delta < node_width) {
-                            scale = 0.75-0.75*((node_width-delta)/node_width);
+                            scale = 0.75 - 0.75 * ((node_width - delta) / node_width);
                         }
 
                         if (dx < 0) {
-                            scale += 2*(Math.min(5*node_width,Math.abs(dx))/(5*node_width));
-                            if (Math.abs(dy) < 3*node_height) {
-                                scaleY = ((dy>0)?0.5:-0.5)*(((3*node_height)-Math.abs(dy))/(3*node_height))*(Math.min(node_width,Math.abs(dx))/(node_width)) ;
+                            scale += 2 * (Math.min(5 * node_width, Math.abs(dx)) / (5 * node_width));
+                            if (Math.abs(dy) < 3 * node_height) {
+                                scaleY = ((dy > 0) ? 0.5 : -0.5) * (((3 * node_height) - Math.abs(dy)) / (3 * node_height)) * (Math.min(node_width, Math.abs(dx)) / (node_width));
                             }
                         }
 
-                        d.x1 = d.source.x+d.source.w/2;
-                        d.y1 = d.source.y+y;
-                        d.x2 = d.target.x-d.target.w/2;
+                        d.x1 = d.source.x + d.source.w / 2;
+                        d.y1 = d.source.y + y;
+                        d.x2 = d.target.x - d.target.w / 2;
                         d.y2 = d.target.y;
 
-                        return "M "+(d.source.x+d.source.w/2)+" "+(d.source.y+y)+
-                            " C "+(d.source.x+d.source.w/2+scale*node_width)+" "+(d.source.y+y+scaleY*node_height)+" "+
-                            (d.target.x-d.target.w/2-scale*node_width)+" "+(d.target.y-scaleY*node_height)+" "+
-                            (d.target.x-d.target.w/2)+" "+d.target.y;
+                        return "M " + (d.source.x + d.source.w / 2) + " " + (d.source.y + y) +
+                            " C " + (d.source.x + d.source.w / 2 + scale * node_width) + " " + (d.source.y + y + scaleY * node_height) + " " +
+                            (d.target.x - d.target.w / 2 - scale * node_width) + " " + (d.target.y - scaleY * node_height) + " " +
+                            (d.target.x - d.target.w / 2) + " " + d.target.y;
                     });
                 }
             })
 
-            link.classed("link_selected", function(d) { return d === selected_link || d.selected; });
-            link.classed("link_unknown",function(d) {
+            link.classed("link_selected", function (d) { return d === selected_link || d.selected; });
+            link.classed("link_unknown", function (d) {
                 delete d.added;
                 return d.target.type == "unknown" || d.source.type == "unknown"
             });
             var offLinks = vis.selectAll(".link_flow_link_g").data(
                 activeFlowLinks,
-                function(d) {
-                    return d.node.id+":"+d.refresh
+                function (d) {
+                    return d.node.id + ":" + d.refresh
                 }
             );
 
-            var offLinksEnter = offLinks.enter().insert("g",".node").attr("class","link_flow_link_g");
-            offLinksEnter.each(function(d,i) {
+            var offLinksEnter = offLinks.enter().insert("g", ".node").attr("class", "link_flow_link_g");
+            offLinksEnter.each(function (d, i) {
                 var g = d3.select(this);
                 var s = 1;
                 var labelAnchor = "start";
@@ -7342,89 +7346,89 @@ RED.view = (function() {
                     s = -1;
                     labelAnchor = "end";
                 }
-                var stemLength = s*30;
-                var branchLength = s*20;
-                var l = g.append("svg:path").attr("class","link_flow_link")
-                    .attr("class","link_link").attr("d","M 0 0 h "+stemLength);
+                var stemLength = s * 30;
+                var branchLength = s * 20;
+                var l = g.append("svg:path").attr("class", "link_flow_link")
+                    .attr("class", "link_link").attr("d", "M 0 0 h " + stemLength);
                 var links = d.links;
                 var flows = Object.keys(links);
                 var tabOrder = RED.nodes.getWorkspaceOrder();
-                flows.sort(function(A,B) {
+                flows.sort(function (A, B) {
                     return tabOrder.indexOf(A) - tabOrder.indexOf(B);
                 });
                 var linkWidth = 10;
                 var h = node_height;
-                var y = -(flows.length-1)*h/2;
+                var y = -(flows.length - 1) * h / 2;
                 var linkGroups = g.selectAll(".link_group").data(flows);
-                var enterLinkGroups = linkGroups.enter().append("g").attr("class","link_group")
-                    .on('mouseover', function() { d3.select(this).classed('link_group_active',true)})
-                    .on('mouseout', function() { d3.select(this).classed('link_group_active',false)})
-                    .on('mousedown', function() { d3.event.preventDefault(); d3.event.stopPropagation(); })
-                    .on('mouseup', function(f) {
+                var enterLinkGroups = linkGroups.enter().append("g").attr("class", "link_group")
+                    .on('mouseover', function () { d3.select(this).classed('link_group_active', true) })
+                    .on('mouseout', function () { d3.select(this).classed('link_group_active', false) })
+                    .on('mousedown', function () { d3.event.preventDefault(); d3.event.stopPropagation(); })
+                    .on('mouseup', function (f) {
                         d3.event.stopPropagation();
                         var targets = d.links[f];
                         RED.workspaces.show(f);
-                        targets.forEach(function(n) {
+                        targets.forEach(function (n) {
                             n.selected = true;
                             n.dirty = true;
-                            moving_set.push({n:n});
+                            moving_set.push({ n: n });
                         });
                         updateSelection();
                         redraw();
                     });
-                enterLinkGroups.each(function(f) {
+                enterLinkGroups.each(function (f) {
                     var linkG = d3.select(this);
-                    linkG.append("svg:path").attr("class","link_flow_link")
-                        .attr("class","link_link")
+                    linkG.append("svg:path").attr("class", "link_flow_link")
+                        .attr("class", "link_link")
                         .attr("d",
-                            "M "+stemLength+" 0 "+
-                            "C "+(stemLength+(1.7*branchLength))+" "+0+
-                            " "+(stemLength+(0.1*branchLength))+" "+y+" "+
-                            (stemLength+branchLength*1.5)+" "+y+" "
+                            "M " + stemLength + " 0 " +
+                            "C " + (stemLength + (1.7 * branchLength)) + " " + 0 +
+                            " " + (stemLength + (0.1 * branchLength)) + " " + y + " " +
+                            (stemLength + branchLength * 1.5) + " " + y + " "
                         );
                     linkG.append("svg:path")
-                        .attr("class","link_port")
+                        .attr("class", "link_port")
                         .attr("d",
-                            "M "+(stemLength+branchLength*1.5+s*(linkWidth+7))+" "+(y-12)+" "+
-                            "h "+(-s*linkWidth)+" "+
-                            "a 3 3 45 0 "+(s===1?"0":"1")+" "+(s*-3)+" 3 "+
-                            "v 18 "+
-                            "a 3 3 45 0 "+(s===1?"0":"1")+" "+(s*3)+" 3 "+
-                            "h "+(s*linkWidth)
+                            "M " + (stemLength + branchLength * 1.5 + s * (linkWidth + 7)) + " " + (y - 12) + " " +
+                            "h " + (-s * linkWidth) + " " +
+                            "a 3 3 45 0 " + (s === 1 ? "0" : "1") + " " + (s * -3) + " 3 " +
+                            "v 18 " +
+                            "a 3 3 45 0 " + (s === 1 ? "0" : "1") + " " + (s * 3) + " 3 " +
+                            "h " + (s * linkWidth)
                         );
                     linkG.append("svg:path")
-                        .attr("class","link_port")
+                        .attr("class", "link_port")
                         .attr("d",
-                            "M "+(stemLength+branchLength*1.5+s*(linkWidth+10))+" "+(y-12)+" "+
-                            "h "+(s*(linkWidth*3))+" "+
-                            "M "+(stemLength+branchLength*1.5+s*(linkWidth+10))+" "+(y+12)+" "+
-                            "h "+(s*(linkWidth*3))
-                        ).style("stroke-dasharray","12 3 8 4 3");
-                    linkG.append("rect").attr("class","port link_port")
-                        .attr("x",stemLength+branchLength*1.5-4+(s*4))
-                        .attr("y",y-4)
-                        .attr("rx",2)
-                        .attr("ry",2)
-                        .attr("width",8)
-                        .attr("height",8);
+                            "M " + (stemLength + branchLength * 1.5 + s * (linkWidth + 10)) + " " + (y - 12) + " " +
+                            "h " + (s * (linkWidth * 3)) + " " +
+                            "M " + (stemLength + branchLength * 1.5 + s * (linkWidth + 10)) + " " + (y + 12) + " " +
+                            "h " + (s * (linkWidth * 3))
+                        ).style("stroke-dasharray", "12 3 8 4 3");
+                    linkG.append("rect").attr("class", "port link_port")
+                        .attr("x", stemLength + branchLength * 1.5 - 4 + (s * 4))
+                        .attr("y", y - 4)
+                        .attr("rx", 2)
+                        .attr("ry", 2)
+                        .attr("width", 8)
+                        .attr("height", 8);
                     linkG.append("rect")
-                        .attr("x",stemLength+branchLength*1.5-(s===-1?node_width:0))
-                        .attr("y",y-12)
-                        .attr("width",node_width)
-                        .attr("height",24)
-                        .style("stroke","none")
-                        .style("fill","transparent")
+                        .attr("x", stemLength + branchLength * 1.5 - (s === -1 ? node_width : 0))
+                        .attr("y", y - 12)
+                        .attr("width", node_width)
+                        .attr("height", 24)
+                        .style("stroke", "none")
+                        .style("fill", "transparent")
                     var tab = RED.nodes.workspace(f);
                     var label;
                     if (tab) {
                         label = tab.label || tab.id;
                     }
                     linkG.append("svg:text")
-                        .attr("class","port_label")
-                        .attr("x",stemLength+branchLength*1.5+(s*15))
-                        .attr("y",y+1)
-                        .style("font-size","10px")
-                        .style("text-anchor",labelAnchor)
+                        .attr("class", "port_label")
+                        .attr("x", stemLength + branchLength * 1.5 + (s * 15))
+                        .attr("y", y + 1)
+                        .style("font-size", "10px")
+                        .style("text-anchor", labelAnchor)
                         .text(label);
 
                     y += h;
@@ -7433,13 +7437,13 @@ RED.view = (function() {
             });
             offLinks.exit().remove();
             offLinks = vis.selectAll(".link_flow_link_g");
-            offLinks.each(function(d) {
+            offLinks.each(function (d) {
                 var s = 1;
                 if (d.node.type === "link in") {
                     s = -1;
                 }
                 var link = d3.select(this);
-                link.attr("transform", function(d) { return "translate(" + (d.node.x+(s*d.node.w/2)) + "," + (d.node.y) + ")"; });
+                link.attr("transform", function (d) { return "translate(" + (d.node.x + (s * d.node.w / 2)) + "," + (d.node.y) + ")"; });
 
             })
 
@@ -7447,8 +7451,8 @@ RED.view = (function() {
             // JOINING - unselect any selected links
             vis.selectAll(".link_selected").data(
                 activeLinks,
-                function(d) {
-                    return d.source.id+":"+d.sourcePort+":"+d.target.id+":"+d.target.i;
+                function (d) {
+                    return d.source.id + ":" + d.sourcePort + ":" + d.target.id + ":" + d.target.i;
                 }
             ).classed("link_selected", false);
         }
@@ -7467,8 +7471,8 @@ RED.view = (function() {
             var scrollX = window.parent.window.scrollX;
             var scrollY = window.parent.window.scrollY;
             $("#chart").focus();
-            window.parent.window.scrollTo(scrollX,scrollY);
-        } catch(err) {
+            window.parent.window.scrollTo(scrollX, scrollY);
+        } catch (err) {
             // In case we're iframed into a page of a different origin, just focus
             // the view following the inevitable DOMException
             $("#chart").focus();
@@ -7481,13 +7485,13 @@ RED.view = (function() {
      *  - all "selected"
      *  - attached to mouse for placing - "IMPORT_DRAGGING"
      */
-    function importNodes(newNodesStr,addNewFlow,touchImport) {
+    function importNodes(newNodesStr, addNewFlow, touchImport) {
         try {
             var activeSubflowChanged;
             if (activeSubflow) {
                 activeSubflowChanged = activeSubflow.changed;
             }
-            var result = RED.nodes.import(newNodesStr,true,addNewFlow);
+            var result = RED.nodes.import(newNodesStr, true, addNewFlow);
             if (result) {
                 var new_nodes = result[0];
                 var new_links = result[1];
@@ -7497,8 +7501,8 @@ RED.view = (function() {
                 if (addNewFlow && new_default_workspace) {
                     RED.workspaces.show(new_default_workspace.id);
                 }
-                var new_ms = new_nodes.filter(function(n) { return n.hasOwnProperty("x") && n.hasOwnProperty("y") && n.z == RED.workspaces.active() }).map(function(n) { return {n:n};});
-                var new_node_ids = new_nodes.map(function(n){ return n.id; });
+                var new_ms = new_nodes.filter(function (n) { return n.hasOwnProperty("x") && n.hasOwnProperty("y") && n.z == RED.workspaces.active() }).map(function (n) { return { n: n }; });
+                var new_node_ids = new_nodes.map(function (n) { return n.id; });
 
                 // TODO: pick a more sensible root node
                 if (new_ms.length > 0) {
@@ -7507,7 +7511,7 @@ RED.view = (function() {
                     var dy = root_node.y;
 
                     if (mouse_position == null) {
-                        mouse_position = [0,0];
+                        mouse_position = [0, 0];
                     }
 
                     var minX = 0;
@@ -7515,7 +7519,7 @@ RED.view = (function() {
                     var i;
                     var node;
 
-                    for (i=0;i<new_ms.length;i++) {
+                    for (i = 0; i < new_ms.length; i++) {
                         node = new_ms[i];
                         node.n.selected = true;
                         node.n.changed = true;
@@ -7523,10 +7527,10 @@ RED.view = (function() {
                         node.n.y -= dy - mouse_position[1];
                         node.dx = node.n.x - mouse_position[0];
                         node.dy = node.n.y - mouse_position[1];
-                        minX = Math.min(node.n.x-node_width/2-5,minX);
-                        minY = Math.min(node.n.y-node_height/2-5,minY);
+                        minX = Math.min(node.n.x - node_width / 2 - 5, minX);
+                        minY = Math.min(node.n.y - node_height / 2 - 5, minY);
                     }
-                    for (i=0;i<new_ms.length;i++) {
+                    for (i = 0; i < new_ms.length; i++) {
                         node = new_ms[i];
                         node.n.x -= minX;
                         node.n.y -= minY;
@@ -7535,8 +7539,8 @@ RED.view = (function() {
                         if (node.n._def.onadd) {
                             try {
                                 node.n._def.onadd.call(node.n);
-                            } catch(err) {
-                                console.log("onadd:",err);
+                            } catch (err) {
+                                console.log("onadd:", err);
                             }
                         }
 
@@ -7551,7 +7555,7 @@ RED.view = (function() {
                                 node.n._def.outputs > 0;
                         }
                     }
-                    RED.keyboard.add("*","escape",function(){
+                    RED.keyboard.add("*", "escape", function () {
                         RED.keyboard.remove("escape");
                         clearSelection();
                         RED.history.pop();
@@ -7562,12 +7566,12 @@ RED.view = (function() {
                 }
 
                 var historyEvent = {
-                    t:"add",
-                    nodes:new_node_ids,
-                    links:new_links,
-                    workspaces:new_workspaces,
-                    subflows:new_subflows,
-                    dirty:RED.nodes.dirty()
+                    t: "add",
+                    nodes: new_node_ids,
+                    links: new_links,
+                    workspaces: new_workspaces,
+                    subflows: new_subflows,
+                    dirty: RED.nodes.dirty()
                 };
                 if (new_ms.length === 0) {
                     RED.nodes.dirty(true);
@@ -7576,7 +7580,7 @@ RED.view = (function() {
                     var subflowRefresh = RED.subflow.refresh(true);
                     if (subflowRefresh) {
                         historyEvent.subflow = {
-                            id:activeSubflow.id,
+                            id: activeSubflow.id,
                             changed: activeSubflowChanged,
                             instances: subflowRefresh.instances
                         }
@@ -7587,21 +7591,21 @@ RED.view = (function() {
                 updateActiveNodes();
                 redraw();
             }
-        } catch(error) {
+        } catch (error) {
             if (error.code != "NODE_RED") {
                 console.log(error.stack);
-                RED.notify(RED._("notification.error",{message:error.toString()}),"error");
+                RED.notify(RED._("notification.error", { message: error.toString() }), "error");
             } else {
-                RED.notify(RED._("notification.error",{message:error.message}),"error");
+                RED.notify(RED._("notification.error", { message: error.message }), "error");
             }
         }
     }
 
     function toggleShowGrid(state) {
         if (state) {
-            grid.style("visibility","visible");
+            grid.style("visibility", "visible");
         } else {
-            grid.style("visibility","hidden");
+            grid.style("visibility", "hidden");
         }
     }
     function toggleSnapGrid(state) {
@@ -7610,14 +7614,14 @@ RED.view = (function() {
     }
     function toggleStatus(s) {
         showStatus = s;
-        RED.nodes.eachNode(function(n) { n.dirty = true;});
+        RED.nodes.eachNode(function (n) { n.dirty = true; });
         //TODO: subscribe/unsubscribe here
         redraw();
     }
 
     return {
         init: init,
-        state:function(state) {
+        state: function (state) {
             if (state == null) {
                 return mouse_mode
             } else {
@@ -7625,7 +7629,7 @@ RED.view = (function() {
             }
         },
 
-        redraw: function(updateActive) {
+        redraw: function (updateActive) {
             if (updateActive) {
                 updateActiveNodes();
                 updateSelection();
@@ -7635,7 +7639,7 @@ RED.view = (function() {
         focus: focusView,
         importNodes: importNodes,
         calculateTextWidth: calculateTextWidth,
-        select: function(selection) {
+        select: function (selection) {
             if (typeof selection !== "undefined") {
                 clearSelection();
                 if (typeof selection == "string") {
@@ -7643,38 +7647,38 @@ RED.view = (function() {
                     if (selectedNode) {
                         selectedNode.selected = true;
                         selectedNode.dirty = true;
-                        moving_set = [{n:selectedNode}];
+                        moving_set = [{ n: selectedNode }];
                     }
                 }
             }
             updateSelection();
             redraw();
         },
-        selection: function() {
+        selection: function () {
             var selection = {};
             if (moving_set.length > 0) {
-                selection.nodes = moving_set.map(function(n) { return n.n;});
+                selection.nodes = moving_set.map(function (n) { return n.n; });
             }
             if (selected_link != null) {
                 selection.link = selected_link;
             }
             return selection;
         },
-        scale: function() {
+        scale: function () {
             return scaleFactor;
         },
-        getLinksAtPoint: function(x,y) {
+        getLinksAtPoint: function (x, y) {
             var result = [];
             var links = outer.selectAll(".link_background")[0];
-            for (var i=0;i<links.length;i++) {
+            for (var i = 0; i < links.length; i++) {
                 var bb = links[i].getBBox();
-                if (x >= bb.x && y >= bb.y && x <= bb.x+bb.width && y <= bb.y+bb.height) {
+                if (x >= bb.x && y >= bb.y && x <= bb.x + bb.width && y <= bb.y + bb.height) {
                     result.push(links[i])
                 }
             }
             return result;
         },
-        reveal: function(id) {
+        reveal: function (id) {
             if (RED.nodes.workspace(id) || RED.nodes.subflow(id)) {
                 RED.workspaces.show(id);
             } else {
@@ -7684,27 +7688,27 @@ RED.view = (function() {
                     node.dirty = true;
                     RED.workspaces.show(node.z);
 
-                    var screenSize = [$("#chart").width(),$("#chart").height()];
-                    var scrollPos = [$("#chart").scrollLeft(),$("#chart").scrollTop()];
+                    var screenSize = [$("#chart").width(), $("#chart").height()];
+                    var scrollPos = [$("#chart").scrollLeft(), $("#chart").scrollTop()];
 
-                    if (node.x < scrollPos[0] || node.y < scrollPos[1] || node.x > screenSize[0]+scrollPos[0] || node.y > screenSize[1]+scrollPos[1]) {
-                        var deltaX = '-='+((scrollPos[0] - node.x) + screenSize[0]/2);
-                        var deltaY = '-='+((scrollPos[1] - node.y) + screenSize[1]/2);
+                    if (node.x < scrollPos[0] || node.y < scrollPos[1] || node.x > screenSize[0] + scrollPos[0] || node.y > screenSize[1] + scrollPos[1]) {
+                        var deltaX = '-=' + ((scrollPos[0] - node.x) + screenSize[0] / 2);
+                        var deltaY = '-=' + ((scrollPos[1] - node.y) + screenSize[1] / 2);
                         $("#chart").animate({
                             scrollLeft: deltaX,
                             scrollTop: deltaY
-                        },200);
+                        }, 200);
                     }
 
                     if (!node._flashing) {
                         node._flashing = true;
                         var flash = 22;
-                        var flashFunc = function() {
+                        var flashFunc = function () {
                             flash--;
                             node.dirty = true;
                             if (flash >= 0) {
                                 node.highlighted = !node.highlighted;
-                                setTimeout(flashFunc,100);
+                                setTimeout(flashFunc, 100);
                             } else {
                                 node.highlighted = false;
                                 delete node._flashing;
@@ -7725,39 +7729,39 @@ RED.view = (function() {
 // Handles the static sidebar used to display, node help, debug and general node-red options
 // RED.sidebar is not needed
 
-RED.palette = (function() {
+RED.palette = (function () {
 
-    var exclusion = ['config','unknown','deprecated'];
+    var exclusion = ['config', 'unknown', 'deprecated'];
     var coreCategories = ['subflows', 'input', 'output', 'function', 'social', 'mobile', 'storage', 'analysis', 'advanced'];
 
     var categoryContainers = {};
 
-    function createCategoryContainer(category, label){
+    function createCategoryContainer(category, label) {
         label = label || category.replace("_", " ");
-        var catDiv = $('<div id="palette-container-'+category+'" class="palette-category palette-close hide">'+
-            '<div id="palette-header-'+category+'" class="palette-header"><i class="expanded fa fa-angle-down"></i><span>'+label+'</span></div>'+
-            '<div class="palette-content" id="palette-base-category-'+category+'">'+
-            '<div id="palette-'+category+'-input"></div>'+
-            '<div id="palette-'+category+'-output"></div>'+
-            '<div id="palette-'+category+'-function"></div>'+
-            '</div>'+
+        var catDiv = $('<div id="palette-container-' + category + '" class="palette-category palette-close hide">' +
+            '<div id="palette-header-' + category + '" class="palette-header"><i class="expanded fa fa-angle-down"></i><span>' + label + '</span></div>' +
+            '<div class="palette-content" id="palette-base-category-' + category + '">' +
+            '<div id="palette-' + category + '-input"></div>' +
+            '<div id="palette-' + category + '-output"></div>' +
+            '<div id="palette-' + category + '-function"></div>' +
+            '</div>' +
             '</div>').appendTo("#palette-container");
 
         categoryContainers[category] = {
             container: catDiv,
-            close: function() {
+            close: function () {
                 catDiv.removeClass("palette-open");
                 catDiv.addClass("palette-closed");
-                $("#palette-base-category-"+category).slideUp();
-                $("#palette-header-"+category+" i").removeClass("expanded");
+                $("#palette-base-category-" + category).slideUp();
+                $("#palette-header-" + category + " i").removeClass("expanded");
             },
-            open: function() {
+            open: function () {
                 catDiv.addClass("palette-open");
                 catDiv.removeClass("palette-closed");
-                $("#palette-base-category-"+category).slideDown();
-                $("#palette-header-"+category+" i").addClass("expanded");
+                $("#palette-base-category-" + category).slideDown();
+                $("#palette-header-" + category + " i").addClass("expanded");
             },
-            toggle: function() {
+            toggle: function () {
                 if (catDiv.hasClass("palette-open")) {
                     categoryContainers[category].close();
                 } else {
@@ -7766,12 +7770,12 @@ RED.palette = (function() {
             }
         };
 
-        $("#palette-header-"+category).on('click', function(e) {
+        $("#palette-header-" + category).on('click', function (e) {
             categoryContainers[category].toggle();
         });
     }
 
-    function setLabel(type, el,label, info) {
+    function setLabel(type, el, label, info) {
         var nodeWidth = 82;
         var nodeHeight = 25;
         var lineHeight = 20;
@@ -7784,10 +7788,10 @@ RED.palette = (function() {
         var currentLine = words[0];
         var currentLineWidth = RED.view.calculateTextWidth(currentLine, "palette_label", 0);
 
-        for (var i=1;i<words.length;i++) {
-            var newWidth = RED.view.calculateTextWidth(currentLine+" "+words[i], "palette_label", 0);
+        for (var i = 1; i < words.length; i++) {
+            var newWidth = RED.view.calculateTextWidth(currentLine + " " + words[i], "palette_label", 0);
             if (newWidth < nodeWidth) {
-                currentLine += " "+words[i];
+                currentLine += " " + words[i];
                 currentLineWidth = newWidth;
             } else {
                 displayLines.push(currentLine);
@@ -7798,76 +7802,76 @@ RED.palette = (function() {
         displayLines.push(currentLine);
 
         var lines = displayLines.join("<br/>");
-        var multiLineNodeHeight = 8+(lineHeight*displayLines.length);
-        el.css({height:multiLineNodeHeight+"px"});
+        var multiLineNodeHeight = 8 + (lineHeight * displayLines.length);
+        el.css({ height: multiLineNodeHeight + "px" });
 
         var labelElement = el.find(".palette_label");
         labelElement.html(lines).attr('dir', RED.text.bidi.resolveBaseTextDir(lines));
 
-        el.find(".palette_port").css({top:(multiLineNodeHeight/2-5)+"px"});
+        el.find(".palette_port").css({ top: (multiLineNodeHeight / 2 - 5) + "px" });
 
         var popOverContent;
         try {
-            var l = "<p><b>"+RED.text.bidi.enforceTextDirectionWithUCC(label)+"</b></p>";
+            var l = "<p><b>" + RED.text.bidi.enforceTextDirectionWithUCC(label) + "</b></p>";
             if (label != type) {
-                l = "<p><b>"+RED.text.bidi.enforceTextDirectionWithUCC(label)+"</b><br/><i>"+type+"</i></p>";
+                l = "<p><b>" + RED.text.bidi.enforceTextDirectionWithUCC(label) + "</b><br/><i>" + type + "</i></p>";
             }
-            popOverContent = $(l+(info?info:$("script[data-help-name$='"+type+"']").html()||"<p>"+RED._("palette.noInfo")+"</p>").trim())
-                .filter(function(n) {
+            popOverContent = $(l + (info ? info : $("script[data-help-name$='" + type + "']").html() || "<p>" + RED._("palette.noInfo") + "</p>").trim())
+                .filter(function (n) {
                     return (this.nodeType == 1 && this.nodeName == "P") || (this.nodeType == 3 && this.textContent.trim().length > 0)
-                }).slice(0,2);
-        } catch(err) {
+                }).slice(0, 2);
+        } catch (err) {
             // Malformed HTML may cause errors. TODO: need to understand what can break
             // NON-NLS: internal debug
-            console.log("Error generating pop-over label for ",type);
+            console.log("Error generating pop-over label for ", type);
             console.log(err.toString());
-            popOverContent = "<p><b>"+label+"</b></p><p>"+RED._("palette.noInfo")+"</p>";
+            popOverContent = "<p><b>" + label + "</b></p><p>" + RED._("palette.noInfo") + "</p>";
         }
 
         // el.data('popover').setContent(popOverContent);
     }
 
     function escapeNodeType(nt) {
-        return nt.replace(/ /g,"_").replace(/\./g,"_").replace(/:/g,"_");
+        return nt.replace(/ /g, "_").replace(/\./g, "_").replace(/:/g, "_");
     }
 
-    function addNodeType(nt,def) {
+    function addNodeType(nt, def) {
         var nodeTypeId = escapeNodeType(nt);
         if ($("#palette_node_" + nodeTypeId).length) {
             return;
         }
-        if (exclusion.indexOf(def.category)===-1) {
+        if (exclusion.indexOf(def.category) === -1) {
 
-            var category = def.category.replace(" ","_");
+            var category = def.category.replace(" ", "_");
             var rootCategory = category.split("-")[0];
 
             var d = document.createElement("div");
-            d.id = "palette_node_"+nodeTypeId;
+            d.id = "palette_node_" + nodeTypeId;
             d.type = nt;
 
             var label = /^(.*?)([ -]in|[ -]out)?$/.exec(nt)[1];
             if (typeof def.paletteLabel !== "undefined") {
                 try {
-                    label = (typeof def.paletteLabel === "function" ? def.paletteLabel.call(def) : def.paletteLabel)||"";
-                } catch(err) {
-                    console.log("Definition error: "+nt+".paletteLabel",err);
+                    label = (typeof def.paletteLabel === "function" ? def.paletteLabel.call(def) : def.paletteLabel) || "";
+                } catch (err) {
+                    console.log("Definition error: " + nt + ".paletteLabel", err);
                 }
             }
 
-            $('<div/>',{class:"palette_label"+(def.align==="right"?" palette_label_right":"")}).appendTo(d);
+            $('<div/>', { class: "palette_label" + (def.align === "right" ? " palette_label_right" : "") }).appendTo(d);
 
-            d.className="palette_node";
+            d.className = "palette_node";
 
 
             if (def.icon) {
                 var icon_url = "arrow-in.png";
                 try {
                     icon_url = (typeof def.icon === "function" ? def.icon.call({}) : def.icon);
-                } catch(err) {
-                    console.log("Definition error: "+nt+".icon",err);
+                } catch (err) {
+                    console.log("Definition error: " + nt + ".icon", err);
                 }
-                var iconContainer = $('<div/>',{class:"palette_icon_container"+(def.align==="right"?" palette_icon_container_right":"")}).appendTo(d);
-                $('<div/>',{class:"palette_icon",style:`background-image: url(${baseURL}flows/icons/${icon_url})`}).appendTo(iconContainer);
+                var iconContainer = $('<div/>', { class: "palette_icon_container" + (def.align === "right" ? " palette_icon_container_right" : "") }).appendTo(d);
+                $('<div/>', { class: "palette_icon", style: `background-image: url(${BASE_URL}flows/icons/${icon_url})` }).appendTo(iconContainer);
             }
 
             d.style.backgroundColor = def.color;
@@ -7884,22 +7888,22 @@ RED.palette = (function() {
                 d.appendChild(portIn);
             }
 
-            if ($("#palette-base-category-"+rootCategory).length === 0) {
-                if(coreCategories.indexOf(rootCategory) !== -1){
-                    createCategoryContainer(rootCategory, RED._("node-red:palette.label."+rootCategory, {defaultValue:rootCategory}));
+            if ($("#palette-base-category-" + rootCategory).length === 0) {
+                if (coreCategories.indexOf(rootCategory) !== -1) {
+                    createCategoryContainer(rootCategory, RED._("node-red:palette.label." + rootCategory, { defaultValue: rootCategory }));
                 } else {
                     var ns = def.set.id;
-                    createCategoryContainer(rootCategory, RED._(ns+":palette.label."+rootCategory, {defaultValue:rootCategory}));
+                    createCategoryContainer(rootCategory, RED._(ns + ":palette.label." + rootCategory, { defaultValue: rootCategory }));
                 }
             }
-            $("#palette-container-"+rootCategory).attr("style", "display: block !important");
+            $("#palette-container-" + rootCategory).attr("style", "display: block !important");
 
-            if ($("#palette-"+category).length === 0) {
-                $("#palette-base-category-"+rootCategory).append('<div id="palette-'+category+'"></div>');
+            if ($("#palette-" + category).length === 0) {
+                $("#palette-base-category-" + rootCategory).append('<div id="palette-' + category + '"></div>');
             }
 
-            $("#palette-"+category).append(d);
-            d.onmousedown = function(e) { e.preventDefault(); };
+            $("#palette-" + category).append(d);
+            d.onmousedown = function (e) { e.preventDefault(); };
 
             // $(d).popover({
             //     title:d.type,
@@ -7910,15 +7914,15 @@ RED.palette = (function() {
             //     container:'body'
             // });
 
-            $(d).click(function() {
+            $(d).click(function () {
                 RED.view.focus();
                 var helpText;
                 if (nt.indexOf("subflow:") === 0) {
-                    helpText = marked(RED.nodes.subflow(nt.substring(8)).info||"");
+                    helpText = marked(RED.nodes.subflow(nt.substring(8)).info || "");
                 } else {
-                    helpText = $("script[data-help-name$='"+d.type+"']").html()||"";
+                    helpText = $("script[data-help-name$='" + d.type + "']").html() || "";
                 }
-                var help = '<div class="node-help">'+helpText+"</div>";
+                var help = '<div class="node-help">' + helpText + "</div>";
                 // RED.sidebar.info.set(help);
             });
             var chart = $("#chart");
@@ -7933,10 +7937,10 @@ RED.palette = (function() {
                 appendTo: $('.flows-wrapper'),
                 revert: true,
                 revertDuration: 50,
-                containment:'#main-container',
-                start: function() {RED.view.focus();},
-                stop: function() { d3.select('.link_splice').classed('link_splice',false); if (spliceTimer) { clearTimeout(spliceTimer); spliceTimer = null;}},
-                drag: function(e,ui) {
+                containment: '#main-container',
+                start: function () { RED.view.focus(); },
+                stop: function () { d3.select('.link_splice').classed('link_splice', false); if (spliceTimer) { clearTimeout(spliceTimer); spliceTimer = null; } },
+                drag: function (e, ui) {
 
                     // TODO: this is the margin-left of palette node. Hard coding
                     // it here makes me sad
@@ -7944,11 +7948,11 @@ RED.palette = (function() {
                     ui.position.left += 17.5;
 
                     if (def.inputs > 0 && def.outputs > 0) {
-                        mouseX = ui.position.left+(ui.helper.width()/2) - chartOffset.left + chart.scrollLeft();
-                        mouseY = ui.position.top+(ui.helper.height()/2) - chartOffset.top + chart.scrollTop();
+                        mouseX = ui.position.left + (ui.helper.width() / 2) - chartOffset.left + chart.scrollLeft();
+                        mouseY = ui.position.top + (ui.helper.height() / 2) - chartOffset.top + chart.scrollTop();
 
                         if (!spliceTimer) {
-                            spliceTimer = setTimeout(function() {
+                            spliceTimer = setTimeout(function () {
                                 var nodes = [];
                                 var bestDistance = Infinity;
                                 var bestLink = null;
@@ -7958,7 +7962,7 @@ RED.palette = (function() {
                                     svgRect.y = mouseY;
                                     svgRect.width = 1;
                                     svgRect.height = 1;
-                                    nodes = chartSVG.getIntersectionList(svgRect,chartSVG);
+                                    nodes = chartSVG.getIntersectionList(svgRect, chartSVG);
                                     mouseX /= RED.view.scale();
                                     mouseY /= RED.view.scale();
                                 } else {
@@ -7966,14 +7970,14 @@ RED.palette = (function() {
                                     // makes us sad
                                     mouseX /= RED.view.scale();
                                     mouseY /= RED.view.scale();
-                                    nodes = RED.view.getLinksAtPoint(mouseX,mouseY);
+                                    nodes = RED.view.getLinksAtPoint(mouseX, mouseY);
                                 }
-                                for (var i=0;i<nodes.length;i++) {
+                                for (var i = 0; i < nodes.length; i++) {
                                     if (d3.select(nodes[i]).classed('link_background')) {
                                         var length = nodes[i].getTotalLength();
-                                        for (var j=0;j<length;j+=10) {
+                                        for (var j = 0; j < length; j += 10) {
                                             var p = nodes[i].getPointAtLength(j);
-                                            var d2 = ((p.x-mouseX)*(p.x-mouseX))+((p.y-mouseY)*(p.y-mouseY));
+                                            var d2 = ((p.x - mouseX) * (p.x - mouseX)) + ((p.y - mouseY) * (p.y - mouseY));
                                             if (d2 < 200 && d2 < bestDistance) {
                                                 bestDistance = d2;
                                                 bestLink = nodes[i];
@@ -7982,23 +7986,23 @@ RED.palette = (function() {
                                     }
                                 }
                                 if (activeSpliceLink && activeSpliceLink !== bestLink) {
-                                    d3.select(activeSpliceLink.parentNode).classed('link_splice',false);
+                                    d3.select(activeSpliceLink.parentNode).classed('link_splice', false);
                                 }
                                 if (bestLink) {
-                                    d3.select(bestLink.parentNode).classed('link_splice',true)
+                                    d3.select(bestLink.parentNode).classed('link_splice', true)
                                 } else {
-                                    d3.select('.link_splice').classed('link_splice',false);
+                                    d3.select('.link_splice').classed('link_splice', false);
                                 }
                                 if (activeSpliceLink !== bestLink) {
                                     if (bestLink) {
-                                        $(ui.helper).data('splice',d3.select(bestLink).data()[0]);
+                                        $(ui.helper).data('splice', d3.select(bestLink).data()[0]);
                                     } else {
                                         $(ui.helper).removeData('splice');
                                     }
                                 }
                                 activeSpliceLink = bestLink;
                                 spliceTimer = null;
-                            },200);
+                            }, 200);
                         }
                     }
                 }
@@ -8006,15 +8010,15 @@ RED.palette = (function() {
 
             var nodeInfo = null;
             if (def.category == "subflows") {
-                $(d).dblclick(function(e) {
+                $(d).dblclick(function (e) {
                     RED.workspaces.show(nt.substring(8));
                     e.preventDefault();
                 });
-                nodeInfo = marked(def.info||"");
+                nodeInfo = marked(def.info || "");
             }
-            setLabel(nt,$(d),label,nodeInfo);
+            setLabel(nt, $(d), label, nodeInfo);
 
-            var categoryNode = $("#palette-container-"+category);
+            var categoryNode = $("#palette-container-" + category);
             if (categoryNode.find(".palette_node").length === 1) {
                 categoryContainers[category].open();
             }
@@ -8024,7 +8028,7 @@ RED.palette = (function() {
 
     function removeNodeType(nt) {
         var nodeTypeId = escapeNodeType(nt);
-        var paletteNode = $("#palette_node_"+nodeTypeId);
+        var paletteNode = $("#palette_node_" + nodeTypeId);
         var categoryNode = paletteNode.closest(".palette-category");
         paletteNode.remove();
         if (categoryNode.find(".palette_node").length === 0) {
@@ -8037,17 +8041,17 @@ RED.palette = (function() {
 
     function hideNodeType(nt) {
         var nodeTypeId = escapeNodeType(nt);
-        $("#palette_node_"+nodeTypeId).hide();
+        $("#palette_node_" + nodeTypeId).hide();
     }
 
     function showNodeType(nt) {
         var nodeTypeId = escapeNodeType(nt);
-        $("#palette_node_"+nodeTypeId).attr("style", "display: block !important");
+        $("#palette_node_" + nodeTypeId).attr("style", "display: block !important");
     }
 
     function refreshNodeTypes() {
-        RED.nodes.eachSubflow(function(sf) {
-            var paletteNode = $("#palette_node_subflow_"+sf.id.replace(".","_"));
+        RED.nodes.eachSubflow(function (sf) {
+            var paletteNode = $("#palette_node_subflow_" + sf.id.replace(".", "_"));
             var portInput = paletteNode.find(".palette_port_input");
             var portOutput = paletteNode.find(".palette_port_output");
 
@@ -8066,13 +8070,13 @@ RED.palette = (function() {
             } else if (portOutput.length !== 0 && sf.out.length === 0) {
                 portOutput.remove();
             }
-            setLabel(sf.type+":"+sf.id,paletteNode,sf.name,marked(sf.info||""));
+            setLabel(sf.type + ":" + sf.id, paletteNode, sf.name, marked(sf.info || ""));
         });
     }
 
     function filterChange(val) {
-        var re = new RegExp(val.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'),'i');
-        $("#palette-container .palette_node").each(function(i,el) {
+        var re = new RegExp(val.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i');
+        $("#palette-container .palette_node").each(function (i, el) {
             var currentLabel = $(el).find(".palette_label").text();
             if (val === "" || re.test(el.id) || re.test(currentLabel)) {
                 $(this).attr("style", "display: block !important");
@@ -8085,7 +8089,7 @@ RED.palette = (function() {
             if (categoryContainers.hasOwnProperty(category)) {
                 if (categoryContainers[category].container
                     .find(".palette_node")
-                    .filter(function() { return $(this).css('display') !== 'none'}).length === 0) {
+                    .filter(function () { return $(this).css('display') !== 'none' }).length === 0) {
                     categoryContainers[category].close();
                 } else {
                     categoryContainers[category].open();
@@ -8096,19 +8100,19 @@ RED.palette = (function() {
 
     function init() {
 
-        RED.events.on('registry:node-type-added', function(nodeType) {
+        RED.events.on('registry:node-type-added', function (nodeType) {
             var def = RED.nodes.getType(nodeType);
-            addNodeType(nodeType,def);
+            addNodeType(nodeType, def);
             if (def.onpaletteadd && typeof def.onpaletteadd === "function") {
                 def.onpaletteadd.call(def);
             }
         });
-        RED.events.on('registry:node-type-removed', function(nodeType) {
+        RED.events.on('registry:node-type-removed', function (nodeType) {
             removeNodeType(nodeType);
         });
 
-        RED.events.on('registry:node-set-enabled', function(nodeSet) {
-            for (var j=0;j<nodeSet.types.length;j++) {
+        RED.events.on('registry:node-set-enabled', function (nodeSet) {
+            for (var j = 0; j < nodeSet.types.length; j++) {
                 showNodeType(nodeSet.types[j]);
                 var def = RED.nodes.getType(nodeSet.types[j]);
                 if (def.onpaletteadd && typeof def.onpaletteadd === "function") {
@@ -8116,8 +8120,8 @@ RED.palette = (function() {
                 }
             }
         });
-        RED.events.on('registry:node-set-disabled', function(nodeSet) {
-            for (var j=0;j<nodeSet.types.length;j++) {
+        RED.events.on('registry:node-set-disabled', function (nodeSet) {
+            for (var j = 0; j < nodeSet.types.length; j++) {
                 hideNodeType(nodeSet.types[j]);
                 var def = RED.nodes.getType(nodeSet.types[j]);
                 if (def.onpaletteremove && typeof def.onpaletteremove === "function") {
@@ -8125,9 +8129,9 @@ RED.palette = (function() {
                 }
             }
         });
-        RED.events.on('registry:node-set-removed', function(nodeSet) {
+        RED.events.on('registry:node-set-removed', function (nodeSet) {
             if (nodeSet.added) {
-                for (var j=0;j<nodeSet.types.length;j++) {
+                for (var j = 0; j < nodeSet.types.length; j++) {
                     removeNodeType(nodeSet.types[j]);
                     var def = RED.nodes.getType(nodeSet.types[j]);
                     if (def.onpaletteremove && typeof def.onpaletteremove === "function") {
@@ -8154,13 +8158,13 @@ RED.palette = (function() {
         if (!Array.isArray(categoryList)) {
             categoryList = coreCategories
         }
-        categoryList.forEach(function(category){
-            createCategoryContainer(category, RED._("palette.label."+category,{defaultValue:category}));
+        categoryList.forEach(function (category) {
+            createCategoryContainer(category, RED._("palette.label." + category, { defaultValue: category }));
         });
 
 
         // matheusr @TODO dom manip here makes me sad
-        $("#palette-collapse-all").on("click", function(e) {
+        $("#palette-collapse-all").on("click", function (e) {
             e.preventDefault();
             for (var cat in categoryContainers) {
                 if (categoryContainers.hasOwnProperty(cat)) {
@@ -8168,7 +8172,7 @@ RED.palette = (function() {
                 }
             }
         });
-        $("#palette-expand-all").on("click", function(e) {
+        $("#palette-expand-all").on("click", function (e) {
             e.preventDefault();
             for (var cat in categoryContainers) {
                 if (categoryContainers.hasOwnProperty(cat)) {
@@ -8180,14 +8184,14 @@ RED.palette = (function() {
 
     return {
         init: init,
-        add:addNodeType,
-        remove:removeNodeType,
-        hide:hideNodeType,
-        show:showNodeType,
-        refresh:refreshNodeTypes
+        add: addNodeType,
+        remove: removeNodeType,
+        hide: hideNodeType,
+        show: showNodeType,
+        refresh: refreshNodeTypes
     };
 })();
-RED.palette.editor = (function() {
+RED.palette.editor = (function () {
 
     var disabled = false;
 
@@ -8205,63 +8209,63 @@ RED.palette.editor = (function() {
     var eventTimers = {};
     var activeFilter = "";
 
-    function delayCallback(start,callback) {
+    function delayCallback(start, callback) {
         var delta = Date.now() - start;
         if (delta < 300) {
             delta = 300;
         } else {
             delta = 0;
         }
-        setTimeout(function() {
+        setTimeout(function () {
             callback();
-        },delta);
+        }, delta);
     }
-    function changeNodeState(id,state,shade,callback) {
+    function changeNodeState(id, state, shade, callback) {
         shade.attr("style", "display: block !important");
         var start = Date.now();
         $.ajax({
-            url:"nodes/"+id,
+            url: "nodes/" + id,
             type: "PUT",
             data: JSON.stringify({
                 enabled: state
             }),
             contentType: "application/json; charset=utf-8"
-        }).done(function(data,textStatus,xhr) {
-            delayCallback(start,function() {
+        }).done(function (data, textStatus, xhr) {
+            delayCallback(start, function () {
                 shade.hide();
                 callback();
             });
-        }).fail(function(xhr,textStatus,err) {
-            delayCallback(start,function() {
+        }).fail(function (xhr, textStatus, err) {
+            delayCallback(start, function () {
                 shade.hide();
                 callback(xhr);
             });
         })
     }
-    function installNodeModule(id,shade,callback) {
+    function installNodeModule(id, shade, callback) {
         shade.attr("style", "display: block !important");
         $.ajax({
-            url:"nodes",
+            url: "nodes",
             type: "POST",
             data: JSON.stringify({
                 module: id
             }),
             contentType: "application/json; charset=utf-8"
-        }).done(function(data,textStatus,xhr) {
+        }).done(function (data, textStatus, xhr) {
             shade.hide();
             callback();
-        }).fail(function(xhr,textStatus,err) {
+        }).fail(function (xhr, textStatus, err) {
             shade.hide();
             callback(xhr);
         });
     }
-    function removeNodeModule(id,callback) {
+    function removeNodeModule(id, callback) {
         $.ajax({
-            url:"nodes/"+id,
+            url: "nodes/" + id,
             type: "DELETE"
-        }).done(function(data,textStatus,xhr) {
+        }).done(function (data, textStatus, xhr) {
             callback();
-        }).fail(function(xhr,textStatus,err) {
+        }).fail(function (xhr, textStatus, err) {
             callback(xhr);
         })
     }
@@ -8276,26 +8280,26 @@ RED.palette.editor = (function() {
 
     function refreshNodeModule(module) {
         if (!eventTimers.hasOwnProperty(module)) {
-            eventTimers[module] = setTimeout(function() {
+            eventTimers[module] = setTimeout(function () {
                 delete eventTimers[module];
                 _refreshNodeModule(module);
-            },100);
+            }, 100);
         }
     }
 
 
-    function getContrastingBorder(rgbColor){
+    function getContrastingBorder(rgbColor) {
         var parts = /^rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)[,)]/.exec(rgbColor);
         if (parts) {
             var r = parseInt(parts[1]);
             var g = parseInt(parts[2]);
             var b = parseInt(parts[3]);
-            var yiq = ((r*299)+(g*587)+(b*114))/1000;
+            var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
             if (yiq > 160) {
-                r = Math.floor(r*0.8);
-                g = Math.floor(g*0.8);
-                b = Math.floor(b*0.8);
-                return "rgb("+r+","+g+","+b+")";
+                r = Math.floor(r * 0.8);
+                g = Math.floor(g * 0.8);
+                b = Math.floor(b * 0.8);
+                return "rgb(" + r + "," + g + "," + b + ")";
             }
         }
         return rgbColor;
@@ -8304,57 +8308,57 @@ RED.palette.editor = (function() {
     function formatUpdatedAt(dateString) {
         var now = new Date();
         var d = new Date(dateString);
-        var delta = (Date.now() - new Date(dateString).getTime())/1000;
+        var delta = (Date.now() - new Date(dateString).getTime()) / 1000;
 
         if (delta < 60) {
             return RED._('palette.editor.times.seconds');
         }
-        delta = Math.floor(delta/60);
+        delta = Math.floor(delta / 60);
         if (delta < 10) {
             return RED._('palette.editor.times.minutes');
         }
         if (delta < 60) {
-            return RED._('palette.editor.times.minutesV',{count:delta});
+            return RED._('palette.editor.times.minutesV', { count: delta });
         }
 
-        delta = Math.floor(delta/60);
+        delta = Math.floor(delta / 60);
 
         if (delta < 24) {
-            return RED._('palette.editor.times.hoursV',{count:delta});
+            return RED._('palette.editor.times.hoursV', { count: delta });
         }
 
-        delta = Math.floor(delta/24);
+        delta = Math.floor(delta / 24);
 
         if (delta < 7) {
-            return RED._('palette.editor.times.daysV',{count:delta})
+            return RED._('palette.editor.times.daysV', { count: delta })
         }
-        var weeks = Math.floor(delta/7);
-        var days = delta%7;
+        var weeks = Math.floor(delta / 7);
+        var days = delta % 7;
 
         if (weeks < 4) {
-            return RED._('palette.editor.times.weeksV',{count:weeks})
+            return RED._('palette.editor.times.weeksV', { count: weeks })
         }
 
-        var months = Math.floor(weeks/4);
-        weeks = weeks%4;
+        var months = Math.floor(weeks / 4);
+        weeks = weeks % 4;
 
         if (months < 12) {
-            return RED._('palette.editor.times.monthsV',{count:months})
+            return RED._('palette.editor.times.monthsV', { count: months })
         }
-        var years = Math.floor(months/12);
-        months = months%12;
+        var years = Math.floor(months / 12);
+        months = months % 12;
 
         if (months === 0) {
-            return RED._('palette.editor.times.yearsV',{count:years})
+            return RED._('palette.editor.times.yearsV', { count: years })
         } else {
-            return RED._('palette.editor.times.year'+(years>1?'s':'')+'MonthsV',{y:years,count:months})
+            return RED._('palette.editor.times.year' + (years > 1 ? 's' : '') + 'MonthsV', { y: years, count: months })
         }
     }
 
 
     function _refreshNodeModule(module) {
         if (!nodeEntries.hasOwnProperty(module)) {
-            nodeEntries[module] = {info:RED.nodes.registry.getModule(module)};
+            nodeEntries[module] = { info: RED.nodes.registry.getModule(module) };
             var index = [module];
             for (var s in nodeEntries[module].info.sets) {
                 if (nodeEntries[module].info.sets.hasOwnProperty(s)) {
@@ -8385,21 +8389,21 @@ RED.palette.editor = (function() {
                             activeTypeCount += set.types.length;
                         }
                         typeCount += set.types.length;
-                        for (var i=0;i<moduleInfo.sets[setName].types.length;i++) {
+                        for (var i = 0; i < moduleInfo.sets[setName].types.length; i++) {
                             var t = moduleInfo.sets[setName].types[i];
-                            inUseCount += (typesInUse[t]||0);
+                            inUseCount += (typesInUse[t] || 0);
                             var swatch = setElements.swatches[t];
                             if (set.enabled) {
                                 var def = RED.nodes.getType(t);
                                 if (def && def.color) {
-                                    swatch.css({background:def.color});
-                                    swatch.css({border: "1px solid "+getContrastingBorder(swatch.css('backgroundColor'))})
+                                    swatch.css({ background: def.color });
+                                    swatch.css({ border: "1px solid " + getContrastingBorder(swatch.css('backgroundColor')) })
 
                                 } else {
-                                    swatch.css({background:"#eee",border:"1px dashed #999"})
+                                    swatch.css({ background: "#eee", border: "1px dashed #999" })
                                 }
                             } else {
-                                swatch.css({background:"#eee",border:"1px dashed #999"})
+                                swatch.css({ background: "#eee", border: "1px dashed #999" })
                             }
                         }
                         nodeEntries[module].setUseCount[setName] = inUseCount;
@@ -8416,11 +8420,11 @@ RED.palette.editor = (function() {
                                 setElements.enableButton.html(RED._('palette.editor.enable'));
                             }
                         }
-                        setElements.setRow.toggleClass("palette-module-set-disabled",!set.enabled);
+                        setElements.setRow.toggleClass("palette-module-set-disabled", !set.enabled);
                     }
                 }
-                var nodeCount = (activeTypeCount === typeCount)?typeCount:activeTypeCount+" / "+typeCount;
-                nodeEntry.setCount.html(RED._('palette.editor.nodeCount',{count:typeCount,label:nodeCount}));
+                var nodeCount = (activeTypeCount === typeCount) ? typeCount : activeTypeCount + " / " + typeCount;
+                nodeEntry.setCount.html(RED._('palette.editor.nodeCount', { count: typeCount, label: nodeCount }));
 
                 if (nodeEntries[module].totalUseCount > 0) {
                     nodeEntry.enableButton.html(RED._('palette.editor.inuse'));
@@ -8436,7 +8440,7 @@ RED.palette.editor = (function() {
                     } else {
                         nodeEntry.enableButton.html(RED._('palette.editor.disableall'));
                     }
-                    nodeEntry.container.toggleClass("disabled",(activeTypeCount === 0));
+                    nodeEntry.container.toggleClass("disabled", (activeTypeCount === 0));
                 }
             }
 
@@ -8461,12 +8465,12 @@ RED.palette.editor = (function() {
         editorTabs.activateTab('nodes');
 
         $("#main-container").addClass("palette-expanded");
-        setTimeout(function() {
+        setTimeout(function () {
             editorTabs.resize();
             filterInput.focus();
-        },250);
+        }, 250);
         RED.events.emit("palette-editor:open");
-        RED.keyboard.add("*","escape",function(){hidePaletteEditor()});
+        RED.keyboard.add("*", "escape", function () { hidePaletteEditor() });
     }
     function hidePaletteEditor() {
         RED.keyboard.remove("escape");
@@ -8475,12 +8479,12 @@ RED.palette.editor = (function() {
         $("#editor-shade").hide();
         $("#sidebar-shade").hide();
         $("#sidebar-separator").attr("style", "display: block !important");
-        $("#palette-editor").find('.expanded').each(function(i,el) {
+        $("#palette-editor").find('.expanded').each(function (i, el) {
             $(el).find(".palette-module-content").slideUp();
             $(el).removeClass('expanded');
         });
-        filterInput.searchBox('value',"");
-        searchInput.searchBox('value',"");
+        filterInput.searchBox('value', "");
+        searchInput.searchBox('value', "");
         RED.events.emit("palette-editor:close");
 
     }
@@ -8492,7 +8496,7 @@ RED.palette.editor = (function() {
         if (val === "") {
             filterInput.searchBox('count');
         } else {
-            filterInput.searchBox('count',visible+" / "+size);
+            filterInput.searchBox('count', visible + " / " + size);
         }
     }
 
@@ -8504,11 +8508,11 @@ RED.palette.editor = (function() {
 
     var activeSort = sortModulesAZ;
 
-    function handleCatalogResponse(err,catalog,index,v) {
-        catalogueLoadStatus.push(err||v);
+    function handleCatalogResponse(err, catalog, index, v) {
+        catalogueLoadStatus.push(err || v);
         if (!err) {
             if (v.modules) {
-                v.modules.forEach(function(m) {
+                v.modules.forEach(function (m) {
                     loadedIndex[m.id] = m;
                     m.index = [m.id];
                     if (m.keywords) {
@@ -8523,21 +8527,21 @@ RED.palette.editor = (function() {
                 })
                 loadedList = loadedList.concat(v.modules);
             }
-            searchInput.searchBox('count',loadedList.length);
+            searchInput.searchBox('count', loadedList.length);
         } else {
             catalogueLoadErrors = true;
         }
         if (catalogueCount > 1) {
-            $(".palette-module-shade-status").html(RED._('palette.editor.loading')+"<br>"+catalogueLoadStatus.length+"/"+catalogueCount);
+            $(".palette-module-shade-status").html(RED._('palette.editor.loading') + "<br>" + catalogueLoadStatus.length + "/" + catalogueCount);
         }
         if (catalogueLoadStatus.length === catalogueCount) {
             if (catalogueLoadErrors) {
-                RED.notify(RED._('palette.editor.errors.catalogLoadFailed',{url: catalog}),"error",false,8000);
+                RED.notify(RED._('palette.editor.errors.catalogLoadFailed', { url: catalog }), "error", false, 8000);
             }
-            var delta = 250-(Date.now() - catalogueLoadStart);
-            setTimeout(function() {
+            var delta = 250 - (Date.now() - catalogueLoadStart);
+            setTimeout(function () {
                 $("#palette-module-install-shade").hide();
-            },Math.max(delta,0));
+            }, Math.max(delta, 0));
 
         }
     }
@@ -8548,21 +8552,21 @@ RED.palette.editor = (function() {
             loadedIndex = {};
             packageList.editableList('empty');
             $(".palette-module-shade-status").html(RED._('palette.editor.loading'));
-            var catalogues = RED.settings.theme('palette.catalogues')||['https://catalogue.nodered.org/catalogue.json'];
+            var catalogues = RED.settings.theme('palette.catalogues') || ['https://catalogue.nodered.org/catalogue.json'];
             catalogueLoadStatus = [];
             catalogueLoadErrors = false;
             catalogueCount = catalogues.length;
             if (catalogues.length > 1) {
-                $(".palette-module-shade-status").html(RED._('palette.editor.loading')+"<br>0/"+catalogues.length);
+                $(".palette-module-shade-status").html(RED._('palette.editor.loading') + "<br>0/" + catalogues.length);
             }
             $("#palette-module-install-shade").attr("style", "display: block !important");
             catalogueLoadStart = Date.now();
-            catalogues.forEach(function(catalog,index) {
-                $.getJSON(catalog, {_: new Date().getTime()},function(v) {
-                    handleCatalogResponse(null,catalog,index,v);
+            catalogues.forEach(function (catalog, index) {
+                $.getJSON(catalog, { _: new Date().getTime() }, function (v) {
+                    handleCatalogResponse(null, catalog, index, v);
                     refreshNodeModuleList();
-                }).fail(function(jqxhr, textStatus, error) {
-                    handleCatalogResponse(jqxhr,catalog,index);
+                }).fail(function (jqxhr, textStatus, error) {
+                    handleCatalogResponse(jqxhr, catalog, index);
                 })
             });
         }
@@ -8571,22 +8575,22 @@ RED.palette.editor = (function() {
     function refreshFilteredItems() {
         packageList.editableList('empty');
         filteredList.sort(activeSort);
-        for (var i=0;i<Math.min(10,filteredList.length);i++) {
-            packageList.editableList('addItem',filteredList[i]);
+        for (var i = 0; i < Math.min(10, filteredList.length); i++) {
+            packageList.editableList('addItem', filteredList[i]);
         }
         if (filteredList.length === 0) {
-            packageList.editableList('addItem',{});
+            packageList.editableList('addItem', {});
         }
 
         if (filteredList.length > 10) {
-            packageList.editableList('addItem',{start:10,more:filteredList.length-10})
+            packageList.editableList('addItem', { start: 10, more: filteredList.length - 10 })
         }
     }
-    function sortModulesAZ(A,B) {
+    function sortModulesAZ(A, B) {
         return A.info.id.localeCompare(B.info.id);
     }
-    function sortModulesRecent(A,B) {
-        return -1 * (A.info.timestamp-B.info.timestamp);
+    function sortModulesRecent(A, B) {
+        return -1 * (A.info.timestamp - B.info.timestamp);
     }
 
     function init() {
@@ -8594,25 +8598,25 @@ RED.palette.editor = (function() {
             return;
         }
 
-        RED.events.on("editor:open",function() { disabled = true; });
-        RED.events.on("editor:close",function() { disabled = false; });
-        RED.events.on("search:open",function() { disabled = true; });
-        RED.events.on("search:close",function() { disabled = false; });
-        RED.events.on("type-search:open",function() { disabled = true; });
-        RED.events.on("type-search:close",function() { disabled = false; });
+        RED.events.on("editor:open", function () { disabled = true; });
+        RED.events.on("editor:close", function () { disabled = false; });
+        RED.events.on("search:open", function () { disabled = true; });
+        RED.events.on("search:close", function () { disabled = false; });
+        RED.events.on("type-search:open", function () { disabled = true; });
+        RED.events.on("type-search:close", function () { disabled = false; });
 
-        RED.actions.add("core:manage-palette",RED.palette.editor.show);
+        RED.actions.add("core:manage-palette", RED.palette.editor.show);
 
         editorTabs = RED.tabs.create({
-            id:"palette-editor-tabs",
-            onchange:function(tab) {
+            id: "palette-editor-tabs",
+            onchange: function (tab) {
                 $("#palette-editor .palette-editor-tab").hide();
                 tab.content.attr("style", "display: block !important");
                 if (filterInput) {
-                    filterInput.searchBox('value',"");
+                    filterInput.searchBox('value', "");
                 }
                 if (searchInput) {
-                    searchInput.searchBox('value',"");
+                    searchInput.searchBox('value', "");
                 }
                 if (tab.id === 'install') {
                     if (searchInput) {
@@ -8628,17 +8632,17 @@ RED.palette.editor = (function() {
         });
 
 
-        $("#editor-shade").click(function() {
+        $("#editor-shade").click(function () {
             if ($("#main-container").hasClass("palette-expanded")) {
                 hidePaletteEditor();
             }
         });
 
-        $("#palette-editor-close").on("click", function(e) {
+        $("#palette-editor-close").on("click", function (e) {
             hidePaletteEditor();
         })
 
-        var modulesTab = $('<div>',{class:"palette-editor-tab"}).appendTo("#palette-editor");
+        var modulesTab = $('<div>', { class: "palette-editor-tab" }).appendTo("#palette-editor");
 
         editorTabs.addTab({
             id: 'nodes',
@@ -8646,55 +8650,55 @@ RED.palette.editor = (function() {
             content: modulesTab
         })
 
-        var filterDiv = $('<div>',{class:"palette-search"}).appendTo(modulesTab);
+        var filterDiv = $('<div>', { class: "palette-search" }).appendTo(modulesTab);
         filterInput = $('<input type="text" data-i18n="[placeholder]palette.filter"></input>')
             .appendTo(filterDiv)
             .searchBox({
                 delay: 200,
-                change: function() {
+                change: function () {
                     filterChange($(this).val());
                 }
             });
 
 
-        nodeList = $('<ol>',{id:"palette-module-list", style:"position: absolute;top: 35px;bottom: 0;left: 0;right: 0px;"}).appendTo(modulesTab).editableList({
+        nodeList = $('<ol>', { id: "palette-module-list", style: "position: absolute;top: 35px;bottom: 0;left: 0;right: 0px;" }).appendTo(modulesTab).editableList({
             addButton: false,
             scrollOnAdd: false,
-            sort: function(A,B) {
+            sort: function (A, B) {
                 return A.info.name.localeCompare(B.info.name);
             },
-            filter: function(data) {
-                if (activeFilter === "" ) {
+            filter: function (data) {
+                if (activeFilter === "") {
                     return true;
                 }
 
-                return (activeFilter==="")||(data.index.indexOf(activeFilter) > -1);
+                return (activeFilter === "") || (data.index.indexOf(activeFilter) > -1);
             },
-            addItem: function(container,i,object) {
+            addItem: function (container, i, object) {
                 var entry = object.info;
                 if (entry) {
-                    var headerRow = $('<div>',{class:"palette-module-header"}).appendTo(container);
+                    var headerRow = $('<div>', { class: "palette-module-header" }).appendTo(container);
                     var titleRow = $('<div class="palette-module-meta palette-module-name"><i class="fa fa-cube"></i></div>').appendTo(headerRow);
                     $('<span>').html(entry.name).appendTo(titleRow);
                     var metaRow = $('<div class="palette-module-meta palette-module-version"><i class="fa fa-tag"></i></div>').appendTo(headerRow);
                     $('<span>').html(entry.version).appendTo(metaRow);
-                    var buttonRow = $('<div>',{class:"palette-module-meta"}).appendTo(headerRow);
+                    var buttonRow = $('<div>', { class: "palette-module-meta" }).appendTo(headerRow);
                     var setButton = $('<a href="#" class="editor-button editor-button-small palette-module-set-button"><i class="fa fa-angle-right palette-module-node-chevron"></i> </a>').appendTo(buttonRow);
                     var setCount = $('<span>').appendTo(setButton);
-                    var buttonGroup = $('<div>',{class:"palette-module-button-group"}).appendTo(buttonRow);
+                    var buttonGroup = $('<div>', { class: "palette-module-button-group" }).appendTo(buttonRow);
 
                     var updateButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(RED._('palette.editor.update')).appendTo(buttonGroup);
-                    updateButton.click(function(evt) {
+                    updateButton.click(function (evt) {
                         evt.preventDefault();
                     })
 
 
                     var removeButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(RED._('palette.editor.remove')).appendTo(buttonGroup);
-                    removeButton.click(function(evt) {
+                    removeButton.click(function (evt) {
                         evt.preventDefault();
 
-                        $("#palette-module-install-confirm").data('module',entry.name);
-                        $("#palette-module-install-confirm").data('shade',shade);
+                        $("#palette-module-install-confirm").data('module', entry.name);
+                        $("#palette-module-install-confirm").data('shade', shade);
                         $("#palette-module-install-confirm-body").html(RED._("palette.editor.confirm.remove.body"));
                         $(".palette-module-install-confirm-button-install").hide();
                         $(".palette-module-install-confirm-button-remove").attr("style", "display: block !important");
@@ -8707,7 +8711,7 @@ RED.palette.editor = (function() {
                     }
                     var enableButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(RED._('palette.editor.disableall')).appendTo(buttonGroup);
 
-                    var contentRow = $('<div>',{class:"palette-module-content"}).appendTo(container);
+                    var contentRow = $('<div>', { class: "palette-module-content" }).appendTo(container);
                     var shade = $('<div class="palette-module-shade hide"><img src="mashupflows/red/images/spin.svg" class="palette-spinner"/></div>').appendTo(container);
 
                     object.elements = {
@@ -8719,7 +8723,7 @@ RED.palette.editor = (function() {
                         shade: shade,
                         sets: {}
                     }
-                    setButton.click(function(evt) {
+                    setButton.click(function (evt) {
                         evt.preventDefault();
                         if (container.hasClass('expanded')) {
                             container.removeClass('expanded');
@@ -8731,27 +8735,27 @@ RED.palette.editor = (function() {
                     })
 
                     var setList = Object.keys(entry.sets)
-                    setList.sort(function(A,B) {
+                    setList.sort(function (A, B) {
                         return A.toLowerCase().localeCompare(B.toLowerCase());
                     });
-                    setList.forEach(function(setName) {
+                    setList.forEach(function (setName) {
                         var set = entry.sets[setName];
-                        var setRow = $('<div>',{class:"palette-module-set"}).appendTo(contentRow);
-                        var buttonGroup = $('<div>',{class:"palette-module-set-button-group"}).appendTo(setRow);
+                        var setRow = $('<div>', { class: "palette-module-set" }).appendTo(contentRow);
+                        var buttonGroup = $('<div>', { class: "palette-module-set-button-group" }).appendTo(setRow);
                         var typeSwatches = {};
-                        set.types.forEach(function(t) {
-                            var typeDiv = $('<div>',{class:"palette-module-type"}).appendTo(setRow);
-                            typeSwatches[t] = $('<span>',{class:"palette-module-type-swatch"}).appendTo(typeDiv);
-                            $('<span>',{class:"palette-module-type-node"}).html(t).appendTo(typeDiv);
+                        set.types.forEach(function (t) {
+                            var typeDiv = $('<div>', { class: "palette-module-type" }).appendTo(setRow);
+                            typeSwatches[t] = $('<span>', { class: "palette-module-type-swatch" }).appendTo(typeDiv);
+                            $('<span>', { class: "palette-module-type-node" }).html(t).appendTo(typeDiv);
                         })
 
                         var enableButton = $('<a href="#" class="editor-button editor-button-small"></a>').appendTo(buttonGroup);
-                        enableButton.click(function(evt) {
+                        enableButton.click(function (evt) {
                             evt.preventDefault();
                             if (object.setUseCount[setName] === 0) {
                                 var currentSet = RED.nodes.registry.getNodeSet(set.id);
                                 shade.attr("style", "display: block !important");
-                                changeNodeState(set.id,!currentSet.enabled,shade,function(xhr){
+                                changeNodeState(set.id, !currentSet.enabled, shade, function (xhr) {
                                     console.log(xhr)
                                 });
                             }
@@ -8763,24 +8767,24 @@ RED.palette.editor = (function() {
                             swatches: typeSwatches
                         };
                     });
-                    enableButton.click(function(evt) {
+                    enableButton.click(function (evt) {
                         evt.preventDefault();
                         if (object.totalUseCount === 0) {
-                            changeNodeState(entry.name,(container.hasClass('disabled')),shade,function(xhr){
+                            changeNodeState(entry.name, (container.hasClass('disabled')), shade, function (xhr) {
                                 console.log(xhr)
                             });
                         }
                     })
                     refreshNodeModule(entry.name);
                 } else {
-                    $('<div>',{class:"red-ui-search-empty"}).html(RED._('search.empty')).appendTo(container);
+                    $('<div>', { class: "red-ui-search-empty" }).html(RED._('search.empty')).appendTo(container);
                 }
             }
         });
 
 
 
-        var installTab = $('<div>',{class:"palette-editor-tab hide"}).appendTo("#palette-editor");
+        var installTab = $('<div>', { class: "palette-editor-tab hide" }).appendTo("#palette-editor");
 
         editorTabs.addTab({
             id: 'install',
@@ -8788,35 +8792,35 @@ RED.palette.editor = (function() {
             content: installTab
         })
 
-        var toolBar = $('<div>',{class:"palette-editor-toolbar"}).appendTo(installTab);
+        var toolBar = $('<div>', { class: "palette-editor-toolbar" }).appendTo(installTab);
 
-        var searchDiv = $('<div>',{class:"palette-search"}).appendTo(installTab);
+        var searchDiv = $('<div>', { class: "palette-search" }).appendTo(installTab);
         searchInput = $('<input type="text" data-i18n="[placeholder]palette.search"></input>')
             .appendTo(searchDiv)
             .searchBox({
                 delay: 300,
-                change: function() {
+                change: function () {
                     var searchTerm = $(this).val().toLowerCase();
                     if (searchTerm.length > 0) {
-                        filteredList = loadedList.filter(function(m) {
+                        filteredList = loadedList.filter(function (m) {
                             return (m.index.indexOf(searchTerm) > -1);
-                        }).map(function(f) { return {info:f}});
+                        }).map(function (f) { return { info: f } });
                         refreshFilteredItems();
-                        searchInput.searchBox('count',filteredList.length+" / "+loadedList.length);
+                        searchInput.searchBox('count', filteredList.length + " / " + loadedList.length);
                     } else {
-                        searchInput.searchBox('count',loadedList.length);
+                        searchInput.searchBox('count', loadedList.length);
                         packageList.editableList('empty');
                     }
                 }
             });
 
 
-        $('<span>').html(RED._("palette.editor.sort")+' ').appendTo(toolBar);
+        $('<span>').html(RED._("palette.editor.sort") + ' ').appendTo(toolBar);
         var sortGroup = $('<span class="button-group"></span>').appendTo(toolBar);
         var sortAZ = $('<a href="#" class="sidebar-header-button-toggle selected" data-i18n="palette.editor.sortAZ"></a>').appendTo(sortGroup);
         var sortRecent = $('<a href="#" class="sidebar-header-button-toggle" data-i18n="palette.editor.sortRecent"></a>').appendTo(sortGroup);
 
-        sortAZ.click(function(e) {
+        sortAZ.click(function (e) {
             e.preventDefault();
             if ($(this).hasClass("selected")) {
                 return;
@@ -8827,7 +8831,7 @@ RED.palette.editor = (function() {
             refreshFilteredItems();
         });
 
-        sortRecent.click(function(e) {
+        sortRecent.click(function (e) {
             e.preventDefault();
             if ($(this).hasClass("selected")) {
                 return;
@@ -8841,56 +8845,56 @@ RED.palette.editor = (function() {
 
         var refreshSpan = $('<span>').appendTo(toolBar);
         var refreshButton = $('<a href="#" class="sidebar-header-button"><i class="fa fa-refresh"></i></a>').appendTo(refreshSpan);
-        refreshButton.click(function(e) {
+        refreshButton.click(function (e) {
             e.preventDefault();
             loadedList = [];
             loadedIndex = {};
             initInstallTab();
         })
 
-        packageList = $('<ol>',{style:"position: absolute;top: 78px;bottom: 0;left: 0;right: 0px;"}).appendTo(installTab).editableList({
+        packageList = $('<ol>', { style: "position: absolute;top: 78px;bottom: 0;left: 0;right: 0px;" }).appendTo(installTab).editableList({
             addButton: false,
             scrollOnAdd: false,
-            addItem: function(container,i,object) {
+            addItem: function (container, i, object) {
 
                 if (object.more) {
                     container.addClass('palette-module-more');
-                    var moreRow = $('<div>',{class:"palette-module-header palette-module"}).appendTo(container);
-                    var moreLink = $('<a href="#"></a>').html(RED._('palette.editor.more',{count:object.more})).appendTo(moreRow);
-                    moreLink.click(function(e) {
+                    var moreRow = $('<div>', { class: "palette-module-header palette-module" }).appendTo(container);
+                    var moreLink = $('<a href="#"></a>').html(RED._('palette.editor.more', { count: object.more })).appendTo(moreRow);
+                    moreLink.click(function (e) {
                         e.preventDefault();
-                        packageList.editableList('removeItem',object);
-                        for (var i=object.start;i<Math.min(object.start+10,object.start+object.more);i++) {
-                            packageList.editableList('addItem',filteredList[i]);
+                        packageList.editableList('removeItem', object);
+                        for (var i = object.start; i < Math.min(object.start + 10, object.start + object.more); i++) {
+                            packageList.editableList('addItem', filteredList[i]);
                         }
                         if (object.more > 10) {
-                            packageList.editableList('addItem',{start:object.start+10, more:object.more-10})
+                            packageList.editableList('addItem', { start: object.start + 10, more: object.more - 10 })
                         }
                     })
                     return;
                 }
                 if (object.info) {
                     var entry = object.info;
-                    var headerRow = $('<div>',{class:"palette-module-header"}).appendTo(container);
+                    var headerRow = $('<div>', { class: "palette-module-header" }).appendTo(container);
                     var titleRow = $('<div class="palette-module-meta"><i class="fa fa-cube"></i></div>').appendTo(headerRow);
-                    $('<span>',{class:"palette-module-name"}).html(entry.name||entry.id).appendTo(titleRow);
-                    $('<a target="_blank" class="palette-module-link"><i class="fa fa-external-link"></i></a>').attr('href',entry.url).appendTo(titleRow);
+                    $('<span>', { class: "palette-module-name" }).html(entry.name || entry.id).appendTo(titleRow);
+                    $('<a target="_blank" class="palette-module-link"><i class="fa fa-external-link"></i></a>').attr('href', entry.url).appendTo(titleRow);
                     var descRow = $('<div class="palette-module-meta"></div>').appendTo(headerRow);
-                    $('<div>',{class:"palette-module-description"}).html(entry.description).appendTo(descRow);
+                    $('<div>', { class: "palette-module-description" }).html(entry.description).appendTo(descRow);
 
                     var metaRow = $('<div class="palette-module-meta"></div>').appendTo(headerRow);
-                    $('<span class="palette-module-version"><i class="fa fa-tag"></i> '+entry.version+'</span>').appendTo(metaRow);
-                    $('<span class="palette-module-updated"><i class="fa fa-calendar"></i> '+formatUpdatedAt(entry.updated_at)+'</span>').appendTo(metaRow);
-                    var buttonRow = $('<div>',{class:"palette-module-meta"}).appendTo(headerRow);
-                    var buttonGroup = $('<div>',{class:"palette-module-button-group"}).appendTo(buttonRow);
+                    $('<span class="palette-module-version"><i class="fa fa-tag"></i> ' + entry.version + '</span>').appendTo(metaRow);
+                    $('<span class="palette-module-updated"><i class="fa fa-calendar"></i> ' + formatUpdatedAt(entry.updated_at) + '</span>').appendTo(metaRow);
+                    var buttonRow = $('<div>', { class: "palette-module-meta" }).appendTo(headerRow);
+                    var buttonGroup = $('<div>', { class: "palette-module-button-group" }).appendTo(buttonRow);
                     var shade = $('<div class="palette-module-shade hide"><img src="mashupflows/red/images/spin.svg" class="palette-spinner"/></div>').appendTo(container);
                     var installButton = $('<a href="#" class="editor-button editor-button-small"></a>').html(RED._('palette.editor.install')).appendTo(buttonGroup);
-                    installButton.click(function(e) {
+                    installButton.click(function (e) {
                         e.preventDefault();
                         if (!$(this).hasClass('disabled')) {
-                            $("#palette-module-install-confirm").data('module',entry.id);
-                            $("#palette-module-install-confirm").data('url',entry.url);
-                            $("#palette-module-install-confirm").data('shade',shade);
+                            $("#palette-module-install-confirm").data('module', entry.id);
+                            $("#palette-module-install-confirm").data('url', entry.url);
+                            $("#palette-module-install-confirm").data('shade', shade);
                             $("#palette-module-install-confirm-body").html(RED._("palette.editor.confirm.install.body"));
                             $(".palette-module-install-confirm-button-install").attr("style", "display: block !important");
                             $(".palette-module-install-confirm-button-remove").hide();
@@ -8905,10 +8909,10 @@ RED.palette.editor = (function() {
                     }
 
                     object.elements = {
-                        installButton:installButton
+                        installButton: installButton
                     }
                 } else {
-                    $('<div>',{class:"red-ui-search-empty"}).html(RED._('search.empty')).appendTo(container);
+                    $('<div>', { class: "red-ui-search-empty" }).html(RED._('search.empty')).appendTo(container);
                 }
             }
         });
@@ -8925,14 +8929,14 @@ RED.palette.editor = (function() {
             buttons: [
                 {
                     text: RED._("common.label.cancel"),
-                    click: function() {
-                        $( this ).dialog( "close" );
+                    click: function () {
+                        $(this).dialog("close");
                     }
                 },
                 {
                     text: RED._("palette.editor.confirm.button.review"),
                     class: "primary palette-module-install-confirm-button-install",
-                    click: function() {
+                    click: function () {
                         var url = $(this).data('url');
                         window.open(url);
                     }
@@ -8940,62 +8944,62 @@ RED.palette.editor = (function() {
                 {
                     text: RED._("palette.editor.confirm.button.install"),
                     class: "primary palette-module-install-confirm-button-install",
-                    click: function() {
+                    click: function () {
                         var id = $(this).data('module');
                         var shade = $(this).data('shade');
-                        installNodeModule(id,shade,function(xhr) {
+                        installNodeModule(id, shade, function (xhr) {
                             if (xhr) {
                                 if (xhr.responseJSON) {
-                                    RED.notify(RED._('palette.editor.errors.installFailed',{module: id,message:xhr.responseJSON.message}));
+                                    RED.notify(RED._('palette.editor.errors.installFailed', { module: id, message: xhr.responseJSON.message }));
                                 }
                             }
                         });
-                        $( this ).dialog( "close" );
+                        $(this).dialog("close");
                     }
                 },
                 {
                     text: RED._("palette.editor.confirm.button.remove"),
                     class: "primary palette-module-install-confirm-button-remove",
-                    click: function() {
+                    click: function () {
                         var id = $(this).data('module');
                         var shade = $(this).data('shade');
                         shade.attr("style", "display: block !important");
-                        removeNodeModule(id, function(xhr) {
+                        removeNodeModule(id, function (xhr) {
                             shade.hide();
                             if (xhr) {
                                 if (xhr.responseJSON) {
-                                    RED.notify(RED._('palette.editor.errors.removeFailed',{module: id,message:xhr.responseJSON.message}));
+                                    RED.notify(RED._('palette.editor.errors.removeFailed', { module: id, message: xhr.responseJSON.message }));
                                 }
                             }
                         })
 
-                        $( this ).dialog( "close" );
+                        $(this).dialog("close");
                     }
                 }
             ]
         })
 
-        RED.events.on('registry:node-set-enabled', function(ns) {
+        RED.events.on('registry:node-set-enabled', function (ns) {
             refreshNodeModule(ns.module);
         });
-        RED.events.on('registry:node-set-disabled', function(ns) {
+        RED.events.on('registry:node-set-disabled', function (ns) {
             refreshNodeModule(ns.module);
         });
-        RED.events.on('registry:node-type-added', function(nodeType) {
+        RED.events.on('registry:node-type-added', function (nodeType) {
             if (!/^subflow:/.test(nodeType)) {
                 var ns = RED.nodes.registry.getNodeSetForType(nodeType);
                 refreshNodeModule(ns.module);
             }
         });
-        RED.events.on('registry:node-type-removed', function(nodeType) {
+        RED.events.on('registry:node-type-removed', function (nodeType) {
             if (!/^subflow:/.test(nodeType)) {
                 var ns = RED.nodes.registry.getNodeSetForType(nodeType);
                 refreshNodeModule(ns.module);
             }
         });
-        RED.events.on('registry:node-set-added', function(ns) {
+        RED.events.on('registry:node-set-added', function (ns) {
             refreshNodeModule(ns.module);
-            for (var i=0;i<filteredList.length;i++) {
+            for (var i = 0; i < filteredList.length; i++) {
                 if (filteredList[i].info.id === ns.module) {
                     var installButton = filteredList[i].elements.installButton;
                     installButton.addClass('disabled');
@@ -9004,14 +9008,14 @@ RED.palette.editor = (function() {
                 }
             }
         });
-        RED.events.on('registry:node-set-removed', function(ns) {
+        RED.events.on('registry:node-set-removed', function (ns) {
             var module = RED.nodes.registry.getModule(ns.module);
             if (!module) {
                 var entry = nodeEntries[ns.module];
                 if (entry) {
                     nodeList.editableList('removeItem', entry);
                     delete nodeEntries[ns.module];
-                    for (var i=0;i<filteredList.length;i++) {
+                    for (var i = 0; i < filteredList.length; i++) {
                         if (filteredList[i].info.id === ns.module) {
                             var installButton = filteredList[i].elements.installButton;
                             installButton.removeClass('disabled');
@@ -9022,16 +9026,16 @@ RED.palette.editor = (function() {
                 }
             }
         });
-        RED.events.on('nodes:add', function(n) {
+        RED.events.on('nodes:add', function (n) {
             if (!/^subflow:/.test(n.type)) {
-                typesInUse[n.type] = (typesInUse[n.type]||0)+1;
+                typesInUse[n.type] = (typesInUse[n.type] || 0) + 1;
                 if (typesInUse[n.type] === 1) {
                     var ns = RED.nodes.registry.getNodeSetForType(n.type);
                     refreshNodeModule(ns.module);
                 }
             }
         })
-        RED.events.on('nodes:remove', function(n) {
+        RED.events.on('nodes:remove', function (n) {
             if (typesInUse.hasOwnProperty(n.type)) {
                 typesInUse[n.type]--;
                 if (typesInUse[n.type] === 0) {
@@ -9052,7 +9056,7 @@ RED.palette.editor = (function() {
 })();
 
 
-RED.editor = (function() {
+RED.editor = (function () {
 
     var editStack = [];
     var editing_node = null;
@@ -9063,7 +9067,7 @@ RED.editor = (function() {
 
     function getCredentialsURL(nodeType, nodeID) {
         var dashedType = nodeType.replace(/\s+/g, '-');
-        return  'credentials/' + dashedType + "/" + nodeID;
+        return 'credentials/' + dashedType + "/" + nodeID;
     }
 
     /**
@@ -9078,7 +9082,7 @@ RED.editor = (function() {
         var subflow;
         var isValid;
         var hasChanged;
-        if (node.type.indexOf("subflow:")===0) {
+        if (node.type.indexOf("subflow:") === 0) {
             subflow = RED.nodes.subflow(node.type.substring(8));
             isValid = subflow.valid;
             hasChanged = subflow.changed;
@@ -9094,8 +9098,8 @@ RED.editor = (function() {
                 node.valid = node.valid && validateNodeProperties(node, node._def.credentials, node._def._creds);
             }
         } else if (node.type == "subflow") {
-            var subflowNodes = RED.nodes.filterNodes({z:node.id});
-            for (var i=0;i<subflowNodes.length;i++) {
+            var subflowNodes = RED.nodes.filterNodes({ z: node.id });
+            for (var i = 0; i < subflowNodes.length; i++) {
                 isValid = subflowNodes[i].valid;
                 hasChanged = subflowNodes[i].changed;
                 if (isValid === undefined) {
@@ -9105,15 +9109,15 @@ RED.editor = (function() {
                 node.valid = node.valid && isValid;
                 node.changed = node.changed || hasChanged;
             }
-            var subflowInstances = RED.nodes.filterNodes({type:"subflow:"+node.id});
+            var subflowInstances = RED.nodes.filterNodes({ type: "subflow:" + node.id });
             var modifiedTabs = {};
-            for (i=0;i<subflowInstances.length;i++) {
+            for (i = 0; i < subflowInstances.length; i++) {
                 subflowInstances[i].valid = node.valid;
                 subflowInstances[i].changed = subflowInstances[i].changed || node.changed;
                 subflowInstances[i].dirty = true;
                 modifiedTabs[subflowInstances[i].z] = true;
             }
-            Object.keys(modifiedTabs).forEach(function(id) {
+            Object.keys(modifiedTabs).forEach(function (id) {
                 var subflow = RED.nodes.subflow(id);
                 if (subflow) {
                     validateNode(subflow);
@@ -9157,7 +9161,7 @@ RED.editor = (function() {
      * @param value - the property value being validated
      * @returns {boolean} whether the node proprty is valid
      */
-    function validateNodeProperty(node,definition,property,value) {
+    function validateNodeProperty(node, definition, property, value) {
         var valid = true;
         if (/^\$\([a-zA-Z_][a-zA-Z0-9_]*\)$/.test(value)) {
             return true;
@@ -9167,9 +9171,9 @@ RED.editor = (function() {
         }
         if (valid && "validate" in definition[property]) {
             try {
-                valid = definition[property].validate.call(node,value);
-            } catch(err) {
-                console.log("Validation error:",node.type,node.id,"property: "+property,"value:",value,err);
+                valid = definition[property].validate.call(node, value);
+            } catch (err) {
+                console.log("Validation error:", node.type, node.id, "property: " + property, "value:", value, err);
             }
         }
         if (valid && definition[property].type && RED.nodes.getType(definition[property].type) && !("validate" in definition[property])) {
@@ -9184,28 +9188,28 @@ RED.editor = (function() {
     }
 
 
-    function validateNodeEditor(node,prefix) {
+    function validateNodeEditor(node, prefix) {
         for (var prop in node._def.defaults) {
             if (node._def.defaults.hasOwnProperty(prop)) {
-                validateNodeEditorProperty(node,node._def.defaults,prop,prefix);
+                validateNodeEditorProperty(node, node._def.defaults, prop, prefix);
             }
         }
         if (node._def.credentials) {
             for (prop in node._def.credentials) {
                 if (node._def.credentials.hasOwnProperty(prop)) {
-                    validateNodeEditorProperty(node,node._def.credentials,prop,prefix);
+                    validateNodeEditorProperty(node, node._def.credentials, prop, prefix);
                 }
             }
         }
     }
-    function validateNodeEditorProperty(node,defaults,property,prefix) {
-        var input = $("#"+prefix+"-"+property);
+    function validateNodeEditorProperty(node, defaults, property, prefix) {
+        var input = $("#" + prefix + "-" + property);
         if (input.length > 0) {
             var value = input.val();
             if (defaults[property].hasOwnProperty("format") && defaults[property].format !== "" && input[0].nodeName === "DIV") {
                 value = input.text();
             }
-            if (!validateNodeProperty(node, defaults, property,value)) {
+            if (!validateNodeProperty(node, defaults, property, value)) {
                 input.addClass("input-error");
             } else {
                 input.removeClass("input-error");
@@ -9227,7 +9231,7 @@ RED.editor = (function() {
         var removedLinks = [];
         if (node.ports) {
             if (outputMap) {
-                RED.nodes.eachLink(function(l) {
+                RED.nodes.eachLink(function (l) {
                     if (l.source === node && outputMap.hasOwnProperty(l.sourcePort)) {
                         if (outputMap[l.sourcePort] === -1) {
                             removedLinks.push(l);
@@ -9241,7 +9245,7 @@ RED.editor = (function() {
                 while (node.outputs < node.ports.length) {
                     node.ports.pop();
                 }
-                RED.nodes.eachLink(function(l) {
+                RED.nodes.eachLink(function (l) {
                     if (l.source === node && l.sourcePort >= node.outputs && removedLinks.indexOf(l) === -1) {
                         removedLinks.push(l);
                     }
@@ -9253,9 +9257,9 @@ RED.editor = (function() {
             }
         }
         if (node.inputs === 0) {
-            removedLinks.concat(RED.nodes.filterLinks({target:node}));
+            removedLinks.concat(RED.nodes.filterLinks({ target: node }));
         }
-        for (var l=0;l<removedLinks.length;l++) {
+        for (var l = 0; l < removedLinks.length; l++) {
             RED.nodes.removeLink(removedLinks[l]);
         }
         return removedLinks;
@@ -9267,9 +9271,9 @@ RED.editor = (function() {
      * @param property - the name of the field
      * @param type - the type of the config-node
      */
-    function prepareConfigNodeSelect(node,property,type,prefix) {
-        var input = $("#"+prefix+"-"+property);
-        if (input.length === 0 ) {
+    function prepareConfigNodeSelect(node, property, type, prefix) {
+        var input = $("#" + prefix + "-" + property);
+        if (input.length === 0) {
             return;
         }
         var newWidth = input.width();
@@ -9280,9 +9284,9 @@ RED.editor = (function() {
         } else {
             newWidth = "70%";
         }
-        var outerWrap = $("<div></div>").css({display:'inline-block',position:'relative'});
-        var selectWrap = $("<div></div>").css({position:'absolute',left:0,right:'40px'}).appendTo(outerWrap);
-        var select = $('<select id="'+prefix+'-'+property+'"></select>').appendTo(selectWrap);
+        var outerWrap = $("<div></div>").css({ display: 'inline-block', position: 'relative' });
+        var selectWrap = $("<div></div>").css({ position: 'absolute', left: 0, right: '40px' }).appendTo(outerWrap);
+        var select = $('<select id="' + prefix + '-' + property + '"></select>').appendTo(selectWrap);
 
         outerWrap.width(newWidth).height(input.height());
         if (outerWrap.width() === 0) {
@@ -9290,13 +9294,13 @@ RED.editor = (function() {
         }
         input.replaceWith(outerWrap);
         // set the style attr directly - using width() on FF causes a value of 114%...
-        select.attr('style',"width:100%");
-        updateConfigNodeSelect(property,type,node[property],prefix);
-        $('<a id="'+prefix+'-lookup-'+property+'" class="editor-button"><i class="fa fa-pencil"></i></a>')
-            .css({position:'absolute',right:0,top:0})
+        select.attr('style', "width:100%");
+        updateConfigNodeSelect(property, type, node[property], prefix);
+        $('<a id="' + prefix + '-lookup-' + property + '" class="editor-button"><i class="fa fa-pencil"></i></a>')
+            .css({ position: 'absolute', right: 0, top: 0 })
             .appendTo(outerWrap);
-        $('#'+prefix+'-lookup-'+property).click(function(e) {
-            showEditConfigNodeDialog(property,type,select.find(":selected").val(),prefix);
+        $('#' + prefix + '-lookup-' + property).click(function (e) {
+            showEditConfigNodeDialog(property, type, select.find(":selected").val(), prefix);
             e.preventDefault();
         });
         var label = "";
@@ -9307,8 +9311,8 @@ RED.editor = (function() {
             if (typeof node_def.label == "function") {
                 try {
                     label = node_def.label.call(configNode);
-                } catch(err) {
-                    console.log("Definition error: "+node_def.type+".label",err);
+                } catch (err) {
+                    console.log("Definition error: " + node_def.type + ".label", err);
                     label = node_def.type;
                 }
             } else {
@@ -9324,12 +9328,12 @@ RED.editor = (function() {
      * @param property - the name of the field
      * @param type - the type of the config-node
      */
-    function prepareConfigNodeButton(node,property,type,prefix) {
-        var input = $("#"+prefix+"-"+property);
+    function prepareConfigNodeButton(node, property, type, prefix) {
+        var input = $("#" + prefix + "-" + property);
         input.val(node[property]);
-        input.attr("type","hidden");
+        input.attr("type", "hidden");
 
-        var button = $("<a>",{id:prefix+"-edit-"+property, class:"editor-button"});
+        var button = $("<a>", { id: prefix + "-edit-" + property, class: "editor-button" });
         input.after(button);
 
         if (node[property]) {
@@ -9338,8 +9342,8 @@ RED.editor = (function() {
             button.text(RED._("editor.configAdd"));
         }
 
-        button.click(function(e) {
-            showEditConfigNodeDialog(property,type,input.val()||"_ADD_",prefix);
+        button.click(function (e) {
+            showEditConfigNodeDialog(property, type, input.val() || "_ADD_", prefix);
             e.preventDefault();
         });
     }
@@ -9351,13 +9355,13 @@ RED.editor = (function() {
      * @param prefix - the prefix to use in the input element ids (node-input|node-config-input)
      * @param definition - the definition of the field
      */
-    function preparePropertyEditor(node,property,prefix,definition) {
-        var input = $("#"+prefix+"-"+property);
+    function preparePropertyEditor(node, property, prefix, definition) {
+        var input = $("#" + prefix + "-" + property);
         if (input.length === 0) {
             return;
         }
         if (input.attr('type') === "checkbox") {
-            input.prop('checked',node[property]);
+            input.prop('checked', node[property]);
         }
         else {
             var val = node[property];
@@ -9383,18 +9387,18 @@ RED.editor = (function() {
      * @param property - the name of the field
      * @param prefix - the prefix to use in the input element ids (node-input|node-config-input)
      */
-    function attachPropertyChangeHandler(node,definition,property,prefix) {
-        var input = $("#"+prefix+"-"+property);
+    function attachPropertyChangeHandler(node, definition, property, prefix) {
+        var input = $("#" + prefix + "-" + property);
         if (definition !== undefined && "format" in definition[property] && definition[property].format !== "" && input[0].nodeName === "DIV") {
-            $("#"+prefix+"-"+property).on('change keyup', function(event,skipValidation) {
+            $("#" + prefix + "-" + property).on('change keyup', function (event, skipValidation) {
                 if (!skipValidation) {
-                    validateNodeEditor(node,prefix);
+                    validateNodeEditor(node, prefix);
                 }
             });
         } else {
-            $("#"+prefix+"-"+property).change(function(event,skipValidation) {
+            $("#" + prefix + "-" + property).change(function (event, skipValidation) {
                 if (!skipValidation) {
-                    validateNodeEditor(node,prefix);
+                    validateNodeEditor(node, prefix);
                 }
             });
         }
@@ -9437,8 +9441,8 @@ RED.editor = (function() {
      */
     function updateNodeCredentials(node, credDefinition, prefix) {
         var changed = false;
-        if(!node.credentials) {
-            node.credentials = {_:{}};
+        if (!node.credentials) {
+            node.credentials = { _: {} };
         }
 
         for (var cred in credDefinition) {
@@ -9468,50 +9472,50 @@ RED.editor = (function() {
      * @param definition - the node definition
      * @param prefix - the prefix to use in the input element ids (node-input|node-config-input)
      */
-    function prepareEditDialog(node,definition,prefix,done) {
+    function prepareEditDialog(node, definition, prefix, done) {
         for (var d in definition.defaults) {
             if (definition.defaults.hasOwnProperty(d)) {
                 if (definition.defaults[d].type) {
                     var configTypeDef = RED.nodes.getType(definition.defaults[d].type);
                     if (configTypeDef) {
                         if (configTypeDef.exclusive) {
-                            prepareConfigNodeButton(node,d,definition.defaults[d].type,prefix);
+                            prepareConfigNodeButton(node, d, definition.defaults[d].type, prefix);
                         } else {
-                            prepareConfigNodeSelect(node,d,definition.defaults[d].type,prefix);
+                            prepareConfigNodeSelect(node, d, definition.defaults[d].type, prefix);
                         }
                     } else {
                         console.log("Unknown type:", definition.defaults[d].type);
-                        preparePropertyEditor(node,d,prefix,definition.defaults);
+                        preparePropertyEditor(node, d, prefix, definition.defaults);
                     }
                 } else {
-                    preparePropertyEditor(node,d,prefix,definition.defaults);
+                    preparePropertyEditor(node, d, prefix, definition.defaults);
                 }
-                attachPropertyChangeHandler(node,definition.defaults,d,prefix);
+                attachPropertyChangeHandler(node, definition.defaults, d, prefix);
             }
         }
-        var completePrepare = function() {
+        var completePrepare = function () {
             if (definition.oneditprepare) {
                 try {
                     definition.oneditprepare.call(node);
-                } catch(err) {
-                    console.log("oneditprepare",node.id,node.type,err.toString());
+                } catch (err) {
+                    console.log("oneditprepare", node.id, node.type, err.toString());
                 }
             }
             // Now invoke any change handlers added to the fields - passing true
             // to prevent full node validation from being triggered each time
             for (var d in definition.defaults) {
                 if (definition.defaults.hasOwnProperty(d)) {
-                    $("#"+prefix+"-"+d).trigger("change",[true]);
+                    $("#" + prefix + "-" + d).trigger("change", [true]);
                 }
             }
             if (definition.credentials) {
                 for (d in definition.credentials) {
                     if (definition.credentials.hasOwnProperty(d)) {
-                        $("#"+prefix+"-"+d).trigger("change",[true]);
+                        $("#" + prefix + "-" + d).trigger("change", [true]);
                     }
                 }
             }
-            validateNodeEditor(node,prefix);
+            validateNodeEditor(node, prefix);
             if (done) {
                 done();
             }
@@ -9524,7 +9528,7 @@ RED.editor = (function() {
             } else {
                 $.getJSON(getCredentialsURL(node.type, node.id), function (data) {
                     node.credentials = data;
-                    node.credentials._ = $.extend(true,{},data);
+                    node.credentials._ = $.extend(true, {}, data);
                     populateCredentialsInputs(node, definition.credentials, node.credentials, prefix);
                     completePrepare();
                 });
@@ -9536,66 +9540,66 @@ RED.editor = (function() {
 
     function getEditStackTitle() {
         var title = '<ul class="editor-tray-breadcrumbs">';
-        for (var i=0;i<editStack.length;i++) {
+        for (var i = 0; i < editStack.length; i++) {
             var node = editStack[i];
             var label = node.type;
             if (node.type === '_expression') {
                 label = "Expression editor";
             } else if (node.type === 'subflow') {
-                label = RED._("subflow.editSubflow",{name:node.name})
-            } else if (node.type.indexOf("subflow:")===0) {
+                label = RED._("subflow.editSubflow", { name: node.name })
+            } else if (node.type.indexOf("subflow:") === 0) {
                 var subflow = RED.nodes.subflow(node.type.substring(8));
-                label = RED._("subflow.editSubflow",{name:subflow.name})
+                label = RED._("subflow.editSubflow", { name: subflow.name })
             } else {
                 if (typeof node._def.paletteLabel !== "undefined") {
                     try {
-                        label = (typeof node._def.paletteLabel === "function" ? node._def.paletteLabel.call(node._def) : node._def.paletteLabel)||"";
-                    } catch(err) {
-                        console.log("Definition error: "+node.type+".paletteLabel",err);
+                        label = (typeof node._def.paletteLabel === "function" ? node._def.paletteLabel.call(node._def) : node._def.paletteLabel) || "";
+                    } catch (err) {
+                        console.log("Definition error: " + node.type + ".paletteLabel", err);
                     }
                 }
-                if (i === editStack.length-1) {
+                if (i === editStack.length - 1) {
                     if (RED.nodes.node(node.id)) {
-                        label = RED._("editor.editNode",{type:label});
+                        label = RED._("editor.editNode", { type: label });
                     } else {
-                        label = RED._("editor.addNewConfig",{type:label});
+                        label = RED._("editor.addNewConfig", { type: label });
                     }
                 }
             }
-            title += '<li>'+label+'</li>';
+            title += '<li>' + label + '</li>';
         }
         title += '</ul>';
         return title;
     }
 
-    function buildEditForm(tray,formId,type,ns) {
+    function buildEditForm(tray, formId, type, ns) {
         var trayBody = tray.find('.editor-tray-body');
-        var dialogForm = $('<form id="'+formId+'" class="form-horizontal" autocomplete="off"></form>').appendTo(trayBody);
-        dialogForm.html($("script[data-template-name='"+type+"']").html());
-        ns = ns||"node-red";
-        dialogForm.find('[data-i18n]').each(function() {
+        var dialogForm = $('<form id="' + formId + '" class="form-horizontal" autocomplete="off"></form>').appendTo(trayBody);
+        dialogForm.html($("script[data-template-name='" + type + "']").html());
+        ns = ns || "node-red";
+        dialogForm.find('[data-i18n]').each(function () {
             var current = $(this).attr("data-i18n");
             var keys = current.split(";");
-            for (var i=0;i<keys.length;i++) {
+            for (var i = 0; i < keys.length; i++) {
                 var key = keys[i];
                 if (key.indexOf(":") === -1) {
                     var prefix = "";
-                    if (key.indexOf("[")===0) {
+                    if (key.indexOf("[") === 0) {
                         var parts = key.split("]");
-                        prefix = parts[0]+"]";
+                        prefix = parts[0] + "]";
                         key = parts[1];
                     }
-                    keys[i] = prefix+ns+":"+key;
+                    keys[i] = prefix + ns + ":" + key;
                 }
             }
-            $(this).attr("data-i18n",keys.join(";"));
+            $(this).attr("data-i18n", keys.join(";"));
         });
         // Add dummy fields to prevent 'Enter' submitting the form in some
         // cases, and also prevent browser auto-fill of password
         // Add in reverse order as they are prepended...
         $('<input type="password" style="display: none;" />').prependTo(dialogForm);
         $('<input type="text" style="display: none;" />').prependTo(dialogForm);
-        dialogForm.submit(function(e) { e.preventDefault();});
+        dialogForm.submit(function (e) { e.preventDefault(); });
         return dialogForm;
     }
 
@@ -9604,7 +9608,7 @@ RED.editor = (function() {
         editStack.push(node);
         RED.view.state(RED.state.EDITING);
         var type = node.type;
-        if (node.type.substring(0,8) == "subflow:") {
+        if (node.type.substring(0, 8) == "subflow:") {
             type = "subflow";
         }
         var trayOptions = {
@@ -9614,7 +9618,7 @@ RED.editor = (function() {
                     id: "node-dialog-delete",
                     class: 'leftButton',
                     text: RED._("common.label.delete"),
-                    click: function() {
+                    click: function () {
                         var startDirty = RED.nodes.dirty();
                         var removedNodes = [];
                         var removedLinks = [];
@@ -9624,9 +9628,9 @@ RED.editor = (function() {
                         removedLinks = removedLinks.concat(removedEntities.links);
 
                         var historyEvent = {
-                            t:'delete',
-                            nodes:removedNodes,
-                            links:removedLinks,
+                            t: 'delete',
+                            nodes: removedNodes,
+                            links: removedLinks,
                             changes: {},
                             dirty: startDirty
                         }
@@ -9640,13 +9644,13 @@ RED.editor = (function() {
                 {
                     id: "node-dialog-cancel",
                     text: RED._("common.label.cancel"),
-                    click: function() {
+                    click: function () {
                         if (editing_node._def) {
                             if (editing_node._def.oneditcancel) {
                                 try {
                                     editing_node._def.oneditcancel.call(editing_node);
-                                } catch(err) {
-                                    console.log("oneditcancel",editing_node.id,editing_node.type,err.toString());
+                                } catch (err) {
+                                    console.log("oneditcancel", editing_node.id, editing_node.type, err.toString());
                                 }
                             }
 
@@ -9656,7 +9660,7 @@ RED.editor = (function() {
                                     if (def.type) {
                                         var configTypeDef = RED.nodes.getType(def.type);
                                         if (configTypeDef && configTypeDef.exclusive) {
-                                            var input = $("#node-input-"+d).val()||"";
+                                            var input = $("#node-input-" + d).val() || "";
                                             if (input !== "" && !editing_node[d]) {
                                                 // This node has an exclusive config node that
                                                 // has just been added. As the user is cancelling
@@ -9677,7 +9681,7 @@ RED.editor = (function() {
                     id: "node-dialog-ok",
                     text: RED._("common.label.done"),
                     class: "primary",
-                    click: function() {
+                    click: function () {
                         var changes = {};
                         var changed = false;
                         var wasDirty = RED.nodes.dirty();
@@ -9691,7 +9695,7 @@ RED.editor = (function() {
                                     if (typeof editing_node[d] === "string" || typeof editing_node[d] === "number") {
                                         oldValues[d] = editing_node[d];
                                     } else {
-                                        oldValues[d] = $.extend(true,{},{v:editing_node[d]}).v;
+                                        oldValues[d] = $.extend(true, {}, { v: editing_node[d] }).v;
                                     }
                                 }
                             }
@@ -9700,8 +9704,8 @@ RED.editor = (function() {
                                 if (rc === true) {
                                     changed = true;
                                 }
-                            } catch(err) {
-                                console.log("oneditsave",editing_node.id,editing_node.type,err.toString());
+                            } catch (err) {
+                                console.log("oneditsave", editing_node.id, editing_node.type, err.toString());
                             }
 
                             for (d in editing_node._def.defaults) {
@@ -9724,7 +9728,7 @@ RED.editor = (function() {
                         if (editing_node._def.defaults) {
                             for (d in editing_node._def.defaults) {
                                 if (editing_node._def.defaults.hasOwnProperty(d)) {
-                                    var input = $("#node-input-"+d);
+                                    var input = $("#node-input-" + d);
                                     var newValue;
                                     if (input.attr('type') === "checkbox") {
                                         newValue = input.prop('checked');
@@ -9746,7 +9750,7 @@ RED.editor = (function() {
                                                 var configNode = RED.nodes.node(editing_node[d]);
                                                 if (configNode) {
                                                     var users = configNode.users;
-                                                    users.splice(users.indexOf(editing_node),1);
+                                                    users.splice(users.indexOf(editing_node), 1);
                                                 }
                                                 configNode = RED.nodes.node(newValue);
                                                 if (configNode) {
@@ -9764,7 +9768,7 @@ RED.editor = (function() {
                         if (editing_node._def.credentials) {
                             var prefix = 'node-input';
                             var credDefinition = editing_node._def.credentials;
-                            var credsChanged = updateNodeCredentials(editing_node,credDefinition,prefix);
+                            var credsChanged = updateNodeCredentials(editing_node, credDefinition, prefix);
                             changed = changed || credsChanged;
                         }
                         if (editing_node.hasOwnProperty("_outputs")) {
@@ -9774,7 +9778,7 @@ RED.editor = (function() {
                                 changed = true;
                             }
                         }
-                        var removedLinks = updateNodeProperties(editing_node,outputMap);
+                        var removedLinks = updateNodeProperties(editing_node, outputMap);
                         if (changed) {
                             var wasChanged = editing_node.changed;
                             editing_node.changed = true;
@@ -9784,11 +9788,11 @@ RED.editor = (function() {
                             var subflowInstances = null;
                             if (activeSubflow) {
                                 subflowInstances = [];
-                                RED.nodes.eachNode(function(n) {
-                                    if (n.type == "subflow:"+RED.workspaces.active()) {
+                                RED.nodes.eachNode(function (n) {
+                                    if (n.type == "subflow:" + RED.workspaces.active()) {
                                         subflowInstances.push({
-                                            id:n.id,
-                                            changed:n.changed
+                                            id: n.id,
+                                            changed: n.changed
                                         });
                                         n.changed = true;
                                         n.dirty = true;
@@ -9797,42 +9801,42 @@ RED.editor = (function() {
                                 });
                             }
                             var historyEvent = {
-                                t:'edit',
-                                node:editing_node,
-                                changes:changes,
-                                links:removedLinks,
-                                dirty:wasDirty,
-                                changed:wasChanged
+                                t: 'edit',
+                                node: editing_node,
+                                changes: changes,
+                                links: removedLinks,
+                                dirty: wasDirty,
+                                changed: wasChanged
                             };
                             if (outputMap) {
                                 historyEvent.outputMap = outputMap;
                             }
                             if (subflowInstances) {
                                 historyEvent.subflow = {
-                                    instances:subflowInstances
+                                    instances: subflowInstances
                                 }
                             }
                             RED.history.push(historyEvent);
                         }
                         editing_node.dirty = true;
                         validateNode(editing_node);
-                        RED.events.emit("editor:save",editing_node);
+                        RED.events.emit("editor:save", editing_node);
                         RED.tray.close();
                     }
                 }
             ],
-            resize: function(dimensions) {
+            resize: function (dimensions) {
                 editTrayWidthCache[type] = dimensions.width;
                 if (editing_node && editing_node._def.oneditresize) {
                     var form = $("#dialog-form");
                     try {
-                        editing_node._def.oneditresize.call(editing_node,{width:form.width(),height:form.height()});
-                    } catch(err) {
-                        console.log("oneditresize",editing_node.id,editing_node.type,err.toString());
+                        editing_node._def.oneditresize.call(editing_node, { width: form.width(), height: form.height() });
+                    } catch (err) {
+                        console.log("oneditresize", editing_node.id, editing_node.type, err.toString());
                     }
                 }
             },
-            open: function(tray,done) {
+            open: function (tray, done) {
                 if (editing_node) {
                     // RED.sidebar.info.refresh(editing_node);
                 }
@@ -9842,14 +9846,14 @@ RED.editor = (function() {
                 } else {
                     ns = node._def.set.id;
                 }
-                var dialogForm = buildEditForm(tray,"dialog-form",type,ns);
-                prepareEditDialog(node,node._def,"node-input", function() {
+                var dialogForm = buildEditForm(tray, "dialog-form", type, ns);
+                prepareEditDialog(node, node._def, "node-input", function () {
                     dialogForm.i18n();
                     done();
                 });
 
             },
-            close: function() {
+            close: function () {
                 if (RED.view.state() != RED.state.IMPORT_DRAGGING) {
                     RED.view.state(RED.state.DEFAULT);
                 }
@@ -9860,7 +9864,7 @@ RED.editor = (function() {
                 RED.view.redraw(true);
                 editStack.pop();
             },
-            show: function() {
+            show: function () {
                 if (editing_node) {
                     // RED.sidebar.info.refresh(editing_node);
                 }
@@ -9875,7 +9879,7 @@ RED.editor = (function() {
             trayOptions.buttons.unshift({
                 class: 'leftButton',
                 text: RED._("subflow.edit"),
-                click: function() {
+                click: function () {
                     RED.workspaces.show(id);
                     $("#node-dialog-ok").click();
                 }
@@ -9890,7 +9894,7 @@ RED.editor = (function() {
      * id - id of config node to edit. _ADD_ for a new one
      * prefix - the input prefix of the parent property
      */
-    function showEditConfigNodeDialog(name,type,id,prefix) {
+    function showEditConfigNodeDialog(name, type, id, prefix) {
         var adding = (id == "_ADD_");
         var node_def = RED.nodes.getType(type);
         var editing_config_node = RED.nodes.node(id);
@@ -9926,17 +9930,17 @@ RED.editor = (function() {
         RED.view.state(RED.state.EDITING);
         var trayOptions = {
             title: getEditStackTitle(), //(adding?RED._("editor.addNewConfig", {type:type}):RED._("editor.editConfig", {type:type})),
-            resize: function() {
+            resize: function () {
                 if (editing_config_node && editing_config_node._def.oneditresize) {
                     var form = $("#node-config-dialog-edit-form");
                     try {
-                        editing_config_node._def.oneditresize.call(editing_config_node,{width:form.width(),height:form.height()});
-                    } catch(err) {
-                        console.log("oneditresize",editing_config_node.id,editing_config_node.type,err.toString());
+                        editing_config_node._def.oneditresize.call(editing_config_node, { width: form.width(), height: form.height() });
+                    } catch (err) {
+                        console.log("oneditresize", editing_config_node.id, editing_config_node.type, err.toString());
                     }
                 }
             },
-            open: function(tray, done) {
+            open: function (tray, done) {
                 var trayHeader = tray.find(".editor-tray-header");
                 var trayFooter = tray.find(".editor-tray-footer");
 
@@ -9945,9 +9949,9 @@ RED.editor = (function() {
                 }
                 trayFooter.append('<span id="node-config-dialog-scope-container"><span id="node-config-dialog-scope-warning" data-i18n="[title]editor.errors.scopeChange"><i class="fa fa-warning"></i></span><select id="node-config-dialog-scope"></select></span>');
 
-                var dialogForm = buildEditForm(tray,"node-config-dialog-edit-form",type,ns);
+                var dialogForm = buildEditForm(tray, "node-config-dialog-edit-form", type, ns);
 
-                prepareEditDialog(editing_config_node,node_def,"node-config-input", function() {
+                prepareEditDialog(editing_config_node, node_def, "node-config-input", function () {
                     if (editing_config_node._def.exclusive) {
                         $("#node-config-dialog-scope").hide();
                     } else {
@@ -9956,31 +9960,31 @@ RED.editor = (function() {
                     $("#node-config-dialog-scope-warning").hide();
 
                     var nodeUserFlows = {};
-                    editing_config_node.users.forEach(function(n) {
+                    editing_config_node.users.forEach(function (n) {
                         nodeUserFlows[n.z] = true;
                     });
                     var flowCount = Object.keys(nodeUserFlows).length;
                     var tabSelect = $("#node-config-dialog-scope").empty();
                     tabSelect.off("change");
-                    tabSelect.append('<option value=""'+(!editing_config_node.z?" selected":"")+' data-i18n="sidebar.config.global"></option>');
+                    tabSelect.append('<option value=""' + (!editing_config_node.z ? " selected" : "") + ' data-i18n="sidebar.config.global"></option>');
                     tabSelect.append('<option disabled data-i18n="sidebar.config.flows"></option>');
-                    RED.nodes.eachWorkspace(function(ws) {
+                    RED.nodes.eachWorkspace(function (ws) {
                         var workspaceLabel = ws.label;
                         if (nodeUserFlows[ws.id]) {
-                            workspaceLabel = "* "+workspaceLabel;
+                            workspaceLabel = "* " + workspaceLabel;
                         }
-                        tabSelect.append('<option value="'+ws.id+'"'+(ws.id==editing_config_node.z?" selected":"")+'>'+workspaceLabel+'</option>');
+                        tabSelect.append('<option value="' + ws.id + '"' + (ws.id == editing_config_node.z ? " selected" : "") + '>' + workspaceLabel + '</option>');
                     });
                     tabSelect.append('<option disabled data-i18n="sidebar.config.subflows"></option>');
-                    RED.nodes.eachSubflow(function(ws) {
+                    RED.nodes.eachSubflow(function (ws) {
                         var workspaceLabel = ws.name;
                         if (nodeUserFlows[ws.id]) {
-                            workspaceLabel = "* "+workspaceLabel;
+                            workspaceLabel = "* " + workspaceLabel;
                         }
-                        tabSelect.append('<option value="'+ws.id+'"'+(ws.id==editing_config_node.z?" selected":"")+'>'+workspaceLabel+'</option>');
+                        tabSelect.append('<option value="' + ws.id + '"' + (ws.id == editing_config_node.z ? " selected" : "") + '>' + workspaceLabel + '</option>');
                     });
                     if (flowCount > 0) {
-                        tabSelect.on('change',function() {
+                        tabSelect.on('change', function () {
                             var newScope = $(this).val();
                             if (newScope === '') {
                                 // global scope - everyone can use it
@@ -9997,16 +10001,16 @@ RED.editor = (function() {
 
                     dialogForm.i18n();
                     if (node_def.hasUsers !== false) {
-                        $("#node-config-dialog-user-count").find("span").html(RED._("editor.nodesUse", {count:editing_config_node.users.length})).parent().attr("style", "display: block !important");
+                        $("#node-config-dialog-user-count").find("span").html(RED._("editor.nodesUse", { count: editing_config_node.users.length })).parent().attr("style", "display: block !important");
                     }
                     done();
                 });
             },
-            close: function() {
+            close: function () {
                 RED.workspaces.refresh();
                 editStack.pop();
             },
-            show: function() {
+            show: function () {
                 if (editing_config_node) {
                     // RED.sidebar.info.refresh(editing_config_node);
                 }
@@ -10016,7 +10020,7 @@ RED.editor = (function() {
             {
                 id: "node-config-dialog-cancel",
                 text: RED._("common.label.cancel"),
-                click: function() {
+                click: function () {
                     var configType = type;
                     var configId = editing_config_node.id;
                     var configAdding = adding;
@@ -10028,15 +10032,15 @@ RED.editor = (function() {
                             var cn = RED.nodes.node(configId);
                             if (cn) {
                                 try {
-                                    configTypeDef.oneditcancel.call(cn,false);
-                                } catch(err) {
-                                    console.log("oneditcancel",cn.id,cn.type,err.toString());
+                                    configTypeDef.oneditcancel.call(cn, false);
+                                } catch (err) {
+                                    console.log("oneditcancel", cn.id, cn.type, err.toString());
                                 }
                             } else {
                                 try {
-                                    configTypeDef.oneditcancel.call({id:configId},true);
-                                } catch(err) {
-                                    console.log("oneditcancel",configId,configType,err.toString());
+                                    configTypeDef.oneditcancel.call({ id: configId }, true);
+                                } catch (err) {
+                                    console.log("oneditcancel", configId, configType, err.toString());
                                 }
                             }
                         }
@@ -10046,9 +10050,9 @@ RED.editor = (function() {
             },
             {
                 id: "node-config-dialog-ok",
-                text: adding?RED._("editor.configAdd"):RED._("editor.configUpdate"),
+                text: adding ? RED._("editor.configAdd") : RED._("editor.configUpdate"),
                 class: "primary",
-                click: function() {
+                click: function () {
                     var configProperty = name;
                     var configId = editing_config_node.id;
                     var configType = type;
@@ -10061,15 +10065,15 @@ RED.editor = (function() {
                     if (configTypeDef.oneditsave) {
                         try {
                             configTypeDef.oneditsave.call(editing_config_node);
-                        } catch(err) {
-                            console.log("oneditsave",editing_config_node.id,editing_config_node.type,err.toString());
+                        } catch (err) {
+                            console.log("oneditsave", editing_config_node.id, editing_config_node.type, err.toString());
                         }
                     }
 
                     for (d in configTypeDef.defaults) {
                         if (configTypeDef.defaults.hasOwnProperty(d)) {
                             var newValue;
-                            input = $("#node-config-input-"+d);
+                            input = $("#node-config-input-" + d);
                             if (input.attr('type') === "checkbox") {
                                 newValue = input.prop('checked');
                             } else if ("format" in configTypeDef.defaults[d] && configTypeDef.defaults[d].format !== "" && input[0].nodeName === "DIV") {
@@ -10086,7 +10090,7 @@ RED.editor = (function() {
                                     var configNode = RED.nodes.node(editing_config_node[d]);
                                     if (configNode) {
                                         var users = configNode.users;
-                                        users.splice(users.indexOf(editing_config_node),1);
+                                        users.splice(users.indexOf(editing_config_node), 1);
                                     }
                                     configNode = RED.nodes.node(newValue);
                                     if (configNode) {
@@ -10103,7 +10107,7 @@ RED.editor = (function() {
                     if (scope) {
                         // Search for nodes that use this one that are no longer
                         // in scope, so must be removed
-                        editing_config_node.users = editing_config_node.users.filter(function(n) {
+                        editing_config_node.users = editing_config_node.users.filter(function (n) {
                             var keep = true;
                             for (var d in n._def.defaults) {
                                 if (n._def.defaults.hasOwnProperty(d)) {
@@ -10129,14 +10133,14 @@ RED.editor = (function() {
                     }
 
                     if (configTypeDef.credentials) {
-                        updateNodeCredentials(editing_config_node,configTypeDef.credentials,"node-config-input");
+                        updateNodeCredentials(editing_config_node, configTypeDef.credentials, "node-config-input");
                     }
                     validateNode(editing_config_node);
                     var validatedNodes = {};
                     validatedNodes[editing_config_node.id] = true;
 
                     var userStack = editing_config_node.users.slice();
-                    while(userStack.length > 0) {
+                    while (userStack.length > 0) {
                         var user = userStack.pop();
                         if (!validatedNodes[user.id]) {
                             validatedNodes[user.id] = true;
@@ -10149,10 +10153,10 @@ RED.editor = (function() {
                     RED.nodes.dirty(true);
                     RED.view.redraw(true);
                     if (!configAdding) {
-                        RED.events.emit("editor:save",editing_config_node);
+                        RED.events.emit("editor:save", editing_config_node);
                     }
-                    RED.tray.close(function() {
-                        updateConfigNodeSelect(configProperty,configType,editing_config_node.id,prefix);
+                    RED.tray.close(function () {
+                        updateConfigNodeSelect(configProperty, configType, editing_config_node.id, prefix);
                     });
                 }
             }
@@ -10162,7 +10166,7 @@ RED.editor = (function() {
             trayOptions.buttons.unshift({
                 class: 'leftButton',
                 text: RED._("editor.configDelete"), //'<i class="fa fa-trash"></i>',
-                click: function() {
+                click: function () {
                     var configProperty = name;
                     var configId = editing_config_node.id;
                     var configType = type;
@@ -10172,23 +10176,23 @@ RED.editor = (function() {
 
                         if (configTypeDef.ondelete) {
                             // Deprecated: never documented but used by some early nodes
-                            console.log("Deprecated API warning: config node type ",configType," has an ondelete function - should be oneditdelete");
+                            console.log("Deprecated API warning: config node type ", configType, " has an ondelete function - should be oneditdelete");
                             configTypeDef.ondelete.call(editing_config_node);
                         }
                         if (configTypeDef.oneditdelete) {
                             configTypeDef.oneditdelete.call(editing_config_node);
                         }
-                    } catch(err) {
-                        console.log("oneditdelete",editing_config_node.id,editing_config_node.type,err.toString());
+                    } catch (err) {
+                        console.log("oneditdelete", editing_config_node.id, editing_config_node.type, err.toString());
                     }
 
                     var historyEvent = {
-                        t:'delete',
-                        nodes:[editing_config_node],
+                        t: 'delete',
+                        nodes: [editing_config_node],
                         changes: {},
                         dirty: RED.nodes.dirty()
                     }
-                    for (var i=0;i<editing_config_node.users.length;i++) {
+                    for (var i = 0; i < editing_config_node.users.length; i++) {
                         var user = editing_config_node.users[i];
                         historyEvent.changes[user.id] = {
                             changed: user.changed,
@@ -10208,8 +10212,8 @@ RED.editor = (function() {
                     RED.nodes.dirty(true);
                     RED.view.redraw(true);
                     RED.history.push(historyEvent);
-                    RED.tray.close(function() {
-                        updateConfigNodeSelect(configProperty,configType,"",prefix);
+                    RED.tray.close(function () {
+                        updateConfigNodeSelect(configProperty, configType, "", prefix);
                     });
                 }
             });
@@ -10218,7 +10222,7 @@ RED.editor = (function() {
         RED.tray.show(trayOptions);
     }
 
-    function defaultConfigNodeSort(A,B) {
+    function defaultConfigNodeSort(A, B) {
         if (A.__label__ < B.__label__) {
             return -1;
         } else if (A.__label__ > B.__label__) {
@@ -10227,20 +10231,20 @@ RED.editor = (function() {
         return 0;
     }
 
-    function updateConfigNodeSelect(name,type,value,prefix) {
+    function updateConfigNodeSelect(name, type, value, prefix) {
         // if prefix is null, there is no config select to update
         if (prefix) {
-            var button = $("#"+prefix+"-edit-"+name);
+            var button = $("#" + prefix + "-edit-" + name);
             if (button.length) {
                 if (value) {
                     button.text(RED._("editor.configEdit"));
                 } else {
                     button.text(RED._("editor.configAdd"));
                 }
-                $("#"+prefix+"-"+name).val(value);
+                $("#" + prefix + "-" + name).val(value);
             } else {
 
-                var select = $("#"+prefix+"-"+name);
+                var select = $("#" + prefix + "-" + name);
                 var node_def = RED.nodes.getType(type);
                 select.children().remove();
 
@@ -10251,14 +10255,14 @@ RED.editor = (function() {
 
                 var configNodes = [];
 
-                RED.nodes.eachConfig(function(config) {
+                RED.nodes.eachConfig(function (config) {
                     if (config.type == type && (!config.z || config.z === activeWorkspace.id)) {
                         var label = "";
                         if (typeof node_def.label == "function") {
                             try {
                                 label = node_def.label.call(config);
-                            } catch(err) {
-                                console.log("Definition error: "+node_def.type+".label",err);
+                            } catch (err) {
+                                console.log("Definition error: " + node_def.type + ".label", err);
                                 label = node_def.type;
                             }
                         } else {
@@ -10274,17 +10278,17 @@ RED.editor = (function() {
                 }
                 try {
                     configNodes.sort(configSortFn);
-                } catch(err) {
-                    console.log("Definition error: "+node_def.type+".sort",err);
+                } catch (err) {
+                    console.log("Definition error: " + node_def.type + ".sort", err);
                 }
 
-                configNodes.forEach(function(cn) {
-                    select.append('<option value="'+cn.id+'"'+(value==cn.id?" selected":"")+'>'+RED.text.bidi.enforceTextDirectionWithUCC(cn.__label__)+'</option>');
+                configNodes.forEach(function (cn) {
+                    select.append('<option value="' + cn.id + '"' + (value == cn.id ? " selected" : "") + '>' + RED.text.bidi.enforceTextDirectionWithUCC(cn.__label__) + '</option>');
                     delete cn.__label__;
                 });
 
-                select.append('<option value="_ADD_"'+(value===""?" selected":"")+'>'+RED._("editor.addNewType", {type:type})+'</option>');
-                window.setTimeout(function() { select.change();},50);
+                select.append('<option value="_ADD_"' + (value === "" ? " selected" : "") + '>' + RED._("editor.addNewType", { type: type }) + '</option>');
+                window.setTimeout(function () { select.change(); }, 50);
             }
         }
     }
@@ -10301,7 +10305,7 @@ RED.editor = (function() {
                 {
                     id: "node-dialog-cancel",
                     text: RED._("common.label.cancel"),
-                    click: function() {
+                    click: function () {
                         RED.tray.close();
                     }
                 },
@@ -10309,7 +10313,7 @@ RED.editor = (function() {
                     id: "node-dialog-ok",
                     class: "primary",
                     text: RED._("common.label.done"),
-                    click: function() {
+                    click: function () {
                         var i;
                         var changes = {};
                         var changed = false;
@@ -10335,11 +10339,11 @@ RED.editor = (function() {
 
                         if (changed) {
                             var subflowInstances = [];
-                            RED.nodes.eachNode(function(n) {
-                                if (n.type == "subflow:"+editing_node.id) {
+                            RED.nodes.eachNode(function (n) {
+                                if (n.type == "subflow:" + editing_node.id) {
                                     subflowInstances.push({
-                                        id:n.id,
-                                        changed:n.changed
+                                        id: n.id,
+                                        changed: n.changed
                                     })
                                     n.changed = true;
                                     n.dirty = true;
@@ -10350,13 +10354,13 @@ RED.editor = (function() {
                             editing_node.changed = true;
                             RED.nodes.dirty(true);
                             var historyEvent = {
-                                t:'edit',
-                                node:editing_node,
-                                changes:changes,
-                                dirty:wasDirty,
-                                changed:wasChanged,
+                                t: 'edit',
+                                node: editing_node,
+                                changes: changes,
+                                dirty: wasDirty,
+                                changed: wasChanged,
                                 subflow: {
-                                    instances:subflowInstances
+                                    instances: subflowInstances
                                 }
                             };
 
@@ -10367,22 +10371,22 @@ RED.editor = (function() {
                     }
                 }
             ],
-            resize: function() {
+            resize: function () {
                 var rows = $("#dialog-form>div:not(.node-text-editor-row)");
                 var editorRow = $("#dialog-form>div.node-text-editor-row");
                 var height = $("#dialog-form").height();
-                for (var i=0;i<rows.size();i++) {
+                for (var i = 0; i < rows.size(); i++) {
                     height -= $(rows[i]).outerHeight(true);
                 }
-                height -= (parseInt($("#dialog-form").css("marginTop"))+parseInt($("#dialog-form").css("marginBottom")));
-                $(".node-text-editor").css("height",height+"px");
+                height -= (parseInt($("#dialog-form").css("marginTop")) + parseInt($("#dialog-form").css("marginBottom")));
+                $(".node-text-editor").css("height", height + "px");
                 subflowEditor.resize();
             },
-            open: function(tray) {
+            open: function (tray) {
                 if (editing_node) {
                     // RED.sidebar.info.refresh(editing_node);
                 }
-                var dialogForm = buildEditForm(tray,"dialog-form","subflow-template");
+                var dialogForm = buildEditForm(tray, "dialog-form", "subflow-template");
                 subflowEditor = RED.editor.createEditor({
                     id: 'subflow-input-info-editor',
                     mode: 'ace/mode/markdown',
@@ -10391,19 +10395,19 @@ RED.editor = (function() {
 
                 $("#subflow-input-name").val(subflow.name);
                 RED.text.bidi.prepareInput($("#subflow-input-name"));
-                subflowEditor.getSession().setValue(subflow.info||"",-1);
+                subflowEditor.getSession().setValue(subflow.info || "", -1);
                 var userCount = 0;
-                var subflowType = "subflow:"+editing_node.id;
+                var subflowType = "subflow:" + editing_node.id;
 
-                RED.nodes.eachNode(function(n) {
+                RED.nodes.eachNode(function (n) {
                     if (n.type === subflowType) {
                         userCount++;
                     }
                 });
-                $("#subflow-dialog-user-count").html(RED._("subflow.subflowInstances", {count:userCount})).attr("style", "display: block !important");
+                $("#subflow-dialog-user-count").html(RED._("subflow.subflowInstances", { count: userCount })).attr("style", "display: block !important");
                 dialogForm.i18n();
             },
-            close: function() {
+            close: function () {
                 if (RED.view.state() != RED.state.IMPORT_DRAGGING) {
                     RED.view.state(RED.state.DEFAULT);
                 }
@@ -10412,7 +10416,7 @@ RED.editor = (function() {
                 editStack.pop();
                 editing_node = null;
             },
-            show: function() {
+            show: function () {
             }
         }
         RED.tray.show(trayOptions);
@@ -10423,7 +10427,7 @@ RED.editor = (function() {
         var value = options.value;
         var onComplete = options.complete;
         var type = "_expression"
-        editStack.push({type:type});
+        editStack.push({ type: type });
         RED.view.state(RED.state.EDITING);
         var expressionEditor;
 
@@ -10433,7 +10437,7 @@ RED.editor = (function() {
                 {
                     id: "node-dialog-cancel",
                     text: RED._("common.label.cancel"),
-                    click: function() {
+                    click: function () {
                         RED.tray.close();
                     }
                 },
@@ -10441,48 +10445,48 @@ RED.editor = (function() {
                     id: "node-dialog-ok",
                     text: RED._("common.label.done"),
                     class: "primary",
-                    click: function() {
+                    click: function () {
                         $("#node-input-expression-help").html("");
                         onComplete(expressionEditor.getValue());
                         RED.tray.close();
                     }
                 }
             ],
-            resize: function(dimensions) {
+            resize: function (dimensions) {
                 editTrayWidthCache[type] = dimensions.width;
 
                 var rows = $("#dialog-form>div:not(.node-text-editor-row)");
                 var editorRow = $("#dialog-form>div.node-text-editor-row");
                 var height = $("#dialog-form").height();
-                for (var i=0;i<rows.size();i++) {
+                for (var i = 0; i < rows.size(); i++) {
                     height -= $(rows[i]).outerHeight(true);
                 }
-                height -= (parseInt($("#dialog-form").css("marginTop"))+parseInt($("#dialog-form").css("marginBottom")));
-                $(".node-text-editor").css("height",height+"px");
+                height -= (parseInt($("#dialog-form").css("marginTop")) + parseInt($("#dialog-form").css("marginBottom")));
+                $(".node-text-editor").css("height", height + "px");
                 expressionEditor.resize();
             },
-            open: function(tray) {
+            open: function (tray) {
                 var trayBody = tray.find('.editor-tray-body');
-                var dialogForm = buildEditForm(tray,'dialog-form','_expression','editor');
+                var dialogForm = buildEditForm(tray, 'dialog-form', '_expression', 'editor');
                 var funcSelect = $("#node-input-expression-func");
-                Object.keys(jsonata.functions).forEach(function(f) {
+                Object.keys(jsonata.functions).forEach(function (f) {
                     funcSelect.append($("<option></option>").val(f).text(f));
                 })
-                funcSelect.change(function(e) {
+                funcSelect.change(function (e) {
                     var f = $(this).val();
-                    var args = RED._('jsonata:'+f+".args",{defaultValue:''});
-                    var title = "<h5>"+f+"("+args+")</h5>";
-                    var body = marked(RED._('jsonata:'+f+'.desc',{defaultValue:''}));
-                    $("#node-input-expression-help").html(title+"<p>"+body+"</p>");
+                    var args = RED._('jsonata:' + f + ".args", { defaultValue: '' });
+                    var title = "<h5>" + f + "(" + args + ")</h5>";
+                    var body = marked(RED._('jsonata:' + f + '.desc', { defaultValue: '' }));
+                    $("#node-input-expression-help").html(title + "<p>" + body + "</p>");
 
                 })
                 expressionEditor = RED.editor.createEditor({
                     id: 'node-input-expression',
                     value: "",
-                    mode:"ace/mode/jsonata",
+                    mode: "ace/mode/jsonata",
                     options: {
-                        enableBasicAutocompletion:true,
-                        enableSnippets:true,
+                        enableBasicAutocompletion: true,
+                        enableSnippets: true,
                         enableLiveAutocompletion: true
                     }
                 });
@@ -10490,13 +10494,13 @@ RED.editor = (function() {
                 var currentTokenPos = -1;
                 var currentFunctionMarker = null;
 
-                expressionEditor.getSession().setValue(value||"",-1);
-                expressionEditor.on("changeSelection", function() {
+                expressionEditor.getSession().setValue(value || "", -1);
+                expressionEditor.on("changeSelection", function () {
                     var c = expressionEditor.getCursorPosition();
-                    var token = expressionEditor.getSession().getTokenAt(c.row,c.column);
+                    var token = expressionEditor.getSession().getTokenAt(c.row, c.column);
                     if (token !== currentToken || (token && /paren/.test(token.type) && c.column !== currentTokenPos)) {
                         currentToken = token;
-                        var r,p;
+                        var r, p;
                         var scopedFunction = null;
                         if (token && token.type === 'keyword') {
                             r = c.row;
@@ -10515,13 +10519,13 @@ RED.editor = (function() {
                                 r = c.row;
                                 p = token.index;
                             } else {
-                                r = c.row-1;
+                                r = c.row - 1;
                                 p = -1;
                             }
-                            while ( scopedFunction === null && r > -1) {
+                            while (scopedFunction === null && r > -1) {
                                 var rowTokens = expressionEditor.getSession().getTokens(r);
                                 if (p === -1) {
-                                    p = rowTokens.length-1;
+                                    p = rowTokens.length - 1;
                                 }
                                 while (p > -1) {
                                     var type = rowTokens[p].type;
@@ -10534,9 +10538,9 @@ RED.editor = (function() {
                                         next = false;
                                     }
                                     if (type === 'paren.lparen') {
-                                        depth-=rowTokens[p].value.length;
+                                        depth -= rowTokens[p].value.length;
                                     } else if (type === 'paren.rparen') {
-                                        depth+=rowTokens[p].value.length;
+                                        depth += rowTokens[p].value.length;
                                     }
                                     if (depth < 0) {
                                         next = true;
@@ -10559,7 +10563,7 @@ RED.editor = (function() {
                 });
 
                 dialogForm.i18n();
-                $("#node-input-expression-func-insert").click(function(e) {
+                $("#node-input-expression-func-insert").click(function (e) {
                     e.preventDefault();
                     var pos = expressionEditor.getCursorPosition();
                     var f = funcSelect.val();
@@ -10568,10 +10572,10 @@ RED.editor = (function() {
                     expressionEditor.focus();
                 })
             },
-            close: function() {
+            close: function () {
                 editStack.pop();
             },
-            show: function() {}
+            show: function () { }
         }
         if (editTrayWidthCache.hasOwnProperty(type)) {
             trayOptions.width = editTrayWidthCache[type];
@@ -10580,13 +10584,13 @@ RED.editor = (function() {
     }
 
     return {
-        init: function() {
+        init: function () {
             RED.tray.init();
-            RED.actions.add("core:confirm-edit-tray", function() {
+            RED.actions.add("core:confirm-edit-tray", function () {
                 $("#node-dialog-ok").click();
                 $("#node-config-dialog-ok").click();
             });
-            RED.actions.add("core:cancel-edit-tray", function() {
+            RED.actions.add("core:cancel-edit-tray", function () {
                 $("#node-dialog-cancel").click();
                 $("#node-config-dialog-cancel").click();
             });
@@ -10598,7 +10602,7 @@ RED.editor = (function() {
         validateNode: validateNode,
         updateNodeProperties: updateNodeProperties, // TODO: only exposed for edit-undo
 
-        createEditor: function(options) {
+        createEditor: function (options) {
             var editor = ace.edit(options.id);
             editor.setTheme("ace/theme/tomorrow");
             var session = editor.getSession();
@@ -10614,20 +10618,20 @@ RED.editor = (function() {
                 editor.setOptions(options.options);
             } else {
                 editor.setOptions({
-                    enableBasicAutocompletion:true,
-                    enableSnippets:true
+                    enableBasicAutocompletion: true,
+                    enableSnippets: true
                 });
             }
             editor.$blockScrolling = Infinity;
             if (options.value) {
-                session.setValue(options.value,-1);
+                session.setValue(options.value, -1);
             }
             if (options.globals) {
-                setTimeout(function() {
+                setTimeout(function () {
                     if (!!session.$worker) {
-                        session.$worker.send("setOptions", [{globals: options.globals, esversion:6}]);
+                        session.$worker.send("setOptions", [{ globals: options.globals, esversion: 6 }]);
                     }
-                },100);
+                }, 100);
             }
             return editor;
         }
@@ -10635,13 +10639,13 @@ RED.editor = (function() {
 })();
 
 // Handles node's configuration right-handed sidebar
-RED.tray = (function() {
+RED.tray = (function () {
 
     var stack = [];
     var editorStack = null;
     var openingTray = false;
 
-    function resize() {}
+    function resize() { }
 
     function showTray(options) {
         var el = $('<div class="editor-tray"></div>');
@@ -10651,23 +10655,23 @@ RED.tray = (function() {
         var footer = $('<div class="editor-tray-footer"></div>').appendTo(el);
         var resizer = $('<div class="editor-tray-resize-handle"></div>').appendTo(el);
         if (options.title) {
-            $('<div class="editor-tray-titlebar">'+options.title+'</div>').appendTo(header);
+            $('<div class="editor-tray-titlebar">' + options.title + '</div>').appendTo(header);
         }
         var buttonBar = $('<div class="editor-tray-toolbar"></div>').appendTo(header);
         var primaryButton;
         if (options.buttons) {
-            for (var i=0;i<options.buttons.length;i++) {
+            for (var i = 0; i < options.buttons.length; i++) {
                 var button = options.buttons[i];
                 var b = $('<button>').button().appendTo(buttonBar);
                 if (button.id) {
-                    b.attr('id',button.id);
+                    b.attr('id', button.id);
                 }
                 if (button.text) {
                     b.html(button.text);
                 }
                 if (button.click) {
-                    b.click((function(action) {
-                        return function(evt) {
+                    b.click((function (action) {
+                        return function (evt) {
                             if (!$(this).hasClass('disabled')) {
                                 action(evt);
                             }
@@ -10697,27 +10701,27 @@ RED.tray = (function() {
         el.draggable({
             handle: resizer,
             axis: "x",
-            start:function(event,ui) {
+            start: function (event, ui) {
                 el.width('auto');
             },
-            drag: function(event,ui) {
-                var absolutePosition = editorStack.position().left+ui.position.left
+            drag: function (event, ui) {
+                var absolutePosition = editorStack.position().left + ui.position.left
                 if (absolutePosition < 7) {
-                    ui.position.left += 7-absolutePosition;
+                    ui.position.left += 7 - absolutePosition;
                 }
                 if (tray.options.resize) {
-                    setTimeout(function() {
-                        tray.options.resize({width: -ui.position.left});
-                    },0);
+                    setTimeout(function () {
+                        tray.options.resize({ width: -ui.position.left });
+                    }, 0);
                 }
                 tray.width = -ui.position.left;
             },
-            stop:function(event,ui) {
+            stop: function (event, ui) {
                 let size = (ui.position.left <= 255) ? 255 : ui.position.left
                 el.width(-size);
-                el.css({left: size});
+                el.css({ left: size });
                 if (tray.options.resize) {
-                    tray.options.resize({width: -size});
+                    tray.options.resize({ width: -size });
                 };
                 tray.width = -size;
             }
@@ -10729,12 +10733,12 @@ RED.tray = (function() {
             $("#palette-shade").attr("style", "display: block !important");
             $(".sidebar-shade").attr("style", "display: block !important");
 
-            tray.preferredWidth = Math.max(el.width(),500);
-            body.css({"minWidth":tray.preferredWidth-40});
+            tray.preferredWidth = Math.max(el.width(), 500);
+            body.css({ "minWidth": tray.preferredWidth - 40 });
 
             if (options.width) {
-                if (options.width > $("#editor-stack").position().left-8) {
-                    options.width = $("#editor-stack").position().left-8;
+                if (options.width > $("#editor-stack").position().left - 8) {
+                    options.width = $("#editor-stack").position().left - 8;
                 }
                 el.width(options.width);
             } else {
@@ -10742,45 +10746,45 @@ RED.tray = (function() {
             }
 
             tray.width = el.width();
-            if (tray.width > $("#editor-stack").position().left-8) {
-                tray.width = Math.max(0/*tray.preferredWidth*/,$("#editor-stack").position().left-8);
+            if (tray.width > $("#editor-stack").position().left - 8) {
+                tray.width = Math.max(0/*tray.preferredWidth*/, $("#editor-stack").position().left - 8);
                 el.width(tray.width);
             }
 
             el.css({
-                right: -(el.width()+10)+"px",
+                right: -(el.width() + 10) + "px",
                 transition: "right 0.15s ease"
             });
             $("#workspace").scrollLeft(0);
             handleWindowResize();
             openingTray = true;
-            setTimeout(function() {
-                setTimeout(function() {
+            setTimeout(function () {
+                setTimeout(function () {
                     if (!options.width) {
-                        el.width(Math.min(tray.preferredWidth,$("#editor-stack").position().left-8));
+                        el.width(Math.min(tray.preferredWidth, $("#editor-stack").position().left - 8));
                     }
                     if (options.resize) {
-                        options.resize({width:el.width()});
+                        options.resize({ width: el.width() });
                     }
                     if (options.show) {
                         // options.attr("style", "display: block !important");
                     }
-                    setTimeout(function() {
+                    setTimeout(function () {
                         // Delay resetting the flag, so we don't close prematurely
                         openingTray = false;
-                    },200);
+                    }, 200);
                     body.find(":focusable:first").focus();
 
-                },150);
-                el.css({right:0});
-            },0);
+                }, 150);
+                el.css({ right: 0 });
+            }, 0);
         }
         if (options.open) {
             if (options.open.length === 1) {
                 options.open(el);
                 finishBuild();
             } else {
-                options.open(el,finishBuild);
+                options.open(el, finishBuild);
             }
         } else {
             finishBuild();
@@ -10789,20 +10793,20 @@ RED.tray = (function() {
 
     function handleWindowResize() {
         if (stack.length > 0) {
-            var tray = stack[stack.length-1];
-            var trayHeight = tray.tray.height()-tray.header.outerHeight()-tray.footer.outerHeight();
-            tray.body.height(trayHeight-40);
-            if (tray.width > $("#editor-stack").position().left-8) {
-                tray.width = $("#editor-stack").position().left-8;
+            var tray = stack[stack.length - 1];
+            var trayHeight = tray.tray.height() - tray.header.outerHeight() - tray.footer.outerHeight();
+            tray.body.height(trayHeight - 40);
+            if (tray.width > $("#editor-stack").position().left - 8) {
+                tray.width = $("#editor-stack").position().left - 8;
                 tray.tray.width(tray.width);
                 // tray.body.parent().width(tray.width);
             } else if (tray.width < tray.preferredWidth) {
-                tray.width = Math.min($("#editor-stack").position().left-8,tray.preferredWidth);
+                tray.width = Math.min($("#editor-stack").position().left - 8, tray.preferredWidth);
                 tray.tray.width(tray.width);
                 // tray.body.parent().width(tray.width);
             }
             if (tray.options.resize) {
-                tray.options.resize({width:tray.width});
+                tray.options.resize({ width: tray.width });
             }
         }
     }
@@ -10812,10 +10816,10 @@ RED.tray = (function() {
             // hot fix for navigational init
             editorStack = $("#editor-stack");
             $(window).resize(handleWindowResize);
-            RED.events.on("sidebar:resize",handleWindowResize);
-            $("#editor-shade").click(function() {
+            RED.events.on("sidebar:resize", handleWindowResize);
+            $("#editor-shade").click(function () {
                 if (!openingTray) {
-                    var tray = stack[stack.length-1];
+                    var tray = stack[stack.length - 1];
                     if (tray && tray.primaryButton) {
                         tray.primaryButton.click();
                     }
@@ -10824,14 +10828,14 @@ RED.tray = (function() {
         },
         show: function show(options) {
             if (stack.length > 0) {
-                var oldTray = stack[stack.length-1];
+                var oldTray = stack[stack.length - 1];
                 oldTray.tray.css({
-                    right: -(oldTray.tray.width()+10)+"px"
+                    right: -(oldTray.tray.width() + 10) + "px"
                 });
-                setTimeout(function() {
+                setTimeout(function () {
                     oldTray.tray.detach();
                     showTray(options);
-                },250)
+                }, 250)
             } else {
                 RED.events.emit("editor:open");
                 showTray(options);
@@ -10873,12 +10877,12 @@ RED.tray = (function() {
 
 // handles toaster notifications
 // RED.notify is not needed | TODO: implement this as a plugin for the outer system
-RED.notify = function(){};
+RED.notify = function () { };
 
 // RED.search is not needed
 
 // Handles ctrl+click context menu for quick node insertion
-RED.typeSearch = (function() {
+RED.typeSearch = (function () {
     var shade;
     var disabled = false;
     var dialog = null;
@@ -10896,11 +10900,11 @@ RED.typeSearch = (function() {
     function search(val) {
         activeFilter = val.toLowerCase();
         var visible = searchResults.editableList('filter');
-        setTimeout(function() {
+        setTimeout(function () {
             selected = 0;
             searchResults.children().removeClass('selected');
             searchResults.children(":visible:first").addClass('selected');
-        },100);
+        }, 100);
 
     }
 
@@ -10912,30 +10916,30 @@ RED.typeSearch = (function() {
             var scrollOffset = scrollWindow.scrollTop();
             var y = selectedEntry.position().top;
             var h = selectedEntry.height();
-            if (y+h > scrollHeight) {
-                scrollWindow.animate({scrollTop: '-='+(scrollHeight-(y+h)-10)},50);
-            } else if (y<0) {
-                scrollWindow.animate({scrollTop: '+='+(y-10)},50);
+            if (y + h > scrollHeight) {
+                scrollWindow.animate({ scrollTop: '-=' + (scrollHeight - (y + h) - 10) }, 50);
+            } else if (y < 0) {
+                scrollWindow.animate({ scrollTop: '+=' + (y - 10) }, 50);
             }
         }
     }
 
     function createDialog() {
         //shade = $('<div>',{class:"red-ui-type-search-shade"}).appendTo("#main-container");
-        dialog = $("<div>",{id:"red-ui-type-search",class:"red-ui-search red-ui-type-search"}).appendTo("#main-container");
-        var searchDiv = $("<div>",{class:"red-ui-search-container"}).appendTo(dialog);
-        searchInput = $('<input type="text">').attr("placeholder",RED._("search.addNode")).appendTo(searchDiv).searchBox({
+        dialog = $("<div>", { id: "red-ui-type-search", class: "red-ui-search red-ui-type-search" }).appendTo("#main-container");
+        var searchDiv = $("<div>", { class: "red-ui-search-container" }).appendTo(dialog);
+        searchInput = $('<input type="text">').attr("placeholder", RED._("search.addNode")).appendTo(searchDiv).searchBox({
             delay: 50,
-            change: function() {
+            change: function () {
                 search($(this).val());
             }
         });
-        searchInput.on('keydown',function(evt) {
+        searchInput.on('keydown', function (evt) {
             var children = searchResults.children(":visible");
             if (children.length > 0) {
                 if (evt.keyCode === 40) {
                     // Down
-                    if (selected < children.length-1) {
+                    if (selected < children.length - 1) {
                         if (selected > -1) {
                             $(children[selected]).removeClass('selected');
                         }
@@ -10957,7 +10961,7 @@ RED.typeSearch = (function() {
                     evt.preventDefault();
                 } else if (evt.keyCode === 13) {
                     // Enter
-                    var index = Math.max(0,selected);
+                    var index = Math.max(0, selected);
                     if (index < children.length) {
                         // TODO: dips into editableList impl details
                         confirm($(children[index]).find(".red-ui-editableList-item-content").data('data'));
@@ -10966,27 +10970,27 @@ RED.typeSearch = (function() {
             }
         });
 
-        searchResultsDiv = $("<div>",{class:"red-ui-search-results-container"}).appendTo(dialog);
-        searchResults = $('<ol>',{id:"search-result-list", style:"position: absolute;top: 0;bottom: 0;left: 0;right: 0;"}).appendTo(searchResultsDiv).editableList({
+        searchResultsDiv = $("<div>", { class: "red-ui-search-results-container" }).appendTo(dialog);
+        searchResults = $('<ol>', { id: "search-result-list", style: "position: absolute;top: 0;bottom: 0;left: 0;right: 0;" }).appendTo(searchResultsDiv).editableList({
             addButton: false,
-            filter: function(data) {
-                if (activeFilter === "" ) {
+            filter: function (data) {
+                if (activeFilter === "") {
                     return true;
                 }
                 if (data.recent || data.common) {
                     return false;
                 }
-                return (activeFilter==="")||(data.index.indexOf(activeFilter) > -1);
+                return (activeFilter === "") || (data.index.indexOf(activeFilter) > -1);
             },
-            addItem: function(container,i,object) {
+            addItem: function (container, i, object) {
                 var def = object.def;
                 object.index = object.type.toLowerCase();
                 if (object.separator) {
                     container.addClass("red-ui-search-result-separator")
                 }
-                var div = $('<a>',{href:'#',class:"red-ui-search-result"}).appendTo(container);
+                var div = $('<a>', { href: '#', class: "red-ui-search-result" }).appendTo(container);
 
-                var nodeDiv = $('<div>',{class:"red-ui-search-result-node"}).appendTo(div);
+                var nodeDiv = $('<div>', { class: "red-ui-search-result-node" }).appendTo(div);
                 var colour = def.color;
                 var icon_url = "arrow-in.png";
                 if (def.category === 'config') {
@@ -10994,30 +10998,30 @@ RED.typeSearch = (function() {
                 } else {
                     try {
                         icon_url = (typeof def.icon === "function" ? def.icon.call({}) : def.icon);
-                    } catch(err) {
-                        console.log("Definition error: "+object.type+".icon",err);
+                    } catch (err) {
+                        console.log("Definition error: " + object.type + ".icon", err);
                     }
                 }
-                nodeDiv.css('backgroundColor',colour);
+                nodeDiv.css('backgroundColor', colour);
 
-                var iconContainer = $('<div/>',{class:"palette_icon_container"}).appendTo(nodeDiv);
-                $('<div/>',{class:"palette_icon",style:`background-image: url(${baseURL}flows/icons/${icon_url})`}).appendTo(iconContainer);
+                var iconContainer = $('<div/>', { class: "palette_icon_container" }).appendTo(nodeDiv);
+                $('<div/>', { class: "palette_icon", style: `background-image: url(${BASE_URL}flows/icons/${icon_url})` }).appendTo(iconContainer);
 
                 if (def.inputs > 0) {
-                    $('<div/>',{class:"red-ui-search-result-node-port"}).appendTo(nodeDiv);
+                    $('<div/>', { class: "red-ui-search-result-node-port" }).appendTo(nodeDiv);
                 }
                 if (def.outputs > 0) {
-                    $('<div/>',{class:"red-ui-search-result-node-port red-ui-search-result-node-output"}).appendTo(nodeDiv);
+                    $('<div/>', { class: "red-ui-search-result-node-port red-ui-search-result-node-output" }).appendTo(nodeDiv);
                 }
 
-                var contentDiv = $('<div>',{class:"red-ui-search-result-description"}).appendTo(div);
+                var contentDiv = $('<div>', { class: "red-ui-search-result-description" }).appendTo(div);
 
                 var label = object.label;
-                object.index += "|"+label.toLowerCase();
+                object.index += "|" + label.toLowerCase();
 
-                $('<div>',{class:"red-ui-search-result-node-label"}).html(label).appendTo(contentDiv);
+                $('<div>', { class: "red-ui-search-result-node-label" }).html(label).appendTo(contentDiv);
 
-                div.click(function(evt) {
+                div.click(function (evt) {
                     evt.preventDefault();
                     confirm(object);
                 });
@@ -11046,16 +11050,16 @@ RED.typeSearch = (function() {
     }
     function show(opts) {
         if (!visible) {
-            RED.keyboard.add("*","escape",function(){hide()});
+            RED.keyboard.add("*", "escape", function () { hide() });
             if (dialog === null) {
                 createDialog();
             }
             visible = true;
-            setTimeout(function() {
-                $(document).on('mousedown.type-search',handleMouseActivity);
-                $(document).on('mouseup.type-search',handleMouseActivity);
-                $(document).on('click.type-search',handleMouseActivity);
-            },200);
+            setTimeout(function () {
+                $(document).on('mousedown.type-search', handleMouseActivity);
+                $(document).on('mouseup.type-search', handleMouseActivity);
+                $(document).on('click.type-search', handleMouseActivity);
+            }, 200);
         } else {
             dialog.hide();
             searchResultsDiv.hide();
@@ -11064,21 +11068,21 @@ RED.typeSearch = (function() {
         addCallback = opts.add;
         RED.events.emit("type-search:open");
         //shade.attr("style", "display: block !important");
-        dialog.css({left:opts.x+"px",top:opts.y+"px"}).attr("style", "display: block !important");
+        dialog.css({ left: opts.x + "px", top: opts.y + "px" }).attr("style", "display: block !important");
         searchResultsDiv.slideDown(300);
-        setTimeout(function() {
+        setTimeout(function () {
             searchResultsDiv.find(".red-ui-editableList-container").scrollTop(0);
             searchInput.focus();
-        },100);
+        }, 100);
     }
     function hide(fast) {
         if (visible) {
             RED.keyboard.remove("escape");
             visible = false;
             if (dialog !== null) {
-                searchResultsDiv.slideUp(fast?50:200,function() {
+                searchResultsDiv.slideUp(fast ? 50 : 200, function () {
                     dialog.hide();
-                    searchInput.searchBox('value','');
+                    searchInput.searchBox('value', '');
                 });
                 //shade.hide();
             }
@@ -11094,10 +11098,10 @@ RED.typeSearch = (function() {
         var label = type;
         if (typeof def.paletteLabel !== "undefined") {
             try {
-                label = (typeof def.paletteLabel === "function" ? def.paletteLabel.call(def) : def.paletteLabel)||"";
-                label += " ("+type+")";
-            } catch(err) {
-                console.log("Definition error: "+type+".paletteLabel",err);
+                label = (typeof def.paletteLabel === "function" ? def.paletteLabel.call(def) : def.paletteLabel) || "";
+                label += " (" + type + ")";
+            } catch (err) {
+                console.log("Definition error: " + type + ".paletteLabel", err);
             }
         }
         return label;
@@ -11106,28 +11110,28 @@ RED.typeSearch = (function() {
     function refreshTypeList() {
         var i;
         searchResults.editableList('empty');
-        searchInput.searchBox('value','');
+        searchInput.searchBox('value', '');
         selected = -1;
         var common = [
-            'inject','function','change','switch'
+            'inject', 'function', 'change', 'switch'
         ];
 
         var recentlyUsed = Object.keys(typesUsed);
-        recentlyUsed.sort(function(a,b) {
-            return typesUsed[b]-typesUsed[a];
+        recentlyUsed.sort(function (a, b) {
+            return typesUsed[b] - typesUsed[a];
         });
-        recentlyUsed = recentlyUsed.filter(function(t) {
+        recentlyUsed = recentlyUsed.filter(function (t) {
             return common.indexOf(t) === -1;
         });
 
         var items = [];
-        RED.nodes.registry.getNodeTypes().forEach(function(t) {
+        RED.nodes.registry.getNodeTypes().forEach(function (t) {
             var def = RED.nodes.getType(t);
             if (def.category !== 'config' && t !== 'unknown') {
-                items.push({type:t,def: def, label:getTypeLabel(t,def)});
+                items.push({ type: t, def: def, label: getTypeLabel(t, def) });
             }
         });
-        items.sort(function(a,b) {
+        items.sort(function (a, b) {
             var al = a.label.toLowerCase();
             var bl = b.label.toLowerCase();
             if (al < bl) {
@@ -11141,43 +11145,43 @@ RED.typeSearch = (function() {
 
         var commonCount = 0;
         var item;
-        for(i=0;i<common.length;i++) {
+        for (i = 0; i < common.length; i++) {
             item = {
                 type: common[i],
                 common: true,
                 def: RED.nodes.getType(common[i])
             };
-            item.label = getTypeLabel(item.type,item.def);
-            if (i === common.length-1) {
+            item.label = getTypeLabel(item.type, item.def);
+            if (i === common.length - 1) {
                 item.separator = true;
             }
             searchResults.editableList('addItem', item);
         }
-        for(i=0;i<Math.min(5,recentlyUsed.length);i++) {
+        for (i = 0; i < Math.min(5, recentlyUsed.length); i++) {
             item = {
-                type:recentlyUsed[i],
+                type: recentlyUsed[i],
                 def: RED.nodes.getType(recentlyUsed[i]),
                 recent: true
             };
-            item.label = getTypeLabel(item.type,item.def);
-            if (i === recentlyUsed.length-1) {
+            item.label = getTypeLabel(item.type, item.def);
+            if (i === recentlyUsed.length - 1) {
                 item.separator = true;
             }
             searchResults.editableList('addItem', item);
         }
-        for (i=0;i<items.length;i++) {
+        for (i = 0; i < items.length; i++) {
             searchResults.editableList('addItem', items[i]);
         }
-        setTimeout(function() {
+        setTimeout(function () {
             selected = 0;
             searchResults.children(":first").addClass('selected');
-        },100);
+        }, 100);
     }
 
     return {
         show: show,
         hide: hide,
-        init: function() { dialog = null; }
+        init: function () { dialog = null; }
     };
 
 })();

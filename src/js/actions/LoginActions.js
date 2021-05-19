@@ -3,24 +3,24 @@ import { t } from 'i18next';
 import loginManager from 'Comms/login/LoginManager';
 import toaster from 'Comms/util/materialize';
 import { AbilityUtil } from 'Components/permissions/ability';
+import { LOGOUT_URL } from 'Src/config';
 
 const alt = require('../alt');
 
 class LoginActions {
-    authenticate(login) {
+    getUserData() {
+        console.log('getUserData');
         return (dispatch) => {
             dispatch();
-            loginManager.authenticate(login)
+            loginManager.getUserData()
                 .then((response) => {
-                    hashHistory.push('/');
-                    if (response.data.login === null) {
-                        this.loginFailed(response.data.login);
-                    } else {
-                        this.loginPermissions(response.data.login.user.permissions);
-                        this.loginSuccess(response.data.login);
-                    }
+                    //      hashHistory.push('/');
+                    console.log('response.data', response);
+                    this.loginPermissions(response.permissions);
+                    this.loginSuccess(response.username);
                 })
                 .catch((error) => {
+                    console.log('error', error);
                     this.loginFailed(error);
                 });
         };
@@ -28,6 +28,7 @@ class LoginActions {
 
     logout() {
         AbilityUtil.logoff();
+        window.location.href = LOGOUT_URL;
         return true;
     }
 
@@ -70,8 +71,23 @@ class LoginActions {
     }
 
     loginPermissions(permissions) {
-        AbilityUtil.loginPermissions(permissions);
-        return permissions;
+        const oldPermissionModel = permissions.map((el) => {
+            const newPermission = { actions: [] };
+            newPermission.subject = el.resourceName;
+            if (el.scopes.includes('view')) {
+                newPermission.actions.push('viewer');
+            }
+            if (el.scopes.includes('update')
+                || el.scopes.includes('create')
+                || el.scopes.includes('delete')) {
+                newPermission.actions.push('modifier');
+            }
+            return newPermission;
+        });
+        console.log(JSON.stringify(oldPermissionModel));
+
+        AbilityUtil.loginPermissions(oldPermissionModel);
+        return oldPermissionModel;
     }
 
     loginFailed(error) {

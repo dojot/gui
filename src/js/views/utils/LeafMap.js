@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import socketio from 'socket.io-client';
 import PropTypes from 'prop-types';
-import { baseURL } from 'Src/config';
+import { BASE_URL } from 'Src/config';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 
@@ -45,7 +45,7 @@ const MarkerUpdater = ({
 }) => {
     const [socketInstance, setSocketInstance] = useState(undefined);
     const [devicePosition, setDevicePosition] = useState(initialPosition);
-    const URL = `${baseURL}stream/socketio`;
+    const URL = `${BASE_URL}stream/socketio`;
 
     const handlePosition = ({ attrs }) => {
         if (attrs[attributeLabel]) {
@@ -65,7 +65,7 @@ const MarkerUpdater = ({
     useEffect(() => {
         const userToken = window.localStorage.getItem('jwt');
         axios.get(URL, { headers: { Authorization: `Bearer ${userToken}` } }).then(({ data }) => {
-            setSocketInstance(socketio(baseURL, { query: `token=${data.token}`, transports: ['polling'] }));
+            setSocketInstance(socketio(BASE_URL, { query: `token=${data.token}`, transports: ['polling'] }));
         }).catch((error) => {
             // @TODO We should better handle these errors
             // eslint-disable-next-line no-console
@@ -75,7 +75,7 @@ const MarkerUpdater = ({
 
     useEffect(() => {
         if (socketInstance) {
-            socketInstance.on(id, (data) => handlePosition(data));
+            socketInstance.on(id, data => handlePosition(data));
             socketInstance.on('error', (data) => {
                 // @TODO We should better handle these errors
                 // eslint-disable-next-line no-console
