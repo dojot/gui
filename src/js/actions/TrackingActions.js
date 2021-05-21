@@ -1,12 +1,14 @@
 /* eslint-disable */
+import { PROXY_URL } from 'Src/config';
 import alt from '../alt';
 import util from '../comms/util';
 import LoginStore from '../stores/LoginStore';
 
+
 class TrackingActions {
     fetch(device_id, attrName, history_length) {
         function getUrl() {
-            return '/history/device/' + device_id + '/history?lastN=' + history_length + '&attr=' + attrName;
+            return `${PROXY_URL}history/device/${device_id}/history?lastN=${history_length}&attr=${attrName}`;
         }
 
         function parserPosition(position) {
@@ -19,11 +21,11 @@ class TrackingActions {
         return (dispatch) => {
             dispatch();
 
-            const service = LoginStore.getState().user.service;
+            const { tenant } = LoginStore.getState().user;
             const config = {
                 method: 'get',
                 headers: new Headers({
-                    'fiware-service': service,
+                    'fiware-service': tenant,
                     'fiware-servicepath': '/',
                 }),
             };

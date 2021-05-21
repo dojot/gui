@@ -2,22 +2,17 @@ import React from 'react';
 import {
     Router, Route, IndexRoute, hashHistory,
 } from 'react-router';
-import Full from './containers/full';
-import { Devices, ViewDevice, NewDevice } from './views/devices';
-import Templates from './views/templates';
-import Users from './views/users';
-import Groups from './views/groups/Groups';
-import Notifications from './views/notifications/index';
-import { Flows, EditFlow } from './views/flows';
-import Alarms from './views/alarms';
-import Todo from './views/utils/todo';
-import NotFound from './views/utils/404';
-import PasswordRecovery from './containers/login/PasswordRecovery';
+
+import { Devices, ViewDevice, NewDevice } from 'Views/devices';
+import Templates from 'Views/templates';
+import Notifications from 'Views/notifications/index';
+import { Flows, EditFlow } from 'Views/flows';
+import Alarms from 'Views/alarms';
+import Full from 'Containers/full/Full';
+import NotFound from './utils/404';
 
 export default (
     <Router history={hashHistory}>
-        <Route path="/passwordrecovery/(:link)" component={PasswordRecovery} />
-        <Route path="/setpassword/(:link)" component={PasswordRecovery} />
         <Route path="/" component={Full}>
             <IndexRoute component={Devices} />
             <Route name="Device manager">
@@ -35,8 +30,6 @@ export default (
                 </Route>
             </Route>
 
-            <Route path="config" name="Settings" component={Todo} />
-
             <Route path="flows" name="Information Flows">
                 <IndexRoute component={Flows} />
                 <Route path="id/:flowid" name="Flow detail" component={EditFlow} />
@@ -50,22 +43,6 @@ export default (
                 <Route path="notifications" name="Notifications" component={Notifications} />
             </Route>
 
-            <Route path="auth" name="Authentication">
-                <IndexRoute component={Users} />
-                <Route path="user" name="User detail" component={Users} />
-            </Route>
-
-            <Route path="groups" name="Groups">
-                <IndexRoute component={Groups} />
-                <Route path="groups" name="Groups" component={Groups} />
-            </Route>
-
-
-            <Route path="deploy" name="Deployment" component={Todo}>
-                <Route path="plugins" name="Template detail" component={Todo} />
-                <Route path="applications" name="Template detail" component={Todo} />
-            </Route>
-            <Route path="todo" name="To be implemented" component={Todo} />
             <Route path="*" name="default" component={NotFound} />
         </Route>
     </Router>

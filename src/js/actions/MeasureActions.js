@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { PROXY_URL } from 'Src/config';
 import LoginStore from '../stores/LoginStore';
 import util from '../comms/util';
 
@@ -10,7 +11,8 @@ class MeasureActions {
     updateTracking(data) {
         return data;
     }
-    updateGeoLabel(geoInfo){
+
+    updateGeoLabel(geoInfo) {
         return geoInfo;
     }
 
@@ -18,28 +20,27 @@ class MeasureActions {
         return data;
     }
 
-
     fetchMeasure(device, attrs, history_length) {
         function getUrl() {
-            if (history_length === undefined) { history_length = 1; }
-            const url = `/history/device/${device.id}/history?lastN=${history_length}&attr=${attrs}`;
+            const lastN = history_length === undefined ? 1 : history_length;
+            const url = `${PROXY_URL}history/device/${device.id}/history?lastN=${lastN}&attr=${attrs}`;
             return url;
         }
 
         return (dispatch) => {
             dispatch();
 
-            const service = LoginStore.getState().user.service;
+            const { tenant } = LoginStore.getState().user;
             const config = {
                 method: 'get',
                 headers: new Headers({
-                    'fiware-service': service,
+                    'fiware-service': tenant,
                     'fiware-servicepath': '/',
                 }),
             };
             util._runFetch(getUrl(), config)
                 .then((reply) => {
-                    if (reply !== null || reply !== undefined) {
+                    if (reply) {
                         device[`_${attrs}`] = reply.reverse();
                     }
                     this.updateMeasures(device);
@@ -54,9 +55,10 @@ class MeasureActions {
     updatePosition(data) { return data; }
 
     fetchPosition(device, device_id, attr, history_length) {
+
         function getUrl() {
-            if (history_length === undefined) { history_length = 1; }
-            const url = `/history/device/${device_id}/history?lastN=${history_length}&attr=${attr}`;
+            const lastN = history_length === undefined ? 1 : history_length;
+            const url = `${PROXY_URL}history/device/${device_id}/history?lastN=${lastN}&attr=${attr}`;
             return url;
         }
 
@@ -70,11 +72,11 @@ class MeasureActions {
         return (dispatch) => {
             dispatch();
 
-            const service = LoginStore.getState().user.service;
+            const { tenant } = LoginStore.getState().user;
             const config = {
                 method: 'get',
                 headers: new Headers({
-                    'fiware-service': service,
+                    'fiware-service': tenant,
                     'fiware-servicepath': '/',
                 }),
             };

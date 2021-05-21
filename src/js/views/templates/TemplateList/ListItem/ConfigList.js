@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import { withNamespaces } from 'react-i18next';
 import PropTypes from 'prop-types';

@@ -62,7 +62,7 @@ const SidebarAttribute = ({
                             <MetadataList values={selectAttr} selectMetadata={selectMetadata} />
                             <div className="body-actions">
                                 <div className="body-actions--divider" />
-                                <Can do="modifier" on="template">
+                                <Can do="modifier" on="device-manager-template">
                                     <SidebarButton
                                         onClick={() => toogleSidebarMetadata()}
                                         icon="metadata"
@@ -80,7 +80,7 @@ const SidebarAttribute = ({
                             {newAttr
 
                                 ? (
-                                    <Can do="modifier" on="template">
+                                    <Can do="modifier" on="device-manager-template">
                                         <DojotBtnClassic
                                             color="blue"
                                             label={t('add.label')}
@@ -91,7 +91,7 @@ const SidebarAttribute = ({
                                 )
                                 : (
                                     <Fragment>
-                                        <Can do="modifier" on="template">
+                                        <Can do="modifier" on="device-manager-template">
                                             <DojotBtnClassic label={t('remove.label')} type="secondary" onClick={() => toogleSidebarDelete('showDeleteAttr')} />
                                             <DojotBtnClassic color="red" label={t('save.label')} type="primary" onClick={() => updateTemplateAttr(selectAttr)} />
                                         </Can>

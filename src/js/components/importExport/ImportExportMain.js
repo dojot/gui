@@ -42,8 +42,8 @@ class ImportExportMain extends Component {
         const { openModal, toggleSidebar, t } = this.props;
         const { openImport } = this.state;
 
-        const canSeeImport = ability.canModify('import');
-        const canSeeExport = ability.canView('export');
+        const canSeeImport = ability.canModify('data-manager-import');
+        const canSeeExport = ability.canView('data-manager-export');
 
         return (
             <div>
@@ -70,7 +70,7 @@ class ImportExportMain extends Component {
                                 firstMessage={t('importExport:import.subtitleMain')}
                             />
                         </div>
-                    ) : <div /> }
+                    ) : <div />}
                     {canSeeExport ? (
                         <div className="">
                             <HeadImportExport
@@ -80,7 +80,7 @@ class ImportExportMain extends Component {
                                 firstMessage={t('importExport:export.subtitle')}
                             />
                         </div>
-                    ) : <div /> }
+                    ) : <div />}
                 </ImportExport>
                 {
                     openImport ? (

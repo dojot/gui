@@ -91,10 +91,10 @@ function localStoragePolyFill() {
     try {
         window.localStorage = localStorage;
         window.sessionStorage = sessionStorage;
-    } catch (e) {}
+    } catch (e) { }
     try {
-    // For Safari private browsing need to also set the proto value.
+        // For Safari private browsing need to also set the proto value.
         window.localStorage.__proto__ = localStorage;
         window.sessionStorage.__proto__ = sessionStorage;
-    } catch (e) {}
+    } catch (e) { }
 }

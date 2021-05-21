@@ -23,7 +23,7 @@ class FStore {
         this.set(null);
     }
 
-    fetch(id) {}
+    fetch(id) { return id; }
 
     set(device) {
         if (device === null || device === undefined) {

@@ -17,7 +17,8 @@ TemplateBagde.defaultProps = {
 
 TemplateBagde.propTypes = {
     template: PropTypes.shape({
-        attrs: PropTypes.array,
+        attrs: PropTypes.arrayOf(
+            PropTypes.shape({})),
         label: PropTypes.string,
     }),
 };

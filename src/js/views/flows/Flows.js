@@ -18,7 +18,7 @@ function SummaryItem(props) {
     return (
         <div className="card-size card-hover lst-entry-wrapper z-depth-2 mg0px pointer">
             <div className="lst-entry-title col s12 bg-gradient-dark-blue">
-                <img className="title-icon" src="images/icons/graph-wt.png"/>
+                <img className="title-icon" src="images/icons/graph-wt.png" />
                 <div className="title-text truncate">
                     <span className="text" title={props.flow.name}>
                         {props.flow.name}
@@ -29,24 +29,24 @@ function SummaryItem(props) {
                 <div className="attr-area light-background">
                     <div className="attr-row">
                         <div className="icon">
-                            <img src="images/tag.png"/>
+                            <img src="images/tag.png" />
                         </div>
                         <div className="attr-content">
-                            <input type="text" value={props.flow.flow.length - 1} disabled/>
-                            <span><Trans i18nKey="flows:nodes"/></span>
+                            <input type="text" value={props.flow.flow.length - 1} disabled />
+                            <span><Trans i18nKey="flows:nodes" /></span>
                         </div>
-                        <div className="center-text-parent material-btn right-side"/>
+                        <div className="center-text-parent material-btn right-side" />
                     </div>
                     <div className="attr-row">
                         <div className="icon">
-                            <img src="images/update.png"/>
+                            <img src="images/update.png" />
                         </div>
                         <div className="attr-content">
                             <input type="text" value={util.iso_to_date(props.flow.updated)}
-                                   disabled/>
-                            <span><Trans i18nKey="flows:last_update"/></span>
+                                disabled />
+                            <span><Trans i18nKey="flows:last_update" /></span>
                         </div>
-                        <div className="center-text-parent material-btn right-side"/>
+                        <div className="center-text-parent material-btn right-side" />
                     </div>
                 </div>
             </div>
@@ -138,9 +138,9 @@ class ListRender extends Component {
                     </ReactCSSTransitionGroup>
                     <div className="col s12 lst-wrapper w100 hei-100-over-scroll flex-container">
                         {this.filteredList.map((flow, id) => (
-                            <div className="mg20px fl flex-order-2">
+                            <div key={id} className="mg20px fl flex-order-2">
                                 <Link to={`/flows/id/${flow.id}`} key={flow.id}>
-                                    <SummaryItem flow={flow} key={flow.id}/>
+                                    <SummaryItem flow={flow} key={flow.id} />
                                 </Link>
                             </div>
                         ))}
@@ -219,7 +219,6 @@ class FlowList extends Component {
     // }
 
     applyFiltering(flowList) {
-        return flowList;
 
         const filter = this.state.filter;
         const idFilter = filter.match(/id:\W*([-a-fA-F0-9]+)\W?/);
@@ -253,7 +252,7 @@ class FlowList extends Component {
                 />
 
                 {/* <!-- footer --> */}
-                <div className="col s12"/>
+                <div className="col s12" />
                 <div className="col s12">&nbsp;</div>
             </div>
         );
@@ -284,11 +283,11 @@ class FlowsComponent extends Component {
         return (
             <div className="full-device-area">
                 <div>
-                <NewPageHeader title={t('flows:title')} subtitle={t('flows:title')} icon="flow">
-                    <OperationsHeader {...this.props} />
-                </NewPageHeader>
+                    <NewPageHeader title={t('flows:title')} subtitle={t('flows:title')} icon="flow">
+                        <OperationsHeader {...this.props} />
+                    </NewPageHeader>
                     <AltContainer store={FlowStore}>
-                        <ListRender showSearchBox={this.state.showFilter} i18n={t}/>
+                        <ListRender showSearchBox={this.state.showFilter} i18n={t} />
                     </AltContainer>
                 </div>
             </div>
@@ -302,8 +301,8 @@ function OperationsHeader(props) {
     return <div className="col s12 pull-right pt10">
         <Can do="modifier" on="flows">
             <DojotBtnLink responsive="true" linkTo="/flows/new"
-                          label={t('flows:header.new.label')}
-                          alt={t('flows:header.new.alt')} icon="fa fa-plus" className="w130px"/>
+                label={t('flows:header.new.label')}
+                alt={t('flows:header.new.alt')} icon="fa fa-plus" className="w130px" />
         </Can>
     </div>;
 }

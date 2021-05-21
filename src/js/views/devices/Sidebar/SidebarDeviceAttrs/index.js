@@ -18,58 +18,58 @@ const SidebarDeviceAttrs = ({
 }) => (
     <Slide right when={showDeviceAttrs} duration={300}>
         {
-                showDeviceAttrs
-                    ? (
-                        <div className="sidebar-device-attrs">
-                            <div className="header">
-                                <div className="title">
-                                    {t('devices:manage_attributes')}
-                                </div>
-                                <div className="icon">
-                                    <img src="images/icons/chip-cyan.png" alt="device-icon" />
-                                </div>
+            showDeviceAttrs
+                ? (
+                    <div className="sidebar-device-attrs">
+                        <div className="header">
+                            <div className="title">
+                                {t('devices:manage_attributes')}
                             </div>
-                            <div className="body">
-                                <div className="title">
-                                    {`${t('devices:device')} > ${t('text.attribute')}`}
-                                </div>
-                                <div className="attr-type">
-                                    {deviceAttrsTitle}
-                                </div>
-                                <div className="attrs-list">
-                                    {
-                                        selectAttr.map((attr) => (
-                                            <AttrCard
-                                                attr={attr}
-                                                key={attr.id}
-                                                handleChangeAttr={handleChangeAttr}
-                                                handleChangeMeta={handleChangeMeta}
-                                                errors={errors[attr.id]}
-                                            />
-                                        ))
-                                    }
-                                </div>
-                            </div>
-                            <div className="footer">
-                                <DojotBtnClassic
-                                    onClick={() => handleShowDeviceAttrsDiscard()}
-                                    label={t('discard.label')}
-                                    type="secondary"
-                                />
-                                <DojotBtnClassic
-                                    onClick={() => validAttrs(selectAttr)}
-                                    label={t('save.label')}
-                                    type="primary"
-                                    color="red"
-                                    id="btn-save-attrs"
-                                />
+                            <div className="icon">
+                                <img src="images/icons/chip-cyan.png" alt="device-icon" />
                             </div>
                         </div>
-                    )
-                    : <div />
-            }
+                        <div className="body">
+                            <div className="title">
+                                {`${t('devices:device')} > ${t('text.attribute')}`}
+                            </div>
+                            <div className="attr-type">
+                                {deviceAttrsTitle}
+                            </div>
+                            <div className="attrs-list">
+                                {
+                                    selectAttr.map((attr) => (
+                                        <AttrCard
+                                            attr={attr}
+                                            key={attr.id}
+                                            handleChangeAttr={handleChangeAttr}
+                                            handleChangeMeta={handleChangeMeta}
+                                            errors={errors[attr.id]}
+                                        />
+                                    ))
+                                }
+                            </div>
+                        </div>
+                        <div className="footer">
+                            <DojotBtnClassic
+                                onClick={() => handleShowDeviceAttrsDiscard()}
+                                label={t('discard.label')}
+                                type="secondary"
+                            />
+                            <DojotBtnClassic
+                                onClick={() => validAttrs(selectAttr)}
+                                label={t('save.label')}
+                                type="primary"
+                                color="red"
+                                id="btn-save-attrs"
+                            />
+                        </div>
+                    </div>
+                )
+                : <div />
+        }
     </Slide>
-    );
+);
 
 SidebarDeviceAttrs.defaultProps = {
     showDeviceAttrs: false,
@@ -82,6 +82,9 @@ SidebarDeviceAttrs.propTypes = {
     t: PropTypes.func.isRequired,
     handleShowDeviceAttrsDiscard: PropTypes.func.isRequired,
     handleChangeMeta: PropTypes.func.isRequired,
+    handleChangeAttr: PropTypes.func.isRequired,
+    deviceAttrsTitle: PropTypes.shape({}).isRequired,
+    errors: PropTypes.shape({}).isRequired,
 };
 
 export default withNamespaces()(SidebarDeviceAttrs);

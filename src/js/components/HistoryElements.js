@@ -1,12 +1,11 @@
 /* eslint-disable */
-import React, { Component, Fragment, useEffect, useCallback, useState } from 'react';
+import React, { Component, Fragment, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import DeviceActions from 'Actions/DeviceActions';
 import FirmwareHelper from '../comms/firmware/FirmwareHelper';
 import util from '../comms/util/util';
-import { SmallPositionRenderer } from 'Views/utils/Maps';
 import { t } from 'i18next';
-import LeafMap, { MapWithSocket } from '../views/utils/LeafMap';
+import LeafMap, { MapWithSocket } from '../views/maps/LeafMap';
 
 const CommandFooter = ({ deviceId, attrLabel, deviceType = '' }) => {
 

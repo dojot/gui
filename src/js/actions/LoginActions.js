@@ -1,4 +1,3 @@
-import { hashHistory } from 'react-router';
 import { t } from 'i18next';
 import loginManager from 'Comms/login/LoginManager';
 import toaster from 'Comms/util/materialize';
@@ -9,18 +8,20 @@ const alt = require('../alt');
 
 class LoginActions {
     getUserData() {
-        console.log('getUserData');
         return (dispatch) => {
             dispatch();
             loginManager.getUserData()
                 .then((response) => {
-                    //      hashHistory.push('/');
-                    console.log('response.data', response);
                     this.loginPermissions(response.permissions);
-                    this.loginSuccess(response.username);
+                    const userinfo = {
+                        name: response.name,
+                        username: response.username,
+                        email: response.email,
+                        tenant: response.tenant,
+                    };
+                    this.loginSuccess(userinfo);
                 })
                 .catch((error) => {
-                    console.log('error', error);
                     this.loginFailed(error);
                 });
         };
@@ -32,42 +33,8 @@ class LoginActions {
         return true;
     }
 
-    setPassword(login) {
-        return (dispatch) => {
-            dispatch();
-            loginManager.setNewPassword(login)
-                .then(() => {
-                    hashHistory.push('/login');
-                    window.location.reload();
-                })
-                .catch((error) => {
-                    this.loginFailed(error);
-                });
-        };
-    }
-
-    updatePassword(data) {
-        return (dispatch) => {
-            dispatch();
-            loginManager.updatePassword(data)
-                .then(() => {
-                    toaster.success(t('text.password_updated'));
-                })
-                .catch((error) => {
-                    toaster.error(error.message);
-                });
-        };
-    }
-
-    resetPassword(username) {
-        return (dispatch) => {
-            dispatch();
-            loginManager.resetPassword(username);
-        };
-    }
-
-    loginSuccess(token) {
-        return token;
+    loginSuccess(user) {
+        return user;
     }
 
     loginPermissions(permissions) {
@@ -84,8 +51,6 @@ class LoginActions {
             }
             return newPermission;
         });
-        console.log(JSON.stringify(oldPermissionModel));
-
         AbilityUtil.loginPermissions(oldPermissionModel);
         return oldPermissionModel;
     }

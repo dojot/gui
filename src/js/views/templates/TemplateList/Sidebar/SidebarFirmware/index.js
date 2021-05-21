@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import Slide from 'react-reveal/Slide';
@@ -125,7 +126,7 @@ class SidebarFirmware extends Component {
         return (
             <Fragment>
                 <Slide right when={showFirmware} duration={300}>
-                    { showFirmware
+                    {showFirmware
                         ? (
                             <div className="-sidebar sidebar-attribute">
                                 <div className="header">
@@ -143,10 +144,10 @@ class SidebarFirmware extends Component {
                                     {(!this.state.new_image)
                                         ? (
                                             <div className="body-form-nodata clickable" onClick={this.createNewImage}>
-                                        Click here to add a new image
+                                                Click here to add a new image
                                             </div>
                                         )
-                                        : null }
+                                        : null}
                                 </div>
                                 <div className="footer">
                                     <Fragment>

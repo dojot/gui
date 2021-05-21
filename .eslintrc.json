@@ -1,28 +1,38 @@
 {
-  "extends": "airbnb",
-  "globals": {
-    "window": true,
-    "browser": true,
-    "node": true,
-    "atob": "readonly",
-    "FormData": "readonly"
-  },
-  "rules": {
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-    "indent": ["error", 4],
-    "react/jsx-indent": ["error", 4],
-    "react/jsx-indent-props": ["error", 4],
-    "react/jsx-fragments": "off",
-    "import/extensions": "off",
-    "import/no-unresolved": "off",
-    "class-methods-use-this": 0,
-    "camelcase": [
-      "error",
-      {
-        "properties": "never",
-        "ignoreDestructuring": true
-      }
-    ],
-    "no-underscore-dangle": 0
-  }
+    "extends": ["airbnb", "prettier"],
+    "globals": {
+        "document": true,
+        "navigator": true,
+        "window": true,
+        "browser": true,
+        "node": true,
+        "atob": "readonly",
+        "FormData": "readonly"
+    },
+    "rules": {
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "indent": ["warn", 4],
+        "react/jsx-indent": ["error", 4],
+        "global-require": 0,
+        "no-prototype-builtins": 0,
+        "react/jsx-indent-props": ["error", 4],
+        "react/jsx-fragments": "off",
+        "import/prefer-default-export": "off",
+        "import/extensions": "off",
+        "import/no-unresolved": "off",
+        "no-param-reassign": "off",
+        "no-restricted-syntax": ["off"],
+        "class-methods-use-this": 0,
+        "comma-dangle": [2, "always-multiline"],
+        "camelcase": ["off"],
+        "no-multiple-empty-lines": [
+            "error",
+            {
+                "max": 2,
+                "maxBOF": 1,
+                "maxEOF": 0
+            }
+        ],
+        "no-underscore-dangle": 0
+    }
 }

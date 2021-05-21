@@ -1,7 +1,7 @@
 const alt = require('../alt');
 const ConfigActions = require('../actions/ConfigActions');
 
- class ConfigStore {
+class ConfigStore {
     constructor() {
         this.error = null;
         this.itemsPerPage = [];
@@ -14,17 +14,17 @@ const ConfigActions = require('../actions/ConfigActions');
         this.mapColorActive = false;
         this.tileSelect = '';
         this.mapObj = [];
-         this.bindListeners({
+        this.bindListeners({
             handleFetchConfigList: ConfigActions.FETCH_CURRENT_CONFIG,
             handleUpdateConfigList: ConfigActions.INSERT_CURRENT_ALARMS,
         });
     }
 
-     handleFetchConfigList() {
+    handleFetchConfigList() {
         this.error = '';
     }
 
-     handleUpdateConfigList(configList) {
+    handleUpdateConfigList(configList) {
         // console.log(configList);
         this.mapImage = configList.mapImage;
         this.measureAttribute = configList.measureAttribute;
@@ -35,18 +35,20 @@ const ConfigActions = require('../actions/ConfigActions');
         this.mapCenter = configList.mapCenter;
         this.mapColorActive = configList.mapColorActive;
         for (const index in this.mapImage) {
-            this.mapObj.push({
-                'id': this.mapImage[index].id,
-                'MAP_HAS_OVERLAY_ENV': "false",
-                'description': this.mapImage[index].description,
-                'overlay_data': {
-                    'path': this.mapImage[index].image_path,
-                    'corner1': this.mapImage[index].mapCoordinates.initial,
-                    'corner2': this.mapImage[index].mapCoordinates.final,
-                },
-            });
+            if (Object.prototype.hasOwnProperty.call(this.mapImage, index)) {
+                this.mapObj.push({
+                    'id': this.mapImage[index].id,
+                    'MAP_HAS_OVERLAY_ENV': "false",
+                    'description': this.mapImage[index].description,
+                    'overlay_data': {
+                        'path': this.mapImage[index].image_path,
+                        'corner1': this.mapImage[index].mapCoordinates.initial,
+                        'corner2': this.mapImage[index].mapCoordinates.final,
+                    },
+                });
+            };
         }
     }
- }
- const _store = alt.createStore(ConfigStore, 'ConfigStore');
+}
+const _store = alt.createStore(ConfigStore, 'ConfigStore');
 export default _store;

@@ -87,6 +87,12 @@ class Metadata extends Component {
     }
 }
 
-Metadata.propTypes = { attr: PropTypes.shape({}).isRequired };
+Metadata.propTypes = {
+    attr: PropTypes.shape({
+        metadata: PropTypes.arrayOf(
+            PropTypes.shape,
+        ),
+    }).isRequired,
+};
 
 export default Metadata;

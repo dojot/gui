@@ -1,5 +1,6 @@
+/* eslint-disable */
 import TemplateActions from 'Actions/TemplateActions';
-import { GenericOperations } from '../utils/Manipulation';
+import { GenericOperations } from '../maps/Manipulation';
 
 class TemplateOperations extends GenericOperations {
     constructor() {

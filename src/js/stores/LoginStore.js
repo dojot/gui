@@ -1,6 +1,5 @@
 import LoginActions from 'Actions/LoginActions';
 import Util from 'Comms/util/util';
-import { BASE_URL } from 'Src/config';
 
 const alt = require('../alt');
 
@@ -12,13 +11,13 @@ class LoginStore {
         this.user = undefined;
         this.loading = false;
 
-        const username = Util.getToken();
-        if (username) {
-            this.set(username);
+        const userinfo = Util.getToken();
+        if (userinfo) {
+            this.user = JSON.parse(userinfo);
+            this.authenticated = true;
         } else {
             this.reset();
         }
-        console.log('this.authenticated', this.authenticated);
 
         this.bindListeners({
             handleGetUserData: LoginActions.GET_USER_DATA,
@@ -28,12 +27,10 @@ class LoginStore {
         });
     }
 
-    set(username) {
-        console.log('username', username);
-        this.user = username;
-        Util.setToken(username); // could be any value;
+    set(userinfo) {
+        this.user = userinfo;
+        Util.setToken(JSON.stringify(userinfo)); // could be any value;
         this.authenticated = true;
-        console.log('set   .authenticated', this.authenticated);
         this.loading = false;
     }
 
@@ -51,10 +48,11 @@ class LoginStore {
         this.loading = true;
     }
 
-    handleSuccess(login) {
+    handleSuccess(userinfo) {
+        console.log("userinfo", userinfo);
         this.hasError = false;
         this.error = '';
-        this.set(login);
+        this.set(userinfo);
         // trying to find other way
         window.location.href = `${window.location.origin}`;
     }

@@ -25,7 +25,7 @@ const SidebarMetadata = ({
 }) => (
     <Fragment>
         <Slide right when={showMetadata} duration={300}>
-            { !showMetadata
+            {!showMetadata
                 ? <div />
                 : (
                     <div className="-sidebar sidebar-metadata">
@@ -57,7 +57,7 @@ const SidebarMetadata = ({
                                 isNewMetadata
 
                                     ? (
-                                        <Can do="modifier" on="template">
+                                        <Can do="modifier" on="device-manager-template">
                                             <DojotBtnClassic
                                                 color="blue"
                                                 label={t('add.label')}
@@ -68,7 +68,7 @@ const SidebarMetadata = ({
                                     )
                                     : (
                                         <Fragment>
-                                            <Can do="modifier" on="template">
+                                            <Can do="modifier" on="device-manager-template">
                                                 <DojotBtnClassic label={t('remove.label')} type="secondary" onClick={() => toogleSidebarDelete('showDeleteMeta')} />
                                                 <DojotBtnClassic color="red" label={t('save.label')} type="primary" onClick={() => updateMetadata()} />
                                             </Can>

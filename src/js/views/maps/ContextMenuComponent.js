@@ -88,9 +88,11 @@ ContextMenuComponent.defaultProps = {
 };
 
 ContextMenuComponent.propTypes = {
-    metadata: PropTypes.shape({
-    }),
     closeContextMenu: PropTypes.func.isRequired,
-};
+    metadata: PropTypes.shape({
+        event: PropTypes.shape({}),
+        device_id: PropTypes.string,
+    }),
+}
 
 export default ContextMenuComponent;

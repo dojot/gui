@@ -46,8 +46,8 @@ class ImageActions {
             dispatch();
 
             imageManager.getImages(templateId).then((imageList) => {
-                   this.updateImages(imageList);
-                })
+                this.updateImages(imageList);
+            })
                 .catch((error) => {
                     this.imagesFailed(error);
                 });
@@ -139,7 +139,7 @@ class ImageActions {
                     }
                 })
                 .catch((error) => {
-                    this.imagesFailed('Failed to remove given image');
+                    this.imagesFailed(`Failed to remove given image: ${JSON.stringify(error)}`);
                 });
         };
     }
@@ -164,7 +164,7 @@ class ImageActions {
                     }
                 })
                 .catch((error) => {
-                    this.imagesFailed('Failed to remove given image');
+                    this.imagesFailed(`Failed to remove given image: ${JSON.stringify(error)}`);
                 });
         };
     }

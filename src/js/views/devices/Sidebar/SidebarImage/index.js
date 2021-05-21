@@ -551,10 +551,10 @@ SidebarImage.propTypes = {
     showSidebarImage: PropTypes.bool,
     toogleSidebarImages: PropTypes.func.isRequired,
     is: PropTypes.shape({
-        images: PropTypes.array,
+        images: PropTypes.shape({}),
     }),
     ds: PropTypes.shape({
-        devices: PropTypes.array,
+        devices: PropTypes.shape({}),
     }),
 };
 

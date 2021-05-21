@@ -6,9 +6,10 @@ import PropTypes from 'prop-types';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import socketio from 'socket.io-client';
+import { BASE_URL, PROXY_URL } from 'Src/config';
 import util from '../../comms/util/util';
 import * as pins from '../../config';
-import ContextMenuComponent from './maps/ContextMenuComponent';
+import ContextMenuComponent from './ContextMenuComponent';
 
 /*
 WebSocket
@@ -18,8 +19,7 @@ const EventEmitter = require('events');
 class WebSocket {
     constructor() {
         this.socketInstance = null;
-        this.target = `${window.location.protocol}//${window.location.host}`;
-        this.tokenUrl = `${this.target}/stream/socketio`;
+        this.tokenUrl = `${PROXY_URL}stream/socketio`;
         this.token = null;
         this.hasToken = false;
         this.deviceIds = {};
@@ -52,7 +52,7 @@ class WebSocket {
                 this.hasToken = true;
 
                 // Step 2: Initiate Socket
-                this.socketInstance = socketio(this.target, {
+                this.socketInstance = socketio(BASE_URL, {
                     query: `token=${this.token}`,
                     transports: ['polling'],
                 });
@@ -123,7 +123,7 @@ const MultipleMapWithSocket = ({
 
     const mapRef = useRef();
     if (mapRef.current) {
-    // We need to wait for the window to finish resizing
+        // We need to wait for the window to finish resizing
         setTimeout(() => {
             mapRef.current.leafletElement.invalidateSize();
         }, 500);

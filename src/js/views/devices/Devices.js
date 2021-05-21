@@ -1,8 +1,9 @@
-/* eslint-disable */
+import PropTypes from "prop-types";
 import React, { Component } from 'react';
 import AltContainer from 'alt-container';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Toggle from 'material-ui/Toggle';
+import { withNamespaces } from 'react-i18next';
 import DeviceStore from '../../stores/DeviceStore';
 import ConfigStore from '../../stores/ConfigStore';
 import MeasureStore from '../../stores/MeasureStore';
@@ -15,51 +16,65 @@ import { DeviceMapWrapper } from './DeviceMap';
 import { DeviceCardList } from './DeviceCard';
 import {
     Pagination, FilterLabel, GenericOperations,
-} from '../utils/Manipulation';
+} from '../maps/Manipulation';
 import { FormActions } from './Actions';
 import Can from '../../components/permissions/Can';
-import { withNamespaces } from 'react-i18next';
 
 
 // UI elements
 
 
-function ToggleWidget(props) {
-    function checkAndToggle(currentState) {
-        if (props.toggleState === currentState) props.toggle();
+const ToggleWidget = ({ toggleState, toggle }) => {
+
+    const checkAndToggle = (currentState) => {
+        if (toggleState === currentState)
+            toggle();
     }
 
     return (
         <div className="box-sh">
-            <div className="toggle-icon" onClick={checkAndToggle.bind(this, true)}>
-                <img src="images/icons/pin.png" />
+            <div className="toggle-icon"
+                tabIndex="0"
+                role="button"
+                onKeyPress={() => checkAndToggle(true)}
+                onClick={() => checkAndToggle(true)}>
+                <img alt="" src="images/icons/pin.png" />
             </div>
             <div className="toggle-map">
                 <MuiThemeProvider>
-                    <Toggle label="" defaultToggled={props.toggleState} onToggle={props.toggle} />
+                    <Toggle label="" defaultToggled={toggleState}
+                        onToggle={toggle} />
                 </MuiThemeProvider>
             </div>
-            <div className="toggle-icon" onClick={checkAndToggle.bind(this, false)}>
+            <div className="toggle-icon"
+                tabIndex="0"
+                role="button"
+                onKeyPress={() => checkAndToggle(false)}
+                onClick={() => checkAndToggle(false)}>
                 <i className="fa fa-th-large" aria-hidden="true" />
             </div>
         </div>
     );
 }
 
-class MapWrapper extends Component {
-    constructor(props) {
-        super(props);
-    }
+ToggleWidget.propTypes = {
+    toggle: PropTypes.func.isRequired,
+    toggleState: PropTypes.bool.isRequired,
+}
 
-    render() {
-        return <AltContainer stores={{
-            positions: MapPositionStore,
-            measures: MeasureStore,
-            configs: ConfigStore
-        }}>
-            <DeviceMapWrapper showFilter={this.props.showFilter} dev_opex={this.props.dev_opex} />
-        </AltContainer>;
-    }
+
+const MapWrapper = ({ showFilter, dev_opex }) => <AltContainer stores={{
+    positions: MapPositionStore,
+    measures: MeasureStore,
+    configs: ConfigStore,
+}}>
+    <DeviceMapWrapper showFilter={showFilter}
+        dev_opex={dev_opex} />
+</AltContainer>
+
+MapWrapper.propTypes = {
+    dev_opex: PropTypes.shape({}).isRequired,
+    showFilter: PropTypes.shape({}).isRequired,
 }
 
 
@@ -73,7 +88,9 @@ class DeviceOperations extends GenericOperations {
 
     whenUpdatePagination(config) {
         for (const key in config) {
-            this.paginationParams[key] = config[key];
+            if (Object.prototype.hasOwnProperty.call(config, key)) {
+                this.paginationParams[key] = config[key];
+            }
         }
         this._fetch();
     }
@@ -126,14 +143,14 @@ class DeviceOperations extends GenericOperations {
 
 
 // TODO: this is an awful quick hack - this should be better scoped.
-let device_list_socket = null;
+const device_list_socket = null;
 
 class DevicesComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
             displayList: true,
-            showFilter: false
+            showFilter: false,
         };
 
         this.toggleSearchBar = this.toggleSearchBar.bind(this);
@@ -154,12 +171,14 @@ class DevicesComponent extends Component {
 
 
     toggleSearchBar() {
-        this.setState({ showFilter: !this.state.showFilter });
+        const { showFilter } = this.state;
+        this.setState({ showFilter: !showFilter });
     }
 
 
     toggleDisplay() {
-        const newDisplay = !this.state.displayList;
+        const { displayList } = this.state;
+        const newDisplay = !displayList;
         // reload devices for maps
         this.dev_opex.setDefaultFilter();
         if (!newDisplay)
@@ -172,20 +191,18 @@ class DevicesComponent extends Component {
 
     render() {
         console.log("DevicesComponent render");
+        const { showFilter, displayList } = this.state;
+        const { t, location: { query } } = this.props;
 
-
-        const detail = 'detail' in this.props.location.query
-            ? this.props.location.query.detail
-            : null;
+        const deviceId = 'detail' in query ? query.detail : null;
         const displayToggle = (
             <ToggleWidget
-                toggleState={this.state.displayList}
+                toggleState={displayList}
                 toggle={this.toggleDisplay}
             />
         );
 
-        const show_pagination = this.state.displayList;
-        const { t } = this.props;
+        const show_pagination = displayList;
         return (
             <div className="full-device-area">
                 <AltContainer store={DeviceStore}>
@@ -195,11 +212,15 @@ class DevicesComponent extends Component {
                         <OperationsHeader displayToggle={displayToggle}
                             toggleSearchBar={this.toggleSearchBar.bind(this)} t={t} />
                     </NewPageHeader>
-                    {this.state.displayList
-                        ? <DeviceCardList deviceid={detail} toggle={displayToggle}
+                    {displayList ?
+                        <DeviceCardList
+                            deviceid={deviceId}
+                            toggle={displayToggle}
                             dev_opex={this.dev_opex}
-                            showFilter={this.state.showFilter} />
-                        : <MapWrapper toggle={displayToggle} showFilter={this.state.showFilter}
+                            showFilter={showFilter} /> :
+                        <MapWrapper
+                            toggle={displayToggle}
+                            showFilter={showFilter}
                             dev_opex={this.dev_opex} />}
                 </AltContainer>
             </div>
@@ -207,23 +228,26 @@ class DevicesComponent extends Component {
     }
 }
 
-function OperationsHeader(props) {
+function OperationsHeader({ toggleSearchBar, t, displayToggle }) {
     return (
         <div className="col s5 pull-right pt10">
             <div
                 className="searchBtn"
-                title={props.t('devices:header.filter.alt')}
-                onClick={props.toggleSearchBar}
+                title={t('devices:header.filter.alt')}
+                tabIndex="0"
+                role="button"
+                onKeyPress={toggleSearchBar}
+                onClick={toggleSearchBar}
             >
                 <i className="fa fa-search" />
             </div>
-            {props.displayToggle}
-            <Can do="modifier" on="device">
+            {displayToggle}
+            <Can do="modifier" on="device-manager-devices">
                 <DojotBtnLink
                     responsive="true"
                     onClick={() => FormActions.set(null)}
-                    label={props.t('devices:header.new.label')}
-                    alt={props.t('devices:header.new.alt')}
+                    label={t('devices:header.new.label')}
+                    alt={t('devices:header.new.alt')}
                     icon="fa fa-plus"
                     className="w130px"
                 />
@@ -231,6 +255,17 @@ function OperationsHeader(props) {
         </div>
     );
 }
+
+OperationsHeader.defaultProps = {
+    displayToggle: null,
+}
+
+OperationsHeader.propTypes = {
+    displayToggle: PropTypes.shape({}),
+    t: PropTypes.func.isRequired,
+    toggleSearchBar: PropTypes.func.isRequired,
+}
+
 
 const Devices = withNamespaces()(DevicesComponent);
 export { Devices };

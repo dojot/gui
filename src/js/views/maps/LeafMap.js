@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import socketio from 'socket.io-client';
 import PropTypes from 'prop-types';
-import { BASE_URL } from 'Src/config';
+import { BASE_URL, PROXY_URL } from 'Src/config';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 
@@ -45,7 +45,7 @@ const MarkerUpdater = ({
 }) => {
     const [socketInstance, setSocketInstance] = useState(undefined);
     const [devicePosition, setDevicePosition] = useState(initialPosition);
-    const URL = `${BASE_URL}stream/socketio`;
+    const URL = `${PROXY_URL}stream/socketio`;
 
     const handlePosition = ({ attrs }) => {
         if (attrs[attributeLabel]) {

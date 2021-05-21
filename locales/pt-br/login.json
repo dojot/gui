@@ -1,5 +1,5 @@
 {
-    "title": "Login",
+    "title": "Bem vindo",
     "go_to_login": "Ir para a tela de Login",
     "alerts": {
         "empty_pass": "Senha vazia.",

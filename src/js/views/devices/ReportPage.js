@@ -3,7 +3,9 @@ import axios from 'axios';
 import moment from 'moment';
 import NewWindow from 'react-new-window';
 import PropTypes from "prop-types";
+import { PROXY_URL } from 'Src/config';
 import Table from '../../components/table/Table.jsx';
+
 
 class ReportTable extends React.PureComponent {
     constructor(props) {
@@ -18,7 +20,7 @@ class ReportTable extends React.PureComponent {
         const {
             deviceId, attrs, dateFrom, dateTo, t, deviceLabel, checkClose,
         } = this.props;
-        const URL = `history/device/${deviceId}/history?attr=${attrs.join('&attr=')}&dateFrom=${moment(dateFrom).utc().format('YYYY-MM-DDTHH:mm')}&dateTo=${moment(dateTo).utc().format('YYYY-MM-DDTHH:mm')}`;
+        const URL = `${PROXY_URL}history/device/${deviceId}/history?attr=${attrs.join('&attr=')}&dateFrom=${moment(dateFrom).utc().format('YYYY-MM-DDTHH:mm')}&dateTo=${moment(dateTo).utc().format('YYYY-MM-DDTHH:mm')}`;
         axios.get(URL, { headers: { Authorization: `Bearer ${token}` } }).then((result) => {
             const reportWindow = Array.isArray(result.data) ? (
                 <NewWindow title={`${deviceLabel} - ${deviceId}`} onUnload={checkClose}>
@@ -29,12 +31,12 @@ class ReportTable extends React.PureComponent {
                 <NewWindow title={`${deviceLabel} - ${deviceId}`} onUnload={checkClose}>
                     <div className="ReportTitle">{`${deviceLabel} - ${deviceId}`}</div>
                     {
-                            Object.keys(result.data).map(
-                                (value) => <Table key="tb-321" itemList={result.data[value]} t={t} />,
-                            )
-                        }
+                        Object.keys(result.data).map(
+                            (value) => <Table key="tb-321" itemList={result.data[value]} t={t} />,
+                        )
+                    }
                 </NewWindow>
-                );
+            );
             this.setState({ reportWindow });
         }).catch(() => {
             const reportWindow = (

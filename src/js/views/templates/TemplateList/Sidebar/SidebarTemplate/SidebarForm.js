@@ -74,7 +74,7 @@ const SidebarForm = ({
             </div>
             <div className="body-actions">
                 <div className="body-actions--divider" />
-                <Can do="modifier" on="template">
+                <Can do="modifier" on="device-manager-template">
                     <SidebarButton
                         onClick={() => toogleSidebarAttribute('data_attrs')}
                         icon="data_attrs"

@@ -2,14 +2,13 @@
 import React, { Component, Fragment } from 'react';
 import { ImageOverlay } from 'react-leaflet';
 import L from 'leaflet';
+import { BASE_URL, PROXY_URL } from 'Src/config';
 import * as pins from '../../config';
-import util from '../../comms/util';
-import ContextMenuComponent from './maps/ContextMenuComponent';
-
+import util from '../../comms/util/util';
+import ContextMenuComponent from './ContextMenuComponent';
 
 require('leaflet.markercluster');
 
-let deviceListSocket = null;
 
 const OpenStreetMapMapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 17,
@@ -54,8 +53,8 @@ class CustomMap extends Component {
         super(props);
         this.state = {
             cm_visible: false,
-            mapId: 'map' + util.guid(),
-            contextMenuInfo: {}
+            mapId: `map${util.guid()}`,
+            contextMenuInfo: {},
         };
         this.map = null;
         this.markers = null;
@@ -82,7 +81,7 @@ class CustomMap extends Component {
 
         const overlays = {
             Map: OpenStreetMapMapnik,
-            Satelite: EsriWorldImagery
+            Satelite: EsriWorldImagery,
         };
         L.control.layers(overlays)
             .addTo(this.map);
@@ -118,7 +117,7 @@ class CustomMap extends Component {
     }
 
     componentWillUnmount() {
-        this.map.eachLayer(function (layer) {
+        this.map.eachLayer((layer) => {
             layer.remove();
         });
         this.map.remove();
@@ -137,7 +136,7 @@ class CustomMap extends Component {
         };
         this.setState({
             cm_visible: true,
-            contextMenuInfo: this.contextMenuInfo
+            contextMenuInfo: this.contextMenuInfo,
         });
     }
 
@@ -296,12 +295,12 @@ class CustomMap extends Component {
 }
 
 const socketio = require('socket.io-client');
+
 class MapSocket {
     constructor(props) {
         this.callback = null;
         this.socketInstance = null;
-        this.target = `${window.location.protocol}//${window.location.host}`;
-        this.token_url = `${this.target}/stream/socketio`;
+        this.token_url = `${PROXY_URL}stream/socketio`;
         this.token = null;
     }
 
@@ -320,7 +319,7 @@ class MapSocket {
             .then((reply) => {
                 this.token = reply.token;
                 // Step 2: initiate Socket
-                this.socketInstance = socketio(this.target, {
+                this.socketInstance = socketio(BASE_URL, {
                     query: `token=${this.token}`,
                     transports: ['polling'],
                 });
@@ -369,13 +368,13 @@ class SmallPositionRenderer extends Component {
             }
             this.setState({
                 loadedLayers: true,
-                layers
+                layers,
             });
         }
         // socket to be used for position updating
         const websocket = new MapSocket();
         this.setState({
-            websocket: websocket,
+            websocket,
         });
 
     }
@@ -386,7 +385,7 @@ class SmallPositionRenderer extends Component {
 
 
     toggleLayer(id) {
-        const layers = this.state.layers;
+        const { layers } = this.state;
         for (const index in layers) {
             if (layers[index].id === id) {
                 layers[index].isVisible = !layers[index].isVisible;

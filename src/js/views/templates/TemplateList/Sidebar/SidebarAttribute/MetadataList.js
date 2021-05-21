@@ -38,7 +38,7 @@ const MetadataList = ({ values, selectMetadata, t }) => {
         );
     }
     return (
-        <Can do="modifier" on="template">
+        <Can do="modifier" on="device-manager-template">
             <div className="body-form-nodata">
                 {t('templates:alerts.select_to_add')}
             </div>

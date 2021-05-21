@@ -1,5 +1,6 @@
+/* eslint-disable */
 import { PROXY_URL, GQL_URL } from 'Src/config';
-import util from '../util';
+import util from '../util/util';
 
 const GQL_TEMPLATE = templateId => `
 {

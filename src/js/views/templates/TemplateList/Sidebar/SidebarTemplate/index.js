@@ -52,7 +52,7 @@ const SidebarTemplate = ({
                             />
                             {isNewTemplate
                                 ? (
-                                    <Can do="modifier" on="template">
+                                    <Can do="modifier" on="device-manager-template">
                                         <DojotBtnClassic
                                             color="blue"
                                             type="primary"
@@ -63,7 +63,7 @@ const SidebarTemplate = ({
                                 )
                                 : (
                                     <Fragment>
-                                        <Can do="modifier" on="template">
+                                        <Can do="modifier" on="device-manager-template">
                                             <DojotBtnClassic label={t('remove.label')} type="secondary" onClick={() => toogleSidebarDelete('showDeleteTemplate')} />
                                             <DojotBtnClassic color="red" label={t('save.label')} type="primary" onClick={updateTemplate} />
                                         </Can>

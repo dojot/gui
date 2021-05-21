@@ -40,14 +40,14 @@ class SidebarFirmImages extends Component {
         const { t } = this.props;
         if (files && Array.isArray(files) && files.length > 0
             && files[0].name && files[0].name.length > 4) {
-                const typeFile = files[0].name.substring(
-                    files[0].name.length - 4, files[0].name.length,
-                );
-                if (typeFile.toUpperCase() !== '.HEX') {
-                    toaster.warning(t('firmware:alerts.file_type_erro'));
-                } else {
-                    ImageActions.updateImageData(image.id, 'file', files);
-                }
+            const typeFile = files[0].name.substring(
+                files[0].name.length - 4, files[0].name.length,
+            );
+            if (typeFile.toUpperCase() !== '.HEX') {
+                toaster.warning(t('firmware:alerts.file_type_erro'));
+            } else {
+                ImageActions.updateImageData(image.id, 'file', files);
+            }
         } else {
             toaster.warning(t('firmware:alerts.file_erro'));
         }
@@ -130,17 +130,18 @@ class SidebarFirmImages extends Component {
                             // show again the image box
                             this.setState({ newImage: false });
                         });
-                    } else
-                    // Todo: currently we don't update meta information for images;
-                    if (image.file) {
-                        const imgBinary = {
-                            id: image.id,
-                            binary: image.file[0],
+                    } else {
+                        // Todo: currently we don't update meta information for images;
+                        if (image.file) {
+                            const imgBinary = {
+                                id: image.id,
+                                binary: image.file[0],
+                            };
+                            ImageActions.triggerUpdate(imgBinary, () => {
+                                toaster.success(t('firmware:alerts.file_added', { version: image.image_version }));
+                                ImageActions.updateImageData(image.id, 'saved', true);
+                            });
                         };
-                        ImageActions.triggerUpdate(imgBinary, () => {
-                            toaster.success(t('firmware:alerts.file_added', { version: image.image_version }));
-                            ImageActions.updateImageData(image.id, 'saved', true);
-                        });
                     }
                 }
                 return true; // it seems wrong, but code factor likes it, so...

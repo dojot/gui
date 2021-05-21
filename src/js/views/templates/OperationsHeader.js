@@ -19,7 +19,7 @@ const OperationsHeader = ({ toggleSearchBar, t }) => (
         >
             <i className="fa fa-search" />
         </div>
-        <Can do="modifier" on="template">
+        <Can do="modifier" on="device-manager-template">
             <DojotBtnLink
                 responsive="true"
                 onClick={() => TemplateActions.selectTemplate()}

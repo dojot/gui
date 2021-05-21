@@ -115,7 +115,7 @@ ImageList.defaultProps = {
 
 ImageList.propTypes = {
     t: PropTypes.func.isRequired,
-    list: PropTypes.object,
+    list: PropTypes.shape({}),
     changeAttrValue: PropTypes.func.isRequired,
     toggleDeleteBinarySidebar: PropTypes.func.isRequired,
     toggleDeleteSidebar: PropTypes.func.isRequired,

@@ -4,7 +4,7 @@ import alt from "../alt";
 
 
 class ConfigActions {
-    fetchCurrentConfig(bool) {
+    fetchCurrentConfig() {
         return (dispatch) => {
             dispatch();
             configManager.getConfigDate()

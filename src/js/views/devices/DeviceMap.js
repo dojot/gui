@@ -1,12 +1,12 @@
 /* eslint-disable */
 import React, { Component } from 'react';
 import Sidebar from '../../components/DeviceRightSidebar';
-import { Filter } from "../utils/Manipulation";
+import { Filter } from "../maps/Manipulation";
 import { Loading } from '../../components/Loading';
 import TrackingActions from '../../actions/TrackingActions';
 import MapPositionActions from "../../actions/MapPositionActions";
 import { withNamespaces } from 'react-i18next';
-import MultipleMapWithSocket from '../utils/MultipleLeafMap.jsx';
+import MultipleMapWithSocket from '../maps/MultipleLeafMap.jsx';
 
 let activeTracks = [];
 

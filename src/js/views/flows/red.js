@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { BASE_URL } from 'Src/config'
+import { BASE_URL,PROXY_URL } from 'Src/config'
 var RED = {};
 
 RED.events = (function () {
@@ -66,7 +66,7 @@ RED.i18n = (function () {
                     defaultNS: 'editor',
                     backend: {
                         loadPath: function (lngs, ns) {
-                            return `${BASE_URL}flows/locales/${ns}`;
+                            return `${PROXY_URL}flows/locales/${ns}`;
                         },
                         withCredentials: true,
                         customHeaders: { 'Authorization': accessToken },
@@ -184,7 +184,7 @@ RED.settings = (function () {
             dataType: "json",
             cache: false,
             //  url: 'http://localhost:1880/settings',
-            url: `${BASE_URL}flows/settings`,
+            url: `${PROXY_URL}flows/settings`,
             success: function (data) {
                 setProperties(data);
                 if (!RED.settings.user || RED.settings.user.anonymous) {

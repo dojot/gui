@@ -18,6 +18,19 @@ const InputCheckbox = ({
     </span>
 );
 
+InputCheckbox.defaultProps = {
+    checked: false,
+    label: '',
+}
+
+InputCheckbox.propTypes = {
+    checked: PropTypes.bool,
+    label: PropTypes.string,
+    name: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+}
+
+
 const TemplateItem = ({
     template, checked, handleSelectTemplate, t,
 }) => (
@@ -57,7 +70,9 @@ TemplateItem.defaultProps = {
 TemplateItem.propTypes = {
     template: PropTypes.shape({
         label: PropTypes.string,
-        attrs: PropTypes.array,
+        id: PropTypes.string,
+        attrs: PropTypes.arrayOf(
+            PropTypes.shape),
     }).isRequired,
     checked: PropTypes.bool,
     handleSelectTemplate: PropTypes.func.isRequired,

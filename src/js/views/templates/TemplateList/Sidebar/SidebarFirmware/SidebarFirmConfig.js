@@ -106,7 +106,7 @@ class SidebarFirmConfig extends Component {
             // removing image attributes
             template.img_attrs = [];
             // 2. also removes img attrs in attr list
-            for (let i = template.attrs.length - 1; i >= 0; i--) {
+            for (let i = template.attrs.length - 1; i >= 0; i -= 1) {
                 if (template.attrs[i].metadata.length) {
                     const lbl = template.attrs[i].metadata[0].label;
                     if (lbl.includes('dojot:firmware_update:')) {
@@ -291,6 +291,7 @@ SidebarFirmConfig.propTypes = {
     showFirmware: PropTypes.bool,
     isNewTemplate: PropTypes.bool,
     imageAllowed: PropTypes.bool,
+    images: PropTypes.shape({}).isRequired,
     template: PropTypes.shape(templateType).isRequired,
     toogleSidebarFirmware: PropTypes.func.isRequired,
 };

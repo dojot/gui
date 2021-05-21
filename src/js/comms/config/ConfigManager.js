@@ -2,10 +2,9 @@ import configDate from './config.json';
 
 class ConfigManager {
     getConfigDate() {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             setTimeout(() => {
-                const didSucceed = true;
-                didSucceed ? resolve(configDate) : reject('Error');
+                resolve(configDate);
             }, 2000);
         });
     }

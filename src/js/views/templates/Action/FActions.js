@@ -1,5 +1,5 @@
 import templateManager from 'Comms/templates/TemplateManager';
-
+import toaster from 'Comms/util/materialize';
 
 class FActions {
     set(args) { return args; }
@@ -11,7 +11,9 @@ class FActions {
             dispatch();
             templateManager.getTemplate(id)
                 .then((d) => { this.set(d); })
-                .catch((error) => { console.error('Failed to get template', error); });
+                .catch((error) => {
+                    toaster.error(`Failed to get template: ${JSON.stringify(error)}`);
+                });
         };
     }
 }

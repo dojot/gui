@@ -3,6 +3,7 @@ import moment from 'moment';
 import LoginActions from '../../actions/LoginActions';
 import 'babel-polyfill';
 import i18n from 'i18next';
+import { BASE_URL, PROXY_URL } from 'Src/config';
 
 const sha1 = require('sha1');
 
@@ -46,7 +47,7 @@ class Util {
      * @returns {string} Ex.: http://localhost:8000
      */
     getFullURL() {
-        return `${window.location.protocol}//${window.location.host}`;
+        return BASE_URL;
     }
 
     /**
@@ -54,7 +55,7 @@ class Util {
      * @returns {string} Ex.: http://localhost:8000/stream/socketio
      */
     getUrlTokenSocketIO() {
-        return `${this.getFullURL()}/stream/socketio`;
+        return `${PROXY_URL}stream/socketio`;
     }
 
     getSHA1(data) {
