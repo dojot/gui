@@ -36,7 +36,7 @@ const RightSideBar = ({ t, user, toggleSidebar }) => {
 
     return (
 
-        <div className="" >
+        <div className="">
             <div className="rightsidebarchild">
                 <div className="logout-page-header">
                     <div className="col s12 m12">
@@ -103,17 +103,18 @@ const RightSideBar = ({ t, user, toggleSidebar }) => {
                             {t('text.import_export')}
                         </div>
                     </div>
-                ) : <div />
-                }
+                ) : <div />}
 
                 <div className="horizontal-line" />
 
                 <div className="logout-page-buttons">
-                    <div className="btn-logout"
+                    <div
+                        className="btn-logout"
                         role="button"
                         tabIndex={0}
                         onKeyPress={logout}
-                        onClick={logout}>
+                        onClick={logout}
+                    >
                         {t('text.logout')}
                     </div>
                 </div>
@@ -129,7 +130,7 @@ const RightSideBar = ({ t, user, toggleSidebar }) => {
                     )
                     : <div />
             }
-        </div >
+        </div>
     )
 }
 

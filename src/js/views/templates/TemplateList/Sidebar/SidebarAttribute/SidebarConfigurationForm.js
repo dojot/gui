@@ -12,7 +12,7 @@ const SidebarConfigurationForm = ({
     changeAttrValue,
     t,
 }) => (
-    <Fragment>
+    <>
         <div className="body-config-name">
             <div className="body-config-icon">
                 <img
@@ -49,7 +49,7 @@ const SidebarConfigurationForm = ({
                 {t('value.label')}
             </MaterialInput>
         </div>
-    </Fragment>
+    </>
 );
 
 SidebarConfigurationForm.propTypes = {

@@ -33,7 +33,7 @@ const SidebarDevice = ({
     const total = device.templates.length ? device.templates.length : 0;
 
     return (
-        <Fragment>
+        <>
             <Slide right when={showSidebarDevice} duration={300}>
                 {
                     showSidebarDevice
@@ -153,7 +153,7 @@ const SidebarDevice = ({
                                 <div className="footer">
                                     {
                                         isNewDevice ? (
-                                            <Fragment>
+                                            <>
                                                 <DojotBtnClassic
                                                     type="secondary"
                                                     label={t('discard.label')}
@@ -173,9 +173,9 @@ const SidebarDevice = ({
                                                         ''
                                                     )
                                                 }
-                                            </Fragment>
+                                            </>
                                         ) : (
-                                            <Fragment>
+                                            <>
                                                 <DojotBtnClassic
                                                     type="secondary"
                                                     label={t('discard.label')}
@@ -196,7 +196,7 @@ const SidebarDevice = ({
                                                     onClick={update}
                                                 />
 
-                                            </Fragment>
+                                            </>
                                         )
                                     }
                                 </div>
@@ -212,7 +212,7 @@ const SidebarDevice = ({
                 message={t('qst_remove', { label: t('devices:device') })}
                 numOfDevPage={numOfDevPage}
             />
-        </Fragment>
+        </>
     );
 };
 
