@@ -1,11 +1,13 @@
 import { PROXY_URL } from "Src/config";
-import util from 'Comms/util';
+import util from 'Comms/util/util';
+import toaster from 'Comms/util/materialize';
 
 const alt = require('../alt');
 
 class FlowActions {
     fetch() {
         return (dispatch) => {
+            dispatch();
             util.GET(`${PROXY_URL}flows/v1/flow`)
                 .then((data) => { this.set(data.flows); })
                 .catch((error) => { this.fail(error); });
@@ -73,7 +75,7 @@ class FlowActions {
         return (dispatch) => {
             dispatch();
             util.DELETE(`${PROXY_URL}flows/v1/flow/${id}`)
-                .then((response) => {
+                .then(() => {
                     this.remove(id);
                     cb(id);
                 })
@@ -86,7 +88,7 @@ class FlowActions {
     }
 
     fail(error) {
-        console.error(error);
+        toaster.error(error.message);
         return error;
     }
 

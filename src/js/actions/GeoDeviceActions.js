@@ -1,33 +1,37 @@
-/* eslint-disable */
-import deviceManager from '../comms/devices/DeviceManager';
-import toaster from "../comms/util/materialize";
-
-var alt = require('../alt');
+import deviceManager from 'Comms/devices/DeviceManager';
+import toaster from "Comms/util/materialize";
+import alt from '../alt';
 
 class GeoDeviceActions {
-     fetchDevices(params = null, cb) {
+
+    fetchDevices(params = null, cb) {
         return dispatch => {
             dispatch();
             deviceManager
-              .getDevicesWithPosition(params)
-              .then(result => {
-                this.setDevices(result);
-                if (cb) {
-                  cb(result);
-                }
-              })
-              .catch(error => {
-                    console.error(error);
+                .getDevicesWithPosition(params)
+                .then(result => {
+                    this.setDevices(result);
+                    if (cb) {
+                        cb(result);
+                    }
+                })
+                .catch(error => {
+                    toaster.error(error.message);
                     this.devicesFailed(error);
-              });
+                });
         };
     }
-     setDevices(result) {
+
+    setDevices(result) {
         return result;
     }
-     devicesFailed(error) {
+
+    devicesFailed(error) {
         toaster.error(error.message);
         return error;
     }
- }
- alt.createActions(GeoDeviceActions, exports);
+}
+
+const _geodevice = alt.createActions(GeoDeviceActions, exports);
+
+export default _geodevice;

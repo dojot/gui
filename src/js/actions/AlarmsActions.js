@@ -1,6 +1,5 @@
-/* eslint-disable */
+import toaster from 'Comms/util/materialize';
 import alarmsManager from '../comms/alarms/AlarmsManager';
-import toaster from '../comms/util/materialize';
 import alt from '../alt';
 
 

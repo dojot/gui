@@ -49,7 +49,6 @@ class LoginStore {
     }
 
     handleSuccess(userinfo) {
-        console.log("userinfo", userinfo);
         this.hasError = false;
         this.error = '';
         this.set(userinfo);

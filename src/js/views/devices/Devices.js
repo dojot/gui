@@ -110,7 +110,9 @@ class DeviceOperations extends GenericOperations {
 
     whenRemoveItemFromLastPage() {
         if (this.paginationParams.page_num > 1) {
-            this.paginationParams.page_num = this.paginationParams.page_num - 1;
+            const newPagParams = Object.assign({}, this.paginationParams);
+            newPagParams.page_num = this.paginationParams.page_num - 1;
+            this.paginationParams = newPagParams;
         }
     }
 
@@ -160,7 +162,6 @@ class DevicesComponent extends Component {
 
 
     componentDidMount() {
-        console.log("DevicesComponent");
         this.dev_opex._fetch();
         FormActions.toggleSidebarDevice.defer(false);
     }
@@ -190,7 +191,6 @@ class DevicesComponent extends Component {
     }
 
     render() {
-        console.log("DevicesComponent render");
         const { showFilter, displayList } = this.state;
         const { t, location: { query } } = this.props;
 
@@ -209,8 +209,10 @@ class DevicesComponent extends Component {
                     <NewPageHeader title={t('devices:title')} subtitle="" icon="device">
                         <FilterLabel ops={this.dev_opex} text={t('devices:header.filter.alt2')} />
                         <Pagination show_pagination={show_pagination} ops={this.dev_opex} />
-                        <OperationsHeader displayToggle={displayToggle}
-                            toggleSearchBar={this.toggleSearchBar.bind(this)} t={t} />
+                        <OperationsHeader
+                            displayToggle={displayToggle}
+                            toggleSearchBar={this.toggleSearchBar}
+                            t={t} />
                     </NewPageHeader>
                     {displayList ?
                         <DeviceCardList
@@ -226,6 +228,19 @@ class DevicesComponent extends Component {
             </div>
         );
     }
+}
+
+DevicesComponent.defaultProps = {
+    location: {},
+}
+
+DevicesComponent.propTypes = {
+    t: PropTypes.func.isRequired,
+    location: PropTypes.shape({
+        query: PropTypes.shape({
+            detail: PropTypes.string,
+        }),
+    }),
 }
 
 function OperationsHeader({ toggleSearchBar, t, displayToggle }) {
