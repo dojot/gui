@@ -196,10 +196,10 @@ export const mapPinLightYellow = new L.Icon({
     shadowSize: new L.Point(41, 41),
 });
 
-
-// export const BASE_URL = process.env.BASE_URL;
 const { GUI_VERSION } = process.env;
-const BASE_URL = `${window.location.origin}/`;
+const auxBase = process.env.BASE_URL ? process.env.BASE_URL : window.location.origin;
+const BASE_URL = `${auxBase}/`;
+
 const APP_URL = process.env.APPLICATION_URL;
 const LOGIN_URL = `${BASE_URL}backstage/v1/auth`;
 const LOGOUT_URL = `${BASE_URL}backstage/v1/auth/revoke`;

@@ -72,10 +72,10 @@ ToggleWidget.propTypes = {
 
 const MapWrapper = ({ showFilter, dev_opex }) => (
     <AltContainer stores={{
-    positions: MapPositionStore,
-    measures: MeasureStore,
-    configs: ConfigStore,
-}}
+        positions: MapPositionStore,
+        measures: MeasureStore,
+        configs: ConfigStore,
+    }}
     >
         <DeviceMapWrapper
             showFilter={showFilter}
@@ -122,7 +122,7 @@ class DeviceOperations extends GenericOperations {
 
     whenRemoveItemFromLastPage() {
         if (this.paginationParams.page_num > 1) {
-            const newPagParams = { ...this.paginationParams};
+            const newPagParams = { ...this.paginationParams };
             newPagParams.page_num = this.paginationParams.page_num - 1;
             this.paginationParams = newPagParams;
         }
@@ -140,7 +140,7 @@ class DeviceOperations extends GenericOperations {
     }
 
     _fetch(cb = null) {
-        const res = { ...this.paginationParams, ...this.filterParams};
+        const res = { ...this.paginationParams, ...this.filterParams };
 
         if (this.filterParams.templates) {
             delete res.templates;
@@ -234,13 +234,13 @@ class DevicesComponent extends Component {
                             dev_opex={this.dev_opex}
                             showFilter={showFilter}
                         />
-                      ) : (
-                          <MapWrapper
-                              toggle={displayToggle}
-                              showFilter={showFilter}
-                              dev_opex={this.dev_opex}
-                          />
-                      )}
+                    ) : (
+                        <MapWrapper
+                            toggle={displayToggle}
+                            showFilter={showFilter}
+                            dev_opex={this.dev_opex}
+                        />
+                    )}
                 </AltContainer>
             </div>
         );

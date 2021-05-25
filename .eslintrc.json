@@ -6,6 +6,9 @@
         "window": true,
         "browser": true,
         "node": true,
+        "Headers": true,
+        "Blob": true,
+        "fetch": true,
         "atob": "readonly",
         "FormData": "readonly"
     },

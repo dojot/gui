@@ -407,7 +407,7 @@ class Sidebar extends Component {
 
         if (!Object.prototype.hasOwnProperty.call(device, 'attrs')) return <div />;
         return (
-            <>
+            <Fragment>
                 <AltContainer store={TemplateStore}>
                     <SidebarDevice
                         hasTemplateWithImages={hasTemplateWithImages}
@@ -464,7 +464,7 @@ class Sidebar extends Component {
                         </AltContainer>
                     )
                     : null}
-            </>
+            </Fragment>
         );
     }
 }

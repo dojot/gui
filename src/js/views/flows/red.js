@@ -1811,7 +1811,7 @@ RED.nodes = (function () {
             removeNodeType: function (nt) {
                 if (nt.substring(0, 8) != "subflow:") {
                     // NON-NLS - internal debug message
-                    throw new Error("this api is subflow only. called with:", nt);
+                    throw new Error("this api is subflow only. called with:" + JSON.stringify(nt));
                 }
                 delete nodeDefinitions[nt];
                 RED.events.emit("registry:node-type-removed", nt);
@@ -8672,7 +8672,7 @@ RED.palette.editor = (function () {
                     return true;
                 }
 
-                return (activeFilter === "") || (data.index.indexOf(activeFilter) > -1);
+                return (data.index.indexOf(activeFilter) > -1);
             },
             addItem: function (container, i, object) {
                 var entry = object.info;
@@ -10980,7 +10980,7 @@ RED.typeSearch = (function () {
                 if (data.recent || data.common) {
                     return false;
                 }
-                return (activeFilter === "") || (data.index.indexOf(activeFilter) > -1);
+                return (data.index.indexOf(activeFilter) > -1);
             },
             addItem: function (container, i, object) {
                 var def = object.def;

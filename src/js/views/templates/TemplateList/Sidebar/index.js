@@ -444,7 +444,7 @@ class Sidebar extends Component {
         const templateModifier = ability.can('modifier', 'device-manager-template');
 
         return (
-            <>
+            <Fragment>
                 <SidebarTemplate
                     template={template}
                     isNewTemplate={isNewTemplate}
@@ -500,7 +500,7 @@ class Sidebar extends Component {
                     toogleSidebarDelete={this.toogleSidebarDelete}
                     removeSelectMeta={this.removeSelectMeta}
                 />
-            </>
+            </Fragment>
         );
     }
 }

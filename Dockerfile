@@ -7,7 +7,7 @@ WORKDIR /data
 ARG DOJOT_VERSION='undefined'
 
 #It is used to define the API URL
-ARG BASE_URL='/'
+ARG BASE_URL=''
 
 #It is used to define the Application URL
 ARG APPLICATION_URL='/'

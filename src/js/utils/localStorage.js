@@ -1,5 +1,4 @@
-/* eslint-disable */
-function localStoragePolyFill() {
+export default function localStoragePolyFill() {
     function createCookie(name, value, days) {
         let expires;
         if (days) {

@@ -23,7 +23,7 @@ const SidebarTemplate = ({
     showDeleteTemplate,
     t,
 }) => (
-    <>
+    <Fragment>
         <Slide right when={showSidebar} duration={300}>
             {showSidebar
                 ? (
@@ -62,12 +62,12 @@ const SidebarTemplate = ({
                                     </Can>
                                 )
                                 : (
-                                    <>
+                                    <Fragment>
                                         <Can do="modifier" on="device-manager-template">
                                             <DojotBtnClassic label={t('remove.label')} type="secondary" onClick={() => toogleSidebarDelete('showDeleteTemplate')} />
                                             <DojotBtnClassic color="red" label={t('save.label')} type="primary" onClick={updateTemplate} />
                                         </Can>
-                                    </>
+                                    </Fragment>
                                 )}
                         </div>
                     </div>
@@ -80,7 +80,7 @@ const SidebarTemplate = ({
             showSidebar={showDeleteTemplate}
             message={t('templates:alerts.qst_remove', { label: t('templates:template') })}
         />
-    </>
+    </Fragment>
 );
 
 SidebarTemplate.defaultProps = {

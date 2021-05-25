@@ -1,9 +1,9 @@
-/* eslint-disable */
 import moment from 'moment';
-import LoginActions from '../../actions/LoginActions';
+import LoginActions from 'Actions/LoginActions';
 import 'babel-polyfill';
 import i18n from 'i18next';
 import { BASE_URL, PROXY_URL } from 'Src/config';
+import localStoragePolyFill from '../../utils/localStorage';
 
 const sha1 = require('sha1');
 
@@ -28,9 +28,8 @@ class Util {
             if (parsedPosition.length > 1) {
                 return [parseFloat(parsedPosition[0]), parseFloat(parsedPosition[1])];
             }
-        } else {
-            return undefined;
         }
+        return undefined;
     }
 
     checkWidthToStateOpen(opened) {
@@ -75,7 +74,9 @@ class Util {
     setToken(token) {
         try {
             // Test webstorage existence.
-            if (!window.localStorage || !window.sessionStorage) throw 'exception';
+            if (!window.localStorage || !window.sessionStorage) {
+                throw new Error('error checking webstorage existence');
+            }
             // Test webstorage accessibility - Needed for Safari private browsing.
             if (token === null || token === undefined) {
                 window.localStorage.removeItem('jwt');
@@ -94,10 +95,11 @@ class Util {
 
     setPermissions(permissions) {
         const objPermStr = JSON.stringify(permissions);
-        console.log("setPermissions", objPermStr);
         try {
             // Test webstorage existence.
-            if (!window.localStorage || !window.sessionStorage) throw 'exception';
+            if (!window.localStorage || !window.sessionStorage) {
+                throw new Error('error checking webstorage existence');
+            }
             // Test webstorage accessibility - Needed for Safari private browsing.
             if (objPermStr === undefined) {
                 window.localStorage.removeItem('roles');
@@ -148,7 +150,7 @@ class Util {
         });
     }
 
-    DELETE(url, payload) {
+    DELETE(url) {
         return this._runFetch(url, { method: 'delete' });
     }
 
@@ -162,7 +164,7 @@ class Util {
 
     _runFetch(url, config) {
         const local = this;
-        let authConfig = config || {};
+        const authConfig = config || {};
         return new Promise(((resolve, reject) => {
             fetch(url, authConfig)
                 .then(local._status)
@@ -226,11 +228,11 @@ class Util {
     }
 
     iso_to_date(timestamp) {
-        return moment(timestamp).format(i18n.t('format.full_date') + ' HH:mm:ss');
+        return moment(timestamp).format(`${i18n.t('format.full_date')} HH:mm:ss`);
     }
 
     iso_to_date_hour(timestamp) {
-        return moment(timestamp).format(i18n.t('format.day_mouth') + ' HH:mm');
+        return moment(timestamp).format(`${i18n.t('format.day_mouth')} HH:mm`);
     }
 
     timestampToHourMinSec(timestamp) {
@@ -272,7 +274,7 @@ class Util {
         const ret = {
             result: true,
             error: '',
-            label: name.trim()
+            label: name.trim(),
         };
         if (name.trim().length === 0) {
             ret.result = false;
@@ -291,74 +293,71 @@ class Util {
     isTypeValid(value, type, dynamic) {
         const ret = { result: true, error: '' };
         if (dynamic === 'actuator' && value.length === 0) return ret;
-        if (type.trim().length == 0) {
+        if (type.trim().length === 0) {
             ret.result = false;
             ret.error = i18n.t('errors_msg.set_type');
             return ret;
         }
         if (dynamic === 'dynamic' && value.length === 0) return ret;
+
         const validator = {
-            string(value) {
-                ret.result = value.trim().length > 0;
+            string: (val) => {
+                ret.result = val.trim().length > 0;
                 ret.error = i18n.t('errors_msg.invalid_text');
                 return ret;
             },
-            'geo:point': function (value) {
-                return this.geo(value)
-            },
-            geo(value) {
+            'geo:point': (val) => this.geo(val),
+            geo: (val) => {
                 const re = /^([+-]?\d+(\.\d+)?)([,]\s*)([+-]?\d+(\.\d+)?)$/;
-                ret.result = re.test(value);
+                ret.result = re.test(val);
                 if (ret.result === false) {
                     ret.error = i18n.t('errors_msg.invalid_geo');
                 }
                 return ret;
             },
-            integer(value) {
+            integer: (val) => {
                 const re = /^[+-]?\d+$/;
-                ret.result = re.test(value);
+                ret.result = re.test(val);
                 if (ret.result === false) {
                     ret.error = i18n.t('errors_msg.invalid_int');
                 }
                 return ret;
             },
-            float(value) {
+            float: (val) => {
                 const re = /^[+-]?\d+(\.\d+)?$/;
-                ret.result = re.test(value);
+                ret.result = re.test(val);
                 if (ret.result === false) {
                     ret.error = i18n.t('errors_msg.invalid_float');
                 }
                 return ret;
             },
-            boolean(value) {
+            boolean: (val) => {
                 const re = /^0|1|true|false$/;
-                ret.result = re.test(value);
+                ret.result = re.test(val);
                 if (ret.result === false) {
                     ret.error = i18n.t('errors_msg.invalid_bool');
                 }
                 return ret;
             },
-            bool(value) {
-                return this.boolean(value)
-            },
-            'protocol': function (value) {
-                ret.result = value.trim().length > 0;
+            bool: (val) => this.boolean(val),
+            protocol: (val) => {
+                ret.result = val.trim().length > 0;
                 ret.error = i18n.t('errors_msg.invalid_protocol');
                 return ret;
             },
-            'topic': function (value) {
-                ret.result = value.trim().length > 0;
+            topic: (val) => {
+                ret.result = val.trim().length > 0;
                 ret.error = i18n.t('errors_msg.invalid_topic');
                 return ret;
             },
-            'translator': function (value) {
-                ret.result = value.trim().length > 0;
+            translator: (val) => {
+                ret.result = val.trim().length > 0;
                 ret.error = i18n.t('errors_msg.invalid_translator');
                 return ret;
             },
-            'device_timeout': function (value) {
+            'device_timeout': (val) => {
                 const re = /^[+-]?\d+$/;
-                ret.result = re.test(value);
+                ret.result = re.test(val);
                 if (ret.result === false) {
                     ret.error = i18n.t('errors_msg.invalid_timeout');
                 }
@@ -374,7 +373,7 @@ class Util {
     }
 
     isDeviceTimeoutValid(device_timeout) {
-        let ret = { result: true, error: "" };
+        const ret = { result: true, error: "" };
         if (device_timeout.length === 0) {
             ret.result = false;
             ret.error = i18n.t('errors_msg.empty_timeout');

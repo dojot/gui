@@ -23,7 +23,7 @@ const SidebarMetadata = ({
     t,
     selectAttr,
 }) => (
-    <>
+    <Fragment>
         <Slide right when={showMetadata} duration={300}>
             {!showMetadata
                 ? <div />
@@ -67,12 +67,12 @@ const SidebarMetadata = ({
                                         </Can>
                                     )
                                     : (
-                                        <>
+                                        <Fragment>
                                             <Can do="modifier" on="device-manager-template">
                                                 <DojotBtnClassic label={t('remove.label')} type="secondary" onClick={() => toogleSidebarDelete('showDeleteMeta')} />
                                                 <DojotBtnClassic color="red" label={t('save.label')} type="primary" onClick={() => updateMetadata()} />
                                             </Can>
-                                        </>
+                                        </Fragment>
                                     )
                             }
                         </div>
@@ -85,7 +85,7 @@ const SidebarMetadata = ({
             showSidebar={showDeleteMeta}
             message={t('templates:alerts.qst_remove', { label: t('templates:metadata') })}
         />
-    </>
+    </Fragment>
 );
 
 SidebarMetadata.defaultProps = {

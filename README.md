@@ -1,9 +1,7 @@
-dojot Graphical Management Interface
-=====================================
+# dojot Graphical Management Interface
 
 This package implements a WEB user interface for the management and configuration of the
 dojot's basic functionality.
-
 
 # Build
 
@@ -27,11 +25,12 @@ yarn run watch
 
 From a clean environment, the following commands create a new docker image capable of serving
 the user interface.
+
 ```
 It has three optional arguments:
  DOJOT_VERSION: Set the GUI version
  APPLICATION_URL: It is used to define the URL of the application and must end with / (ex: / dojot /)
- BASE_URL: It is used to define the API URL and must end with / (ex: / api /)
+ BASE_URL: It is used to define the API URL (ex: / api )
 ```
 
 ```shell

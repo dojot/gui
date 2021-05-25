@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { PROXY_URL, GQL_URL } from 'Src/config';
 import util from '../util/util';
 
@@ -85,47 +84,47 @@ const GQL_TEMPLATE = templateId => `
   `;
 
 class TemplateManager {
-  getLastTemplates(field) {
-    return util.GET(`${PROXY_URL}template?limit=10&sortDsc=${field}`);
-  }
-
-  getTemplates(params) {
-    if (params) {
-      const qs = Object.keys(params).map(key => `${key}=${params[key]}`).join('&');
-      return util.GET(`${PROXY_URL}template?${qs}`);
+    getLastTemplates(field) {
+        return util.GET(`${PROXY_URL}template?limit=10&sortDsc=${field}`);
     }
-    return util.GET(`${PROXY_URL}template`);
-  }
 
-  getTemplate(id) {
-    return util.GET(`${PROXY_URL}template/${id}`);
-  }
+    getTemplates(params) {
+        if (params) {
+            const qs = Object.keys(params).map(key => `${key}=${params[key]}`).join('&');
+            return util.GET(`${PROXY_URL}template?${qs}`);
+        }
+        return util.GET(`${PROXY_URL}template`);
+    }
 
-  getTemplateGQL(id) {
-    const req = {
-      query: GQL_TEMPLATE(id),
-    };
-    return util.POST(`${GQL_URL}/`, req);
-  }
+    getTemplate(id) {
+        return util.GET(`${PROXY_URL}template/${id}`);
+    }
 
-  setTemplate(template) {
-    return util.PUT(`${PROXY_URL}template/${template.id}`, template);
-  }
+    getTemplateGQL(id) {
+        const req = {
+            query: GQL_TEMPLATE(id),
+        };
+        return util.POST(`${GQL_URL}/`, req);
+    }
 
-  addTemplate(d) {
-    return util.POST(`${PROXY_URL}template`, d);
-  }
+    setTemplate(template) {
+        return util.PUT(`${PROXY_URL}template/${template.id}`, template);
+    }
 
-  deleteTemplate(id) {
-    return util.DELETE(`${PROXY_URL}template/${id}`);
-  }
+    addTemplate(d) {
+        return util.POST(`${PROXY_URL}template`, d);
+    }
 
-  setIcon(id, icon) {
-    const data = new FormData();
-    data.append('icon', icon);
-    const config = { method: 'put', body: data };
-    return util._runFetch(`${PROXY_URL}template/${id}/icon`, config);
-  }
+    deleteTemplate(id) {
+        return util.DELETE(`${PROXY_URL}template/${id}`);
+    }
+
+    setIcon(id, icon) {
+        const data = new FormData();
+        data.append('icon', icon);
+        const config = { method: 'put', body: data };
+        return util._runFetch(`${PROXY_URL}template/${id}/icon`, config);
+    }
 }
 
 const templateManager = new TemplateManager();

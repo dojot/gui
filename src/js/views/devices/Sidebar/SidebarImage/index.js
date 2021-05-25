@@ -447,7 +447,7 @@ class SidebarImage extends Component {
         const showApplying = state === 3;
 
         return (
-            <>
+            <Fragment>
                 {showApplyModal ? (
                     <GenericModal
                         title={t('firmware:labels.title_modal_apply')}
@@ -512,13 +512,13 @@ class SidebarImage extends Component {
                                     </div>
                                 </div>
                                 <div className="footer">
-                                    <>
+                                    <Fragment>
                                         <DojotBtnClassic
                                             label={t('firmware:labels.close')}
                                             type="secondary"
                                             onClick={toogleSidebarImages}
                                         />
-                                    </>
+                                    </Fragment>
                                 </div>
                             </div>
                         )
@@ -533,7 +533,7 @@ class SidebarImage extends Component {
                             toogleSidebarFirmware={this.toogleSidebarFirmImage}
                         />
                     ) : null}
-            </>
+            </Fragment>
         );
     }
 }

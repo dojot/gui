@@ -113,7 +113,7 @@ module.exports = {
                 MAP_OVERLAY_JSON_ENV:
                     '{path:"images/Layers/Combined.png",corner1:{lat:-20.90974,lng:-48.83651},corner2:{lat:-21.80963,lng:-47.11802},}',
                 GUI_VERSION: JSON.stringify('Local Development'),
-                BASE_URL: JSON.stringify('/'),
+                BASE_URL: JSON.stringify(''),
                 APPLICATION_URL: JSON.stringify('/'),
             },
         }),

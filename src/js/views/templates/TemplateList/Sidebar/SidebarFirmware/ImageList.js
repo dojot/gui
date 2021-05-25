@@ -9,7 +9,7 @@ import { withNamespaces } from 'react-i18next';
 const ImageList = ({
     list, changeAttrValue, toggleDeleteBinarySidebar, toggleDeleteSidebar, onDrop, t,
 }) => (
-    <>
+    <Fragment>
         {Object.entries(list)
             .map(([key, element]) => (
                 <div key={key} className="image-block">
@@ -37,7 +37,7 @@ const ImageList = ({
                             <span className="label">{t('firmware:image_list.hash')}</span>
                             {(element.image_hash == null)
                                 ? (
-                                    <>
+                                    <Fragment>
                                         {(element.file !== undefined)
                                             ? (
                                                 <span className="value">
@@ -58,10 +58,10 @@ const ImageList = ({
                                                     </div>
                                                 </div>
                                             )}
-                                    </>
+                                    </Fragment>
                                 )
                                 : (
-                                    <>
+                                    <Fragment>
                                         <span className="value">
                                             {element.image_hash}
                                         </span>
@@ -73,7 +73,7 @@ const ImageList = ({
                                             tabIndex={0}
                                             title={t('firmware:labels.rem_bin')}
                                         />
-                                    </>
+                                    </Fragment>
                                 )}
                         </div>
                     </div>
@@ -103,7 +103,7 @@ const ImageList = ({
                     <div className="line-2" />
                 </div>
             ))}
-    </>
+    </Fragment>
 );
 
 ImageList.defaultProps = {

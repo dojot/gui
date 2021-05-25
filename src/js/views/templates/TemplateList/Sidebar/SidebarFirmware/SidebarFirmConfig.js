@@ -141,7 +141,7 @@ class SidebarFirmConfig extends Component {
         const fwImageModifier = ability.can('modifier', 'image');
 
         return (
-            <>
+            <Fragment>
                 <Slide right when={showFirmware} duration={300}>
                     {showFirmware
                         ? (
@@ -253,10 +253,10 @@ class SidebarFirmConfig extends Component {
                                     </div>
                                 </div>
                                 <div className="footer">
-                                    <>
+                                    <Fragment>
                                         <DojotBtnClassic label={t('discard.label')} type="secondary" onClick={toogleSidebarFirmware} />
                                         <DojotBtnClassic color="red" label={t('save.label')} type="primary" onClick={e => this.saveImageConfig(e)} />
-                                    </>
+                                    </Fragment>
                                 </div>
                             </div>
                         )
@@ -272,7 +272,7 @@ class SidebarFirmConfig extends Component {
                             toogleSidebarFirmware={this.toogleSidebarFirmImage}
                         />
                     ) : null}
-            </>
+            </Fragment>
         );
     }
 }
