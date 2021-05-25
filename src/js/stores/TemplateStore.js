@@ -1,5 +1,5 @@
 /* eslint-disable */
-import util from '../comms/util';
+import util from 'Comms/util/util';
 
 const alt = require('../alt');
 const TemplateActions = require('../actions/TemplateActions');

@@ -4,7 +4,7 @@ import AltContainer from 'alt-container';
 import TemplateStore from 'Stores/TemplateStore';
 import { NewPageHeader } from 'Containers/full/PageHeader';
 import { withNamespaces } from 'react-i18next';
-import TemplateActions from 'Actions';
+import TemplateActions from 'Actions/TemplateActions';
 import OperationsHeader from './OperationsHeader';
 import { Filter, Pagination, FilterLabel } from '../maps/Manipulation';
 import TemplateList from './TemplateList/index';

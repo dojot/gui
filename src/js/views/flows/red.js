@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import { BASE_URL,PROXY_URL } from 'Src/config'
+import { PROXY_URL } from 'Src/config'
 var RED = {};
 
 RED.events = (function () {
@@ -4061,16 +4061,16 @@ RED.tabs = (function () {
         msg: { value: "msg", label: "msg.", validate: RED.utils.validatePropertyExpression },
         flow: { value: "flow", label: "flow.", validate: RED.utils.validatePropertyExpression },
         global: { value: "global", label: "global.", validate: RED.utils.validatePropertyExpression },
-        str: { value: "str", label: "string", icon: `${BASE_URL}flows/red/images/typedInput/az.png` },
-        num: { value: "num", label: "number", icon: `${BASE_URL}flows/red/images/typedInput/09.png`, validate: /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/ },
-        bool: { value: "bool", label: "boolean", icon: `${BASE_URL}flows/red/images/typedInput/bool.png`, options: ["true", "false"] },
-        json: { value: "json", label: "JSON", icon: `${BASE_URL}flows/red/images/typedInput/json.png`, validate: function (v) { try { JSON.parse(v); return true; } catch (e) { return false; } } },
-        re: { value: "re", label: "regular expression", icon: `${BASE_URL}flows/red/images/typedInput/re.png` },
+        str: { value: "str", label: "string", icon: `${PROXY_URL}flows/red/images/typedInput/az.png` },
+        num: { value: "num", label: "number", icon: `${PROXY_URL}flows/red/images/typedInput/09.png`, validate: /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/ },
+        bool: { value: "bool", label: "boolean", icon: `${PROXY_URL}flows/red/images/typedInput/bool.png`, options: ["true", "false"] },
+        json: { value: "json", label: "JSON", icon: `${PROXY_URL}flows/red/images/typedInput/json.png`, validate: function (v) { try { JSON.parse(v); return true; } catch (e) { return false; } } },
+        re: { value: "re", label: "regular expression", icon: `${PROXY_URL}flows/red/images/typedInput/re.png` },
         date: { value: "date", label: "timestamp", hasValue: false },
         jsonata: {
             value: "jsonata",
             label: "expression",
-            icon: `${BASE_URL}flows/red/images/typedInput/expr.png`,
+            icon: `${PROXY_URL}flows/red/images/typedInput/expr.png`,
             validate: function (v) { try { jsonata(v); return true; } catch (e) { return false; } },
             expand: function () {
                 var that = this;
@@ -4560,7 +4560,7 @@ RED.keyboard = (function () {
     function init() {
 
         $.getJSON({
-            url: `${BASE_URL}flows/red/keymap.json`,
+            url: `${PROXY_URL}flows/red/keymap.json`,
             type: 'GET',
             headers: {
                 "authorization": `Bearer ${util.getToken()}`,
@@ -5063,7 +5063,7 @@ RED.workspaces = (function () {
             if (!workspace_tabs.contains(id)) {
                 var sf = RED.nodes.subflow(id);
                 if (sf) {
-                    addWorkspace({ type: "subflow", id: id, icon: `${BASE_URL}flows/red/images/subflow_tab.png`, label: sf.name, closeable: true });
+                    addWorkspace({ type: "subflow", id: id, icon: `${PROXY_URL}flows/red/images/subflow_tab.png`, label: sf.name, closeable: true });
                 } else {
                     console.error("Invalid wk id: " + id);
                     return;
@@ -6937,7 +6937,7 @@ RED.view = (function () {
                         .attr("height", function (d) { return Math.min(50, d.h - 4); });
 
                     var icon = icon_group.append("image")
-                        .attr("xlink:href", `${BASE_URL}flows/icons/${+d._def.icon}`)
+                        .attr("xlink:href", `${PROXY_URL}flows/icons/${+d._def.icon}`)
                         .attr("class", "node_icon")
                         .attr("x", 0)
                         .attr("width", "30")
@@ -6968,7 +6968,7 @@ RED.view = (function () {
                     //}
 
                     var img = new Image();
-                    img.src = `${BASE_URL}flows/icons/${d._def.icon}`;
+                    img.src = `${PROXY_URL}flows/icons/${d._def.icon}`;
                     img.onload = function () {
                         icon.attr("width", Math.min(img.width, 30));
                         icon.attr("height", Math.min(img.height, 30));
@@ -7005,8 +7005,8 @@ RED.view = (function () {
                 //node.append("circle").attr({"class":"centerDot","cx":0,"cy":0,"r":5});
 
                 //node.append("path").attr("class","node_error").attr("d","M 3,-3 l 10,0 l -5,-8 z");
-                node.append("image").attr("class", "node_error hidden").attr("xlink:href", `${BASE_URL}flows/icons/node-error.png`).attr("x", 0).attr("y", -6).attr("width", 10).attr("height", 9);
-                node.append("image").attr("class", "node_changed hidden").attr("xlink:href", `${BASE_URL}flows/icons/node-changed.png`).attr("x", 12).attr("y", -6).attr("width", 10).attr("height", 10);
+                node.append("image").attr("class", "node_error hidden").attr("xlink:href", `${PROXY_URL}flows/icons/node-error.png`).attr("x", 0).attr("y", -6).attr("width", 10).attr("height", 9);
+                node.append("image").attr("class", "node_changed hidden").attr("xlink:href", `${PROXY_URL}flows/icons/node-changed.png`).attr("x", 12).attr("y", -6).attr("width", 10).attr("height", 10);
             });
 
             node.each(function (d, i) {
@@ -7133,10 +7133,10 @@ RED.view = (function () {
                             } else {
                                 icon_url = d._def.icon;
                             }
-                            if (`${BASE_URL}flows/icons/${icon_url}` !== current_url) {
-                                icon.attr("xlink:href", `${BASE_URL}flows/icons/${icon_url}`);
+                            if (`${PROXY_URL}flows/icons/${icon_url}` !== current_url) {
+                                icon.attr("xlink:href", `${PROXY_URL}flows/icons/${icon_url}`);
                                 var img = new Image();
-                                img.src = `${BASE_URL}flows/icons/${d._def.icon}`;
+                                img.src = `${PROXY_URL}flows/icons/${d._def.icon}`;
                                 img.onload = function () {
                                     icon.attr("width", Math.min(img.width, 30));
                                     icon.attr("height", Math.min(img.height, 30));
@@ -7871,7 +7871,7 @@ RED.palette = (function () {
                     console.log("Definition error: " + nt + ".icon", err);
                 }
                 var iconContainer = $('<div/>', { class: "palette_icon_container" + (def.align === "right" ? " palette_icon_container_right" : "") }).appendTo(d);
-                $('<div/>', { class: "palette_icon", style: `background-image: url(${BASE_URL}flows/icons/${icon_url})` }).appendTo(iconContainer);
+                $('<div/>', { class: "palette_icon", style: `background-image: url(${PROXY_URL}flows/icons/${icon_url})` }).appendTo(iconContainer);
             }
 
             d.style.backgroundColor = def.color;
@@ -11005,7 +11005,7 @@ RED.typeSearch = (function () {
                 nodeDiv.css('backgroundColor', colour);
 
                 var iconContainer = $('<div/>', { class: "palette_icon_container" }).appendTo(nodeDiv);
-                $('<div/>', { class: "palette_icon", style: `background-image: url(${BASE_URL}flows/icons/${icon_url})` }).appendTo(iconContainer);
+                $('<div/>', { class: "palette_icon", style: `background-image: url(${PROXY_URL}flows/icons/${icon_url})` }).appendTo(iconContainer);
 
                 if (def.inputs > 0) {
                     $('<div/>', { class: "red-ui-search-result-node-port" }).appendTo(nodeDiv);

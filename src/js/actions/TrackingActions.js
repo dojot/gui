@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { PROXY_URL } from 'Src/config';
 import alt from '../alt';
-import util from '../comms/util';
+import util from 'Comms/util/util';
 import LoginStore from '../stores/LoginStore';
 
 

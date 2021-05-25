@@ -36,8 +36,13 @@ const LeafMap = ({ point }) => {
     );
 };
 
+
+LeafMap.defaultProps = {
+    point: [-22.9071, - 47.06324],
+};
+
 LeafMap.propTypes = {
-    point: PropTypes.arrayOf(PropTypes.number).isRequired,
+    point: PropTypes.arrayOf(PropTypes.number),
 };
 
 const MarkerUpdater = ({

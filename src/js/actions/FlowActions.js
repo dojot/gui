@@ -1,6 +1,5 @@
-/* eslint-disable */
-import util from '../comms/util';
 import { PROXY_URL } from "Src/config";
+import util from 'Comms/util';
 
 const alt = require('../alt');
 

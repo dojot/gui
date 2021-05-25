@@ -138,6 +138,12 @@ const MultipleMapWithSocket = ({
             const bounds = L.latLngBounds(positionList);
             setInitialBounds(bounds);
         }
+        else {
+            // no markers to be shown, setting center at Campinas
+            const bounds = L.latLngBounds([
+                [-22.9071, - 47.06324], [-23.5489, -46.6388]]);
+            setInitialBounds(bounds);
+        }
     };
 
     useEffect(() => {

@@ -1,25 +1,25 @@
 {
-  "title": "Import/Export Management",
-  "import": {
-    "titleMain": "Import",
-    "subtitleMain": "Upload your previous data on portal.",
-    "title": "Import",
-    "subtitle": "Select the a file JSON to restore your data",
-    "titleModal": "Import new datas",
-    "subtitleModal": "You will remove all data. Are you sure?",
-    "titleSuccess": "Success",
-    "subtitleSuccess": "All datas imported",
-    "btnModal": "Ok",
-    "btnCancel": "Cancel",
-    "error": {
-      "type": "Wrong type, only accept JSON!",
-      "read": "Error reading file",
-      "file": "Select a file",
-      "size": "File size too large"
+    "title": "Import/Export Management",
+    "import": {
+        "titleMain": "Import",
+        "subtitleMain": "Upload your previous data on portal.",
+        "title": "Import",
+        "subtitle": "Select the a file JSON to restore your data",
+        "titleModal": "Import new datas",
+        "subtitleModal": "You will remove all data. Are you sure?",
+        "titleSuccess": "Success",
+        "subtitleSuccess": "The data were imported",
+        "btnModal": "Ok",
+        "btnCancel": "Cancel",
+        "error": {
+            "type": "Wrong type, only accept JSON!",
+            "read": "Error reading file",
+            "file": "Select a file",
+            "size": "File size too large"
+        }
+    },
+    "export": {
+        "title": "Export",
+        "subtitle": "Export a JSON containing all your data."
     }
-  },
-  "export": {
-    "title": "Export",
-    "subtitle": "Export a JSON containing all your data."
-  }
 }
