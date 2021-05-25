@@ -5,12 +5,11 @@ import * as PropTypes from 'prop-types';
 const Truncate = (props) => {
     const { value } = props;
     return (
-        <Fragment>
+        <>
             {value.length > 25
                 ? `${value.substr(0, 21)}...`
-                : value
-            }
-        </Fragment>
+                : value}
+        </>
     );
 };
 

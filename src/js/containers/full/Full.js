@@ -105,19 +105,23 @@ class Navbar extends Component {
                             {pageIcon}
                         </div>
                         <div className="status-item user-area">
-                            <div className="user-name clickable"
-                                tabIndex="0"
-                                role="button"
-                                onKeyPress={this.handleClick}
-                                onClick={this.handleClick}>
-                                {name}
-                            </div>
-                            <div className="clickable"
+                            <div
+                                className="user-name clickable"
                                 tabIndex="0"
                                 role="button"
                                 onKeyPress={this.handleClick}
                                 onClick={this.handleClick}
-                                title="Login details">
+                            >
+                                {name}
+                            </div>
+                            <div
+                                className="clickable"
+                                tabIndex="0"
+                                role="button"
+                                onKeyPress={this.handleClick}
+                                onClick={this.handleClick}
+                                title="Login details"
+                            >
                                 {!open && <i className="fa fa-caret-down line-normal center-caret" />}
                                 {open && <i className="fa fa-caret-up line-normal center-caret" />}
                             </div>
@@ -242,30 +246,32 @@ class LeftSidebar extends Component {
                         && (
                             <div className="logo-n-bars">
                                 <img alt="menu" className="logo" src="images/logo-bl.png" />
-                                <div role="button"
+                                <div
+                                    role="button"
                                     className="bars action waves-effect waves-light"
                                     tabIndex="0"
                                     onKeyPress={this.handleClick}
-                                    onClick={this.handleClick}>
+                                    onClick={this.handleClick}
+                                >
                                     <img alt="" className="img-bars" src="images/menu.png" />
                                 </div>
                             </div>
-                        )
-                    }
+                        )}
                     {!open
                         && (
                             <div className="logo-n-bars">
                                 <img alt="menu" className="closed-logo" src="images/logo-bl.png" />
-                                <div role="button"
+                                <div
+                                    role="button"
                                     tabIndex="0"
                                     onKeyPress={this.handleClick}
                                     className={`bars action waves-effect waves-light ${(width > 800) ? '' : 'hidden'} `}
-                                    onClick={this.handleClick}>
+                                    onClick={this.handleClick}
+                                >
                                     <img alt="" className="img-bars" src="images/menu.png" />
                                 </div>
                             </div>
-                        )
-                    }
+                        )}
                 </div>
 
                 <nav className="sidebar-nav line-normal">

@@ -33,24 +33,31 @@ const ToggleWidget = ({ toggleState, toggle }) => {
 
     return (
         <div className="box-sh">
-            <div className="toggle-icon"
+            <div
+                className="toggle-icon"
                 tabIndex="0"
                 role="button"
                 onKeyPress={() => checkAndToggle(true)}
-                onClick={() => checkAndToggle(true)}>
+                onClick={() => checkAndToggle(true)}
+            >
                 <img alt="" src="images/icons/pin.png" />
             </div>
             <div className="toggle-map">
                 <MuiThemeProvider>
-                    <Toggle label="" defaultToggled={toggleState}
-                        onToggle={toggle} />
+                    <Toggle
+                        label=""
+                        defaultToggled={toggleState}
+                        onToggle={toggle}
+                    />
                 </MuiThemeProvider>
             </div>
-            <div className="toggle-icon"
+            <div
+                className="toggle-icon"
                 tabIndex="0"
                 role="button"
                 onKeyPress={() => checkAndToggle(false)}
-                onClick={() => checkAndToggle(false)}>
+                onClick={() => checkAndToggle(false)}
+            >
                 <i className="fa fa-th-large" aria-hidden="true" />
             </div>
         </div>
@@ -63,14 +70,19 @@ ToggleWidget.propTypes = {
 }
 
 
-const MapWrapper = ({ showFilter, dev_opex }) => <AltContainer stores={{
+const MapWrapper = ({ showFilter, dev_opex }) => (
+    <AltContainer stores={{
     positions: MapPositionStore,
     measures: MeasureStore,
     configs: ConfigStore,
-}}>
-    <DeviceMapWrapper showFilter={showFilter}
-        dev_opex={dev_opex} />
-</AltContainer>
+}}
+    >
+        <DeviceMapWrapper
+            showFilter={showFilter}
+            dev_opex={dev_opex}
+        />
+    </AltContainer>
+)
 
 MapWrapper.propTypes = {
     dev_opex: PropTypes.shape({}).isRequired,
@@ -126,7 +138,7 @@ class DeviceOperations extends GenericOperations {
     }
 
     _fetch(cb = null) {
-        const res = Object.assign({}, this.paginationParams, this.filterParams);
+        const res = { ...this.paginationParams, ...this.filterParams};
 
         if (this.filterParams.templates) {
             delete res.templates;
@@ -209,19 +221,26 @@ class DevicesComponent extends Component {
                     <NewPageHeader title={t('devices:title')} subtitle="" icon="device">
                         <FilterLabel ops={this.dev_opex} text={t('devices:header.filter.alt2')} />
                         <Pagination show_pagination={show_pagination} ops={this.dev_opex} />
-                        <OperationsHeader displayToggle={displayToggle}
-                            toggleSearchBar={this.toggleSearchBar.bind(this)} t={t} />
+                        <OperationsHeader
+                            displayToggle={displayToggle}
+                            toggleSearchBar={this.toggleSearchBar.bind(this)}
+                            t={t}
+                        />
                     </NewPageHeader>
-                    {displayList ?
+                    {displayList ? (
                         <DeviceCardList
                             deviceid={deviceId}
                             toggle={displayToggle}
                             dev_opex={this.dev_opex}
-                            showFilter={showFilter} /> :
-                        <MapWrapper
-                            toggle={displayToggle}
                             showFilter={showFilter}
-                            dev_opex={this.dev_opex} />}
+                        />
+                      ) : (
+                          <MapWrapper
+                              toggle={displayToggle}
+                              showFilter={showFilter}
+                              dev_opex={this.dev_opex}
+                          />
+                      )}
                 </AltContainer>
             </div>
         );
