@@ -11,7 +11,7 @@ class LoginStore {
         this.user = undefined;
         this.loading = false;
 
-        const userinfo = Util.getToken();
+        const userinfo = Util.getUserInfo();
         if (userinfo) {
             this.user = JSON.parse(userinfo);
             this.authenticated = true;
@@ -29,7 +29,7 @@ class LoginStore {
 
     set(userinfo) {
         this.user = userinfo;
-        Util.setToken(JSON.stringify(userinfo)); // could be any value;
+        Util.setUserInfo(JSON.stringify(userinfo)); // could be any value;
         this.authenticated = true;
         this.loading = false;
     }
@@ -40,7 +40,7 @@ class LoginStore {
         this.loading = false;
         this.user = undefined;
         this.authenticated = false;
-        Util.setToken(undefined);
+        Util.setUserInfo(undefined);
     }
 
     handleGetUserData() {

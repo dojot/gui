@@ -84,7 +84,6 @@ module.exports = {
         new CopyWebpackPlugin([
             { from: 'src/html/index.html', to: 'index.html' },
             { from: 'src/js/views/flows/vendor.js', to: 'js/vendor.js' },
-            { from: 'src/js/utils/localStorage.js', to: 'js/localStorage.js' },
             { from: 'node_modules/leaflet/dist/leaflet.css', to: 'leaflet.css' },
             { from: 'node_modules/leaflet/dist/images', to: 'images' },
             { from: 'node_modules/ace-builds/src-min', to: 'js/ace' },

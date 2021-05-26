@@ -14,7 +14,7 @@ import FlowActions from '../../actions/FlowActions';
 import FlowStore from '../../stores/FlowStore';
 import util from '../../comms/util/util';
 import toaster from '../../comms/util/materialize';
-import { PROXY_URL } from "Src/config";
+import { BASE_URL, PROXY_URL } from "Src/config";
 
 
 
@@ -44,7 +44,6 @@ class FlowCanvas extends Component {
             const config = {
                 headers: {
                     accept: 'application/json',
-                    authorization: `Bearer ${util.getToken()}`,
                 },
             };
             fetch(`${PROXY_URL}flows/nodes`, config)
@@ -86,7 +85,6 @@ class FlowCanvas extends Component {
             const config = {
                 headers: {
                     accept: 'text/html',
-                    authorization: `Bearer ${util.getToken()}`,
                 },
             };
             fetch(`${PROXY_URL}flows/nodes`, config)
@@ -105,7 +103,7 @@ class FlowCanvas extends Component {
                 });
         }
 
-        RED.i18n.init(`Bearer ${util.getToken()}`, () => {
+        RED.i18n.init(() => {
             RED.palette.init();
             RED.workspaces.init();
             RED.view.init();
@@ -180,7 +178,7 @@ class FlowCanvas extends Component {
                     <div id="editor-stack" />
 
                     <div id="palette" style={this.cannotEdit ? { display: 'none' } : {}}>
-                        <img src={`${PROXY_URL}flows/red/images/spin.svg`} className="palette-spinner hide" />
+                        <img src={`flows/red/images/spin.svg`} className="palette-spinner hide" />
                         <div id="palette-container" className="palette-scroll" />
                         <div id="palette-footer">
                             <a className="palette-button" id="palette-collapse-all" href="#">

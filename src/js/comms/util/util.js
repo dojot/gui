@@ -3,9 +3,6 @@ import LoginActions from 'Actions/LoginActions';
 import 'babel-polyfill';
 import i18n from 'i18next';
 import { BASE_URL, PROXY_URL } from 'Src/config';
-import localStoragePolyFill from '../../utils/localStorage';
-
-const sha1 = require('sha1');
 
 function FetchError(data, message) {
     this.name = 'FetchError';
@@ -57,34 +54,26 @@ class Util {
         return `${PROXY_URL}stream/socketio`;
     }
 
-    getSHA1(data) {
-        return sha1(data);
-    }
-
-    getToken() {
-        return window.localStorage.getItem('jwt');
+    getUserInfo() {
+        return window.localStorage.getItem('userinfo');
     }
 
 
-    getUserLoggedInfo() {
-        return JSON.parse(atob(this.getToken().split('.')[1]));
-    }
-
-
-    setToken(token) {
-        try {
+    setUserInfo(userinfo) {
+        if (typeof (Storage) !== "undefined") {
             // Test webstorage existence.
             if (!window.localStorage || !window.sessionStorage) {
                 throw new Error('error checking webstorage existence');
             }
             // Test webstorage accessibility - Needed for Safari private browsing.
-            if (token === null || token === undefined) {
-                window.localStorage.removeItem('jwt');
+            if (userinfo === null || userinfo === undefined) {
+                window.localStorage.removeItem('userinfo');
             } else {
-                window.localStorage.setItem('jwt', token);
+                window.localStorage.setItem('userinfo', userinfo);
             }
-        } catch (e) {
-            localStoragePolyFill();
+        } else {
+            // No web storage Support.
+            throw new Error('error checking webstorage existence');
         }
     }
 
@@ -95,7 +84,7 @@ class Util {
 
     setPermissions(permissions) {
         const objPermStr = JSON.stringify(permissions);
-        try {
+        if (typeof (Storage) !== "undefined") {
             // Test webstorage existence.
             if (!window.localStorage || !window.sessionStorage) {
                 throw new Error('error checking webstorage existence');
@@ -106,8 +95,9 @@ class Util {
             } else {
                 window.localStorage.setItem('roles', objPermStr);
             }
-        } catch (e) {
-            localStoragePolyFill();
+        } else {
+            // No web storage Support.
+            throw new Error('error checking webstorage existence');
         }
     }
 
@@ -164,9 +154,9 @@ class Util {
 
     _runFetch(url, config) {
         const local = this;
-        const authConfig = config || {};
+        const setConfig = config || {};
         return new Promise(((resolve, reject) => {
-            fetch(url, authConfig)
+            fetch(url, setConfig)
                 .then(local._status)
                 .then((data) => {
                     resolve(data[1]);

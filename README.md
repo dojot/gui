@@ -34,7 +34,7 @@ It has three optional arguments:
 ```
 
 ```shell
-docker build -f docker/Dockerfile -t [tag name] --build-arg DOJOT_VERSION=[version] --build-arg APPLICATION_URL=[app url] --build-arg BASE_URL=[api url] .
+docker build -f Dockerfile -t [tag name] --build-arg DOJOT_VERSION=[version] --build-arg APPLICATION_URL=[app url] --build-arg BASE_URL=[api url] .
 ```
 
 To run the created image:
