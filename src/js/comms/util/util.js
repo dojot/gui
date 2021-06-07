@@ -144,6 +144,14 @@ class Util {
         });
     }
 
+    PATCH(url, payload) {
+        return this._runFetch(url, {
+            method: 'PATCH',
+            headers: new Headers({ 'content-type': 'application/json' }),
+            body: new Blob([JSON.stringify(payload)], { type: 'application/json' }),
+        });
+    }
+
     DELETE(url, payload) {
         return this._runFetch(url, { method: 'delete' });
     }
@@ -172,7 +180,7 @@ class Util {
             fetch(url, authConfig)
                 .then(local._status)
                 .then((data) => {
-                    resolve(data[1]);
+                    resolve(data && data[1] ? data[1]: "");
                 })
                 .catch((error) => {
                     reject(local.checkContent(error));
@@ -193,6 +201,9 @@ class Util {
         if (response.status === 502) return Promise.reject(new FetchError(response, i18n.t('errors_msg.api_502')));
         if (response.status === 404) return Promise.reject(new FetchError(response, i18n.t('errors_msg.api_404')));
         if (response.status === 500) return Promise.reject(response);
+
+        //204 No Content
+        if (response.status === 204) return [Promise.resolve(response), null];
 
         const body = await response.json();
         response.message = body.message;

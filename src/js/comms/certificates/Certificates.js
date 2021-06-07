@@ -281,17 +281,23 @@ class Certificates {
      * @param commonName The common name attribute type specifies an identifier Ex.: ID
      * @returns {Promise<{privateKey: string, crtPEM: string}>}
      */
-    async generateCertificates(commonName) {
+    async generateCertificates(deviceId) {
         await this._generateKeyPar().catch((error) => {
             throw error;
         });
 
-        await this._createCSR(commonName).catch((error) => {
+        await this._createCSR(deviceId).catch((error) => {
             throw error;
         });
 
-        const certificatePem = await certManager
-            .signCert(commonName, this._csrPEM)
+        const { certificatePem, certificateFingerprint } = await certManager
+            .signCert(this._csrPEM)
+            .catch((error) => {
+                throw error;
+            });
+
+        await certManager
+            .associateCert(certificateFingerprint, deviceId)
             .catch((error) => {
                 throw error;
             });
