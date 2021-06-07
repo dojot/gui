@@ -7,9 +7,17 @@ class CertificatesManager {
         return caPem;
     }
 
-    async signCert(commonName, csrPEM) {
-        const { certificatePem } = await util.POST(`${baseURL}x509/v1/certificates`, { csr: csrPEM });
-        return certificatePem;
+    async signCert(csrPEM) {
+        return util.POST(`${baseURL}x509/v1/certificates`, { csr: csrPEM });
+    }
+
+    async associateCert(fingerPrint, deviceId) {
+     await util.PATCH(`${baseURL}x509/v1/certificates/${fingerPrint}`,
+            {
+            "belongsTo": {
+              "device": deviceId,
+            },
+      });
     }
 }
 
