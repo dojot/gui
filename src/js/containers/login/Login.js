@@ -6,7 +6,6 @@ import AltContainer from 'alt-container';
 import { withNamespaces } from 'react-i18next';
 import LoginActions from 'Actions/LoginActions';
 import LoginStore from 'Stores/LoginStore';
-import TextField from '@material-ui/core/TextField';
 import { LOGIN_URL } from 'Src/config';
 
 import toaster from 'Comms/util/materialize';
