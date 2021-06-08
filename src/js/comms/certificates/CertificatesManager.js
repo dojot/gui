@@ -6,10 +6,18 @@ class CertificatesManager {
         const { caPem } = await util.GET(`${PROXY_URL}x509/v1/ca`);
         return caPem;
     }
+ 
+    async signCert(csrPEM) {
+        return util.POST(`${PROXY_URL}x509/v1/certificates`, { csr: csrPEM });
+    }
 
-    async signCert(commonName, csrPEM) {
-        const { certificatePem } = await util.POST(`${PROXY_URL}x509/v1/certificates`, { csr: csrPEM });
-        return certificatePem;
+    async associateCert(fingerPrint, deviceId) {
+     await util.PATCH(`${PROXY_URL}x509/v1/certificates/${fingerPrint}`,
+            {
+            "belongsTo": {
+              "device": deviceId,
+            },
+      }); 
     }
 }
 
