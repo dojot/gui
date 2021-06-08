@@ -1,5 +1,4 @@
 .sub-nav {
-
     max-width: 500px;
     overflow: hidden;
     z-index: 9992;
@@ -172,12 +171,12 @@
     color: #fff;
     border: 0 !important;
     background: linear-gradient(0deg, #ffffff, #ffffff),
-    linear-gradient(
+        linear-gradient(
             149.39deg,
             #fcfcfc 24.51%,
             #fcfcfc 24.51%,
             #ffffff 42.02%
-    );
+        );
 
     .header {
         height: 120px;
@@ -454,19 +453,27 @@
     .logout-page-settings {
         cursor: pointer;
 
-        .logout-page-changePassword {
+        .logout-page-item {
             width: 180px;
             height: 40px;
             font-size: 100%;
             font-family: "Raleway", sans-serif;
             color: #4f4f4f;
             padding: 10px 0 0 15px;
+
+            a {
+                color: #4f4f4f !important;
+            }
         }
 
-        .logout-page-changePassword:hover {
+        .logout-page-item:hover {
             color: #fff;
             background-color: #4f4f4f;
             font-weight: bold;
+
+            a {
+                color: #fff !important;
+            }
         }
     }
 
@@ -741,18 +748,17 @@
     }
 }
 
-
 .bg-gradient-dark-ciano {
-    background: #B993D6 !important;
-    background: -webkit-linear-gradient(to right, #8CA6DB, #B993D6) !important;
-    background: linear-gradient(to right, #7c92bf, #B993D6) !important;
+    background: #b993d6 !important;
+    background: -webkit-linear-gradient(to right, #8ca6db, #b993d6) !important;
+    background: linear-gradient(to right, #7c92bf, #b993d6) !important;
 }
 
 .profile-sidebar {
     .header {
-        background: #B993D6;
-        background: -webkit-linear-gradient(to right, #8CA6DB, #B993D6);
-        background: linear-gradient(to right, #7c92bf, #B993D6);
+        background: #b993d6;
+        background: -webkit-linear-gradient(to right, #8ca6db, #b993d6);
+        background: linear-gradient(to right, #7c92bf, #b993d6);
     }
 }
 
@@ -811,7 +817,7 @@
                 width: 310px;
                 align-self: flex-end;
                 height: 1px;
-                background: #E0E0E0;
+                background: #e0e0e0;
             }
 
             .body-actions--button {

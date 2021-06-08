@@ -48,7 +48,6 @@ const RightSideBar = ({ t, user, toggleSidebar }) => {
                             {user.username}
                         </div>
                     </div>
-
                     {user.email !== undefined && (
                         <div>
                             <div className="col s12 m12">
@@ -94,7 +93,7 @@ const RightSideBar = ({ t, user, toggleSidebar }) => {
                 {canSeeImportOrExport ? (
                     <div className="logout-page-settings">
                         <div
-                            className="logout-page-changePassword col s12 m12"
+                            className="logout-page-item col s12 m12"
                             role="button"
                             tabIndex={0}
                             onKeyPress={handleImportExport}
@@ -104,6 +103,14 @@ const RightSideBar = ({ t, user, toggleSidebar }) => {
                         </div>
                     </div>
                 ) : <div />}
+
+                <div className="horizontal-line" />
+
+                <div className="logout-page-settings">
+                    <div className="logout-page-item col s12 m12">
+                        <a href={user.urlAcc} target="_blank" rel="noreferrer">{t('text.edit_user')}</a>
+                    </div>
+                </div>
 
                 <div className="horizontal-line" />
 
@@ -118,7 +125,7 @@ const RightSideBar = ({ t, user, toggleSidebar }) => {
                         {t('text.logout')}
                     </div>
                 </div>
-            </div>
+            </div >
             {
                 openImportExport
                     ? (
@@ -130,7 +137,7 @@ const RightSideBar = ({ t, user, toggleSidebar }) => {
                     )
                     : <div />
             }
-        </div>
+        </div >
     )
 }
 
@@ -145,6 +152,7 @@ RightSideBar.propTypes = {
         username: PropTypes.string.isRequired,
         name: PropTypes.string,
         email: PropTypes.string,
+        urlAcc: PropTypes.string.isRequired,
         tenant: PropTypes.string,
     }),
 }

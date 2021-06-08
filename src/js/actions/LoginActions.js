@@ -18,6 +18,7 @@ class LoginActions {
                         username: response.username,
                         email: response.email,
                         tenant: response.tenant,
+                        urlAcc: response.urlAcc,
                     };
                     this.loginSuccess(userinfo);
                 })
