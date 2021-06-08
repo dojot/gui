@@ -105,6 +105,12 @@ class Util {
         return this._runFetch(this.getUrlTokenSocketIO());
     }
 
+    GET_PROXY(url) {
+        return this._runFetch(`${PROXY_URL}${url}`, {
+            method: 'get',
+        });
+    }
+
     GET(url) {
         return this._runFetch(url, {
             method: 'get',

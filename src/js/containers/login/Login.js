@@ -1,17 +1,18 @@
 import React, {
-    useEffect,
+    useEffect, useState,
 } from 'react';
 import PropTypes from 'prop-types';
 import AltContainer from 'alt-container';
 import { withNamespaces } from 'react-i18next';
 import LoginActions from 'Actions/LoginActions';
 import LoginStore from 'Stores/LoginStore';
+import TextField from '@material-ui/core/TextField';
 import { LOGIN_URL } from 'Src/config';
 
 import toaster from 'Comms/util/materialize';
 
 const LoginContent = (props) => {
-    const tenant = 'admin'; // its temporary
+    const [tenant, setTenant] = useState('');
     const { t, authenticated } = props;
 
     // this value will be returned upon return from the login,
@@ -45,7 +46,8 @@ const LoginContent = (props) => {
 
     const redirectLogin = (e) => {
         e.preventDefault();
-        window.location.href = `${LOGIN_URL}?tenant=${tenant}&state=${state}&return=${returnPath}`;
+        if (tenant.length)
+            window.location.href = `${LOGIN_URL}?tenant=${tenant}&state=${state}&return=${returnPath}`;
     };
 
 
@@ -55,7 +57,7 @@ const LoginContent = (props) => {
                 <div className="col  s4 p0 left-side" />
                 <div className="col s8 login-area-right-side bg-right">
                     <div className="col s7">
-                        <form>
+                        <form autoComplete="on">
                             <div className="row">
                                 <div className="col s12  offset-m1">
                                     <div className="login-page-title">
@@ -72,11 +74,21 @@ const LoginContent = (props) => {
                             </div>
 
                             <div className="row">
-                                <div className="col s11 text-center">
+                                <div className="input-field col s8 m6 offset-m2">
+                                    <input
+                                        type="text"
+                                        value={tenant}
+                                        maxLength="25"
+                                        onChange={(e) => { setTenant(e.target.value); }}
+                                        name="tenant"
+                                    />
+                                </div>
+                                <div className="col s8 m6 offset-m2">
                                     <br />
                                     <button
                                         type="submit"
                                         tabIndex="0"
+                                        disabled={!tenant.length}
                                         onKeyPress={e => redirectLogin(e)}
                                         onClick={e => redirectLogin(e)}
                                         className="clear-btn new-btn-flat red sp-btn-login"

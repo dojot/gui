@@ -15,7 +15,7 @@
         "internal_error": "Erro interno, tente novamente mais tarde.",
         "auth_failed": "Falha de autenticação."
     },
-    "sign_in_desc": "Entre para iniciar sua sessão",
+    "sign_in_desc": "Digite seu Tenant para iniciar a sessão",
     "confirm_pass": "Confirme sua senha",
     "type_password": "Digite sua senha",
     "forgot_password": "Esqueceu a senha?",

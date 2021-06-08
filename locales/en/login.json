@@ -15,7 +15,7 @@
         "internal_error": "Internal error. Please try again later.",
         "auth_failed": "Authentication failed."
     },
-    "sign_in_desc": "Sign in to start your session",
+    "sign_in_desc": "Type your Tenant to sign in",
     "confirm_pass": "Confirm your password",
     "type_password": "Type your password",
     "forgot_password": "Forgot Password?",
