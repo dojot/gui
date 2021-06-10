@@ -195,7 +195,7 @@ class Util {
         if (response.status === 404) return Promise.reject(new FetchError(response, i18n.t('errors_msg.api_404')));
         if (response.status === 500) return Promise.reject(response);
 
-        //204 No Content
+        // 204 No Content
         if (response.status === 204) return [Promise.resolve(response), null];
 
         const body = await response.json();
