@@ -146,7 +146,6 @@ class Util {
         });
     }
 
-
     PATCH(url, payload) {
         return this._runFetch(url, {
             method: 'PATCH',
