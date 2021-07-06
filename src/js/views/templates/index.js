@@ -16,8 +16,8 @@ const FilterFields = ({ fields, onChange }) => (
             id="fld_name"
             type="text"
             className="form-control form-control-lg"
-            placeholder="Label"
-            name="label"
+            placeholder="Nome"
+            name="name"
             value={fields.label}
             onChange={onChange}
         />
